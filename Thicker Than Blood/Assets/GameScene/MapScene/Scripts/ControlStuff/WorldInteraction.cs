@@ -5,16 +5,16 @@ using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 public class WorldInteraction : MonoBehaviour
 {
+    public GameObject player;
+
     const float INTERACT_DIST = 1;
     NavMeshAgent playerAgent;
-    GameObject player;
     List<GameObject> inspectedList = new List<GameObject>();
     public static bool chasing;
     GameObject curChasedObj;
     // Use this for initialization
     void Start()
     {
-        player = GameObject.Find("player_party");
         playerAgent = player.GetComponent<NavMeshAgent>();
         chasing = false;
     }
