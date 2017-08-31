@@ -1,0 +1,173 @@
+fileFormatVersion: 2
+guid: b6c12aa292090b44a982b5eebe953cf4
+timeCreated: 1485854613
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: Armature
+    100004: Bone
+    100006: Bone_001
+    100008: Bone_002
+    100010: Bone_003
+    100012: Bone_004
+    100014: Bone_005
+    100016: Bone_006
+    100018: Bone_007
+    100020: Bone_008
+    100022: Bone_009
+    100024: Bone_010
+    100026: Bone_011
+    100028: Bone_012
+    100030: Bone_013
+    100032: Bone_014
+    100034: Bone_015
+    100036: Bone_016
+    100038: Bone_017
+    100040: Bone_018
+    100042: Bone_019
+    100044: Bone_020
+    100046: Bone_021
+    100048: Bone_022
+    100050: Bone_023
+    100052: Cylinder
+    100054: Cube
+    100056: Bone_0
+    100058: Feet_L
+    100060: Feet_R
+    100062: Hip_L
+    100064: Hip_R
+    100066: LArm_L
+    100068: LArm_R
+    100070: Leg_L
+    100072: Leg_R
+    100074: Palm_L
+    100076: Palm_R
+    100078: Shoulder_L
+    100080: Shoulder_R
+    100082: Thigh_L
+    100084: Thigh_R
+    100086: UArm_L
+    100088: UArm_R
+    400000: //RootNode
+    400002: Armature
+    400004: Bone
+    400006: Bone_001
+    400008: Bone_002
+    400010: Bone_003
+    400012: Bone_004
+    400014: Bone_005
+    400016: Bone_006
+    400018: Bone_007
+    400020: Bone_008
+    400022: Bone_009
+    400024: Bone_010
+    400026: Bone_011
+    400028: Bone_012
+    400030: Bone_013
+    400032: Bone_014
+    400034: Bone_015
+    400036: Bone_016
+    400038: Bone_017
+    400040: Bone_018
+    400042: Bone_019
+    400044: Bone_020
+    400046: Bone_021
+    400048: Bone_022
+    400050: Bone_023
+    400052: Cylinder
+    400054: Cube
+    400056: Bone_0
+    400058: Feet_L
+    400060: Feet_R
+    400062: Hip_L
+    400064: Hip_R
+    400066: LArm_L
+    400068: LArm_R
+    400070: Leg_L
+    400072: Leg_R
+    400074: Palm_L
+    400076: Palm_R
+    400078: Shoulder_L
+    400080: Shoulder_R
+    400082: Thigh_L
+    400084: Thigh_R
+    400086: UArm_L
+    400088: UArm_R
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: Cylinder
+    4300002: Cube
+    7400000: Default Take
+    9500000: //RootNode
+    13700000: Cylinder
+    13700002: Cube
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
