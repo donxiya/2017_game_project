@@ -19,7 +19,7 @@ public class Person {
     public float stamina { get; set; }
     public float staminaMax { get; set; }
     public float health;
-    public float maxHealth;
+    public float healthMax;
 
     public float visionRate;
     public float hideRate;
@@ -53,7 +53,6 @@ public class Person {
     //ini gear
     public void initialization()
     {
-
     }
     public virtual float getAttackDmg()
     {
@@ -85,18 +84,4 @@ public class Person {
 
 }
 
-public class Item
-{
-    public string name;
-    public int value;
-    public float weight;
-    public string description;
-    public string city;
-    public Item(string nameI, int valueI, string cityI, string descriptionI)
-    {
-        name = nameI;
-        value = valueI;
-        city = cityI;
-        description = descriptionI;
-    }
-}
+

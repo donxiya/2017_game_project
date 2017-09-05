@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class BattleCentralControl : MonoBehaviour {
+    
+
     public static bool battleStart, playerTurn;
     public static Grid[,] map;
     public static int gridXMax, gridZMax;
@@ -26,6 +28,7 @@ public class BattleCentralControl : MonoBehaviour {
         generateMap(gridXMax, gridZMax);
         placeOnMap(gridXMax, gridZMax);
         objsChanged = new List<GameObject>();
+        groundInitialization();
 
     }
 
@@ -36,7 +39,6 @@ public class BattleCentralControl : MonoBehaviour {
         {
             SceneManager.LoadScene("MenuScene");
         }
-
     }
 
     public static List<GameObject> gridInLine(GameObject start, GameObject end)
@@ -50,18 +52,6 @@ public class BattleCentralControl : MonoBehaviour {
         {
             RaycastHit hit = hits[i];
             result.Add(hit.transform.gameObject);
-            /**
-            Renderer rend = hit.transform.GetComponent<Renderer>();
-
-            if (rend)
-            {
-                // Change the material of all hit colliders
-                // to use a transparent shader.
-                rend.material.shader = Shader.Find("Transparent/Diffuse");
-                Color tempColor = rend.material.color;
-                tempColor.a = 0.3F;
-                rend.material.color = tempColor;
-            }**/
         }
         return result;
     }
@@ -70,6 +60,7 @@ public class BattleCentralControl : MonoBehaviour {
     {
         if (objsChanged.Count > 0)
         {
+            //Debug.Log("recover item amount: " + objsChanged.Count);
             foreach (GameObject go in objsChanged)
             {
                 recoverColor(go);
@@ -86,6 +77,7 @@ public class BattleCentralControl : MonoBehaviour {
             Color tempColor = rend.material.color;
             tempColor.a = 0.8F;
             rend.material.color = tempColor;
+            objsChanged.Add(toChange);
         }
     }
     public static void recoverColor(GameObject toChange)
@@ -171,5 +163,10 @@ public class BattleCentralControl : MonoBehaviour {
             map[x, z] = temp;
         }
         return model;
+    }
+    void groundInitialization()
+    {
+        //Terrain terrain = ground.GetComponent<Terrain>();
+        //ground.GetComponent<MeshRenderer>().enabled = false;
     }
 }

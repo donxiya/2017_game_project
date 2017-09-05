@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GridObject : BattleInteractable {
-    public Grid gridInfo;
     public override void cameraFocusOn()
     {
         base.cameraFocusOn();
@@ -12,13 +11,22 @@ public class GridObject : BattleInteractable {
     {
         return Instantiate(toPlace, pos, rot);
     }
+    public bool inGrid(float x, float z)
+    {
+        float gridPosX = BattleCentralControl.objToGrid[gameObject].x;
+        float gridPosZ = BattleCentralControl.objToGrid[gameObject].x;
+        if (x > gridPosX- .5f && x < gridPosX + .5f &&
+            z > gridPosZ - .5f && z < gridPosZ + .5f)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public void moveTroopToGrid(GameObject toMove)
     {
-        Debug.Log(BattleCentralControl.objToGrid[gameObject].path.Count);
-        toMove.GetComponent<PlayerTroop>().troopMoveToPlace(BattleCentralControl.objToGrid[gameObject].path.Dequeue());
-        /**while (BattleCentralControl.objToGrid[gameObject].path.Count != 0)
-        {
-            toMove.GetComponent<PlayerTroop>().troopMoveToPlace(BattleCentralControl.objToGrid[gameObject].path.Dequeue());
-        }**/
+
+        toMove.GetComponent<PlayerTroop>().troopMoveToPlace(BattleCentralControl.objToGrid[gameObject]);
+        
     }
 }

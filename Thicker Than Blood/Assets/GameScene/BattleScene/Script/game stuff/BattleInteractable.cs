@@ -9,4 +9,7 @@ public class BattleInteractable : MonoBehaviour {
         BattleCamera.target = gameObject;
         BattleCamera.cameraMode = CameraMode.mapObject;
     }
+    public virtual void cameraFocusOnExit()
+    {
+    }
 }

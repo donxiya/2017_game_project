@@ -58,7 +58,6 @@ public class TroopControlPanel : MonoBehaviour {
 
     void walk()
     {
-        curControledTroop.GetComponent<PlayerTroop>().showMoveRange();
-        BattleInteraction.skillMode = TroopSkill.walk;
+       // BattleInteraction.skillMode = TroopSkill.walk;
     }
 }

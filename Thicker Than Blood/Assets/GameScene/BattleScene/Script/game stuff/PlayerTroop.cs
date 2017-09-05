@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class PlayerTroop : BattleInteractable {
 
@@ -8,10 +10,35 @@ public class PlayerTroop : BattleInteractable {
     public GameObject controlPanel;
     public Person person { get; set; }
     public Grid curGrid { get; set; }
-    
+
+    public GameObject troopStaminaBar, troopHealthBar, staminaTxt, healthTxt;
+    public Texture2D staminaBarImg, troopHealthBarImg;
+    public bool controlled;
+
+    NavMeshAgent navMeshAgent;
+    Grid lastGrid;
     // Use this for initialization
     public void Start()
     {
+        navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
+    }
+    public void Update() {
+        if (BattleCentralControl.playerTurn && controlled)
+        {
+            if (movedToNewGrid())
+            {
+                Debug.Log("stamina: " + person.stamina);
+                if (person.stamina < getCurrentGrid().staminaCost)
+                {
+                    goBackToLastGrid();
+                } else
+                {
+                    
+                    person.stamina -= getCurrentGrid().staminaCost;
+                }
+            }
+        }
+        showStatus();
     }
     public override void cameraFocusOn()
     {
@@ -20,27 +47,28 @@ public class PlayerTroop : BattleInteractable {
         {
             controlPanel.SetActive(true);
             controlPanel.GetComponent<TroopControlPanel>().curControledTroop = gameObject;
+            controlled = true;
         }
     }
-    
-    public bool troopMoveToPlace(Grid grid)
+    public override void cameraFocusOnExit()
+    {
+        base.cameraFocusOnExit();
+        controlPanel.SetActive(false);
+        controlled = false;
+    }
+    public void troopMoveToPlace(Grid grid)
     {
         if (!grid.occupied)
         {
-            transform.LookAt(new Vector3(grid.x, 1, grid.z));
-            transform.position = Vector3.Slerp(transform.position, new Vector3(grid.x, 1, grid.z), Time.deltaTime * 1f);
-            /**while (gameObject.transform.position.x != grid.x ||
-                gameObject.transform.position.z != grid.z)
+            if (person.stamina > 0)
             {
-                
-            }**/
-        }
-        if (transform.position == new Vector3(grid.x, 1, grid.z))
+                navMeshAgent.destination = new Vector3(grid.x, 1, grid.z);
+            }
+        } else
         {
-            transform.LookAt(transform.position + new Vector3(0, 1, 0));
+            navMeshAgent.destination = new Vector3(grid.x, 1, grid.z);
         }
-
-        return true;
+        
     }
     public void placed(Person personI, Grid curGridI)
     {
@@ -49,53 +77,42 @@ public class PlayerTroop : BattleInteractable {
         curGrid = curGridI;
         //person.stamina = person.getStaminaMax();
     }
-    public List<GameObject> showMoveRange()
+
+    public Grid getCurrentGrid()
     {
-        List<GameObject> result = new List<GameObject>();
-        foreach(Grid g in BattleCentralControl.map)
-        {
-            g.mark = -1;
-            g.path = new Queue<Grid>();
-        }
-        if (person.stamina > 0)
-        {
-            curGrid.mark = person.stamina;
-            curGrid.path.Enqueue(curGrid);
-            List<Grid> temp = new List<Grid>();
-            temp.Add(curGrid);
-            bfsHelper(curGrid);
-        }
-        foreach (Grid g in BattleCentralControl.map)
-        {
-            if (g.mark >= 0)
-            {
-                result.Add(BattleCentralControl.gridToObj[g]);
-                BattleCentralControl.objsChanged.Add(BattleCentralControl.gridToObj[g]);
-                BattleCentralControl.changeColor(BattleCentralControl.gridToObj[g]);
-            }
-        }
+        return BattleCentralControl.map[Mathf.RoundToInt(gameObject.transform.position.x), Mathf.RoundToInt(gameObject.transform.position.z)];
+    }
+
+    public void goBackToLastGrid()
+    {
+        navMeshAgent.destination = new Vector3(lastGrid.x, 1, lastGrid.z);
+        //person.stamina += curGrid.staminaCost;
+        curGrid = lastGrid;
         
-        return result;
     }
-    public void bfsHelper(Grid grid)
+
+    bool movedToNewGrid()
     {
-        //Debug.Log("curG nei: " + grid.neighbors.Count);
-        foreach (Grid neiG in grid.neighbors)
+        if (curGrid != getCurrentGrid())
         {
-            //Debug.Log("curG: " + grid.mark);
-            if (neiG.mark < grid.mark - neiG.staminaCost && grid.mark - neiG.staminaCost >= 0)
-            {
-                neiG.mark = grid.mark - neiG.staminaCost;
-                neiG.path = new Queue<Grid>(grid.path);
-                neiG.path.Enqueue(neiG);
-                if (neiG.mark > 0)
-                {
-                    //Debug.Log("neigG: " + neiG.mark);
-                    bfsHelper(neiG);
-                }
-            }
+            lastGrid = curGrid;
+            curGrid = getCurrentGrid();
+            return true;
+        }
+        return false;
+    }
+
+    
+    void showStatus()
+    {
+        
+        if (person != null)
+        {
+            //Debug.Log("stamina and max: " + person.health + " " + person.getHealthMax());
+            troopHealthBar.GetComponent<RawImage>().rectTransform.sizeDelta = new Vector2(.5f, Mathf.RoundToInt(3 * (person.health / person.getHealthMax())));
+            troopStaminaBar.GetComponent<RawImage>().rectTransform.sizeDelta = new Vector2(.5f, 3 * (person.stamina / person.getStaminaMax()));
+            //staminaTxt.GetComponent<Text>().text = person.stamina.ToString();
         }
     }
-    
 }
 

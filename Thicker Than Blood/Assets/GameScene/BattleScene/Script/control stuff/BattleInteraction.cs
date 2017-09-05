@@ -9,13 +9,12 @@ public class BattleInteraction : MonoBehaviour {
     public static bool chasing;
     public static TroopSkill skillMode;
     public static GameObject curControlled;
-    GameObject curChasedObj;
-    
+    public static GameObject interactedObject;
+
     // Use this for initialization
     void Start()
     {
         player = GameObject.Find("player_party");
-        chasing = false;
         skillMode = TroopSkill.none;
     }
 
@@ -24,9 +23,6 @@ public class BattleInteraction : MonoBehaviour {
     void Update()
     {
         inputKeysActions();
-        if (chasing)
-        {
-        }
     }
     void inputKeysActions()
     {
@@ -37,7 +33,15 @@ public class BattleInteraction : MonoBehaviour {
         }
         if (Input.GetMouseButton(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
-            chasing = false;
+            if (BattleCentralControl.playerTurn)
+            {
+                if (curControlled != null)
+                {
+                    skillMode = TroopSkill.walk;
+                    walkToObj();
+                }
+            }
+            
             
         }
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -50,7 +54,12 @@ public class BattleInteraction : MonoBehaviour {
         RaycastHit interactionInfo;
         if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
         {
-            GameObject interactedObject = interactionInfo.collider.gameObject.transform.parent.gameObject;
+            if (interactedObject != null)
+            {
+                interactedObject.GetComponent<BattleInteractable>().cameraFocusOnExit();
+            }
+            
+            interactedObject = interactionInfo.collider.gameObject.transform.parent.gameObject;
             
             if (interactedObject.tag == "EnemyTroop" || interactedObject.tag == "NeutralTroop" )
             {
@@ -58,7 +67,7 @@ public class BattleInteraction : MonoBehaviour {
                 interactedObject.GetComponent<BattleInteractable>().cameraFocusOn();
             } else if (interactedObject.tag == "Grid")
             {
-                if (skillMode == TroopSkill.walk)
+                /**if (skillMode == TroopSkill.walk)
                 {
                     if (BattleCentralControl.objToGrid[interactedObject].mark >= 0)
                     {
@@ -70,7 +79,8 @@ public class BattleInteraction : MonoBehaviour {
                 } else
                 {
                     interactedObject.GetComponent<GridObject>().cameraFocusOn();
-                }
+                }**/
+                interactedObject.GetComponent<GridObject>().cameraFocusOn();
             } else if (interactedObject.tag == "PlayerTroop")
             {
                 interactedObject.GetComponent<PlayerTroop>().cameraFocusOn();
@@ -82,5 +92,27 @@ public class BattleInteraction : MonoBehaviour {
             }
         }
     }
+
+    void walkToObj()
+    {
+        Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit interactionInfo;
+        if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
+        {
+            interactedObject = interactionInfo.collider.gameObject.transform.parent.gameObject;
+            if (interactedObject.tag == "Grid")
+            {
+                if (skillMode == TroopSkill.walk)
+                {
+                    interactedObject.GetComponent<GridObject>().moveTroopToGrid(curControlled);
+                }
+                else
+                {
+                    interactedObject.GetComponent<GridObject>().cameraFocusOn();
+                }
+            }
+        }
+    }
+    
     
 }

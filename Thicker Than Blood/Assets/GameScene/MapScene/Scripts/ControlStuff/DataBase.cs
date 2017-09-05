@@ -258,3 +258,18 @@ public enum TroopSkill {
     lunge,
     whirlwind
 }
+public class Item
+{
+    public string name;
+    public int value;
+    public float weight;
+    public string description;
+    public string city;
+    public Item(string nameI, int valueI, string cityI, string descriptionI)
+    {
+        name = nameI;
+        value = valueI;
+        city = cityI;
+        description = descriptionI;
+    }
+}

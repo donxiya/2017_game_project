@@ -19,7 +19,7 @@ public class TroopSelection : MonoBehaviour {
     bool inSelecting;
     GameObject curSelectingButton, curSelectedButton;
     Person curSelectingPerson, curSelectedPerson;
-    public GameObject troopPlacingPanel;
+    public GameObject troopPlacingPanel, endTurnPanel;
     public List<Person> selectingMembers, selectedMembers;
     Dictionary<Person, GameObject> troopDict;
     // Use this for initialization
@@ -274,6 +274,7 @@ public class TroopSelection : MonoBehaviour {
         BattleCentralControl.battleStart = true;
         TroopPlacing.battleTroop = selectedMembers;
         troopPlacingPanel.SetActive(true);
+        endTurnPanel.SetActive(true);
     }
     List<Person> sortList(List<Person> listToSort)
     {
