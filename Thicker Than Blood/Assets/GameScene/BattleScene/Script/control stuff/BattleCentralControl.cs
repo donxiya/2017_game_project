@@ -11,7 +11,6 @@ public class BattleCentralControl : MonoBehaviour {
     public static int gridXMax, gridZMax;
     public static Dictionary<Grid, GameObject> gridToObj;
     public static Dictionary<GameObject, Grid> objToGrid;
-    public static List<GameObject> objsChanged { get; set; }
     private void Awake()
     {
         gridToObj = new Dictionary<Grid, GameObject>();
@@ -27,7 +26,6 @@ public class BattleCentralControl : MonoBehaviour {
         map = new Grid[gridXMax, gridZMax];
         generateMap(gridXMax, gridZMax);
         placeOnMap(gridXMax, gridZMax);
-        objsChanged = new List<GameObject>();
         groundInitialization();
 
     }
@@ -35,10 +33,6 @@ public class BattleCentralControl : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SceneManager.LoadScene("MenuScene");
-        }
     }
 
     public static List<GameObject> gridInLine(GameObject start, GameObject end)
@@ -55,43 +49,7 @@ public class BattleCentralControl : MonoBehaviour {
         }
         return result;
     }
-
-    public static void hideCurShowing()
-    {
-        if (objsChanged.Count > 0)
-        {
-            //Debug.Log("recover item amount: " + objsChanged.Count);
-            foreach (GameObject go in objsChanged)
-            {
-                recoverColor(go);
-            }
-        }
-    }
-    public static void changeColor(GameObject toChange)
-    {
-        Renderer rend = toChange.transform.Find("Cube").transform.GetComponent<Renderer>();
-
-        if (rend)
-        {
-            rend.material.shader = Shader.Find("Transparent/Diffuse");
-            Color tempColor = rend.material.color;
-            tempColor.a = 0.8F;
-            rend.material.color = tempColor;
-            objsChanged.Add(toChange);
-        }
-    }
-    public static void recoverColor(GameObject toChange)
-    {
-        Renderer rend = toChange.transform.GetComponent<Renderer>();
-
-        if (rend)
-        {
-            rend.material.shader = Shader.Find("Transparent/Diffuse");
-            Color tempColor = rend.material.color;
-            tempColor.a = 1F;
-            rend.material.color = tempColor;
-        }
-    }
+    
 
     void generateMap(int x, int z)
     {

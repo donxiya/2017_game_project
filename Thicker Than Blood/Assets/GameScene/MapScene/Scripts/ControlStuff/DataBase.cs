@@ -256,7 +256,14 @@ public enum TroopSkill {
     none,
     walk,
     lunge,
-    whirlwind
+    whirlwind,
+    fire,
+    holdSteady,
+    execute,
+    enGarde,
+    charge,
+    quickDraw,
+    rainOfArrows
 }
 public class Item
 {

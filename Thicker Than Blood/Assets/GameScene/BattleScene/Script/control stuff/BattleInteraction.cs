@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BattleInteraction : MonoBehaviour {
     const float INTERACT_DIST = 1;
@@ -23,13 +24,24 @@ public class BattleInteraction : MonoBehaviour {
     void Update()
     {
         inputKeysActions();
+        if (curControlled != null)
+        {
+            showIndicator();
+        }
+        
     }
     void inputKeysActions()
     {
         if (Input.GetMouseButton(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
-            BattleCentralControl.hideCurShowing();
-            selectObject();
+            if (curControlled == null || skillMode == TroopSkill.none || skillMode == TroopSkill.walk)
+            {
+                selectObject();
+            } else
+            {
+                curControlled.GetComponent<PlayerTroop>().makeDamage(curControlled.GetComponent<PlayerTroop>().indicatedGrid());
+            }
+            
         }
         if (Input.GetMouseButton(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
@@ -37,8 +49,11 @@ public class BattleInteraction : MonoBehaviour {
             {
                 if (curControlled != null)
                 {
-                    skillMode = TroopSkill.walk;
-                    walkToObj();
+                    if (skillMode == TroopSkill.none || skillMode == TroopSkill.walk)
+                    {
+                        skillMode = TroopSkill.walk;
+                        walkToObj();
+                    }
                 }
             }
             
@@ -46,10 +61,22 @@ public class BattleInteraction : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (skillMode == TroopSkill.none)
+            {
+                SceneManager.LoadScene("MenuScene");
+            } else
+            {
+                skillMode = TroopSkill.none;
+            }
         }
     }
     void selectObject()
     {
+        if (curControlled != null)
+        {
+            curControlled.GetComponent<PlayerTroop>().controlled = false;
+            curControlled = null;
+        }
         Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit interactionInfo;
         if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
@@ -67,19 +94,6 @@ public class BattleInteraction : MonoBehaviour {
                 interactedObject.GetComponent<BattleInteractable>().cameraFocusOn();
             } else if (interactedObject.tag == "Grid")
             {
-                /**if (skillMode == TroopSkill.walk)
-                {
-                    if (BattleCentralControl.objToGrid[interactedObject].mark >= 0)
-                    {
-                        interactedObject.GetComponent<GridObject>().moveTroopToGrid(curControlled);
-                    } else
-                    {
-
-                    }
-                } else
-                {
-                    interactedObject.GetComponent<GridObject>().cameraFocusOn();
-                }**/
                 interactedObject.GetComponent<GridObject>().cameraFocusOn();
             } else if (interactedObject.tag == "PlayerTroop")
             {
@@ -90,6 +104,7 @@ public class BattleInteraction : MonoBehaviour {
             {
                 Debug.Log(interactedObject.tag);
             }
+            
         }
     }
 
@@ -114,5 +129,22 @@ public class BattleInteraction : MonoBehaviour {
         }
     }
     
+    void showIndicator()
+    {
+        switch(skillMode)
+        {
+            case TroopSkill.none:
+                curControlled.GetComponent<PlayerTroop>().hideIndicators();
+                break;
+            case TroopSkill.walk:
+                curControlled.GetComponent<PlayerTroop>().hideIndicators();
+                break;
+            case TroopSkill.lunge:
+                curControlled.GetComponent<PlayerTroop>().lunge();
+                break;
+        }
+
+    }
     
+
 }

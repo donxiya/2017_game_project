@@ -8,6 +8,7 @@ public class Grid {
     public int x { get; set; }
     public int z { get; set; }
     public bool occupied;
+    public Person troop { get; set; }
     public float mark { get; set; }
     public Queue<Grid> path { get; set; }
     public List<Grid> neighbors { get; set; }

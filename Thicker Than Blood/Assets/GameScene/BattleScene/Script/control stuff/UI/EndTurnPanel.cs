@@ -26,4 +26,5 @@ public class EndTurnPanel : MonoBehaviour {
             endTurnButton.GetComponent<Button>().enabled = false;
         }
 	}
+    
 }

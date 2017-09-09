@@ -17,8 +17,8 @@ public class Person {
     public int battleValue;
     public float attackDmg;
     public float stamina { get; set; }
-    public float staminaMax { get; set; }
-    public float health;
+    public float staminaMax;
+    public float health { get; set; }
     public float healthMax;
 
     public float visionRate;
@@ -38,23 +38,30 @@ public class Person {
 
     public Person(string nameI, Stats statsI, Ranking rk, TroopType tt, Faction factionI, Experience expI)
     {
+        
+        initialization(nameI, statsI, rk, tt, factionI, expI);
+    }
+
+    //ini gear
+    public virtual void initialization(string nameI, Stats statsI, Ranking rk, TroopType tt, Faction factionI, Experience expI)
+    {
         name = nameI;
         stats = statsI;
         ranking = rk;
         troopType = tt;
         faction = factionI;
         exp = expI;
-        initialization();
         attackDmg = 10 * stats.strength * gearAttack;
         battleValue = getBattleValue();
         inBattle = false;
+        stamina = getStaminaMax();
+        health = getHealthMax();
     }
-
-    //ini gear
-    public void initialization()
+    public virtual float getMeleeAttackDmg()
     {
+        return stats.strength * 10;
     }
-    public virtual float getAttackDmg()
+    public virtual float getRangedAttackDmg()
     {
         return stats.strength * 10;
     }
@@ -66,6 +73,7 @@ public class Person {
     {
         return stats.endurance * 100;
     }
+
     public int getBattleValue()
     {
         int result = DataBase.getBattleValue(DataBase.factionToString(faction) 

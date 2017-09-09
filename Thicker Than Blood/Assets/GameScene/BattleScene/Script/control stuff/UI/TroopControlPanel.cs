@@ -4,45 +4,23 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class TroopControlPanel : MonoBehaviour {
-    public GameObject panel, walkButton, rainOfArrows, quickDraw,
-        flay;
+    public GameObject panel, lunge, whirlWind, execute, enGarde, charge, fire, holdSteady, rainOfArrows, quickDraw;
     public GameObject curControledTroop;
     public bool initialized;
 	// Use this for initialization
 	void Start () {
-        walkButton.GetComponent<Button>().onClick.AddListener(delegate { walk(); });
+        
         panel.SetActive(false);
         initialized = false;
+        initializeButtons();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        /**if (curControledTroop != null)
-        {
-            if (!panel.activeSelf && !initialized)
-            {
-                switch (getInfo(curControledTroop).troopType)
-                {
-                    case TroopType.mainCharType:
-                        initializeMain();
-                        break;
-                    case TroopType.recruitType:
-                        break;
-
-                }
-                initialized = true;
-            }
-        }
-        
-        if (panel.activeSelf && initialized)
-        {
-            initialized = false;
-        }**/
 	}
 
     Person getInfo(GameObject troop)
     {
-        Debug.Log("info " + troop.GetComponent<PlayerTroop>().person.name);
         return troop.GetComponent<PlayerTroop>().person;
     }
 
@@ -51,13 +29,21 @@ public class TroopControlPanel : MonoBehaviour {
         
         panel.SetActive(true);
     }
+    void initializeButtons()
+    {
+        lunge.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.lunge; });
+        //whirlWind.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.whirlwind; });
+        //execute.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.execute; });
+        //enGarde.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.enGarde; });
+        //charge.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.charge; });
+        //fire.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.fire; });
+        //holdSteady.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.holdSteady; });
+        //rainOfArrows.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.rainOfArrows; });
+        //quickDraw.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.quickDraw; });
+    }
     void hidePanel()
     {
         panel.SetActive(false);
     }
-
-    void walk()
-    {
-       // BattleInteraction.skillMode = TroopSkill.walk;
-    }
+    
 }
