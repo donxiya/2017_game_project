@@ -12,7 +12,7 @@ public class PlayerTroop : BattleInteractable {
     public Grid curGrid { get; set; }
 
     public GameObject statusPanel, troopStaminaBar, troopHealthBar, staminaTxt, healthTxt;
-    public GameObject curIndicator, lungeIndicator;
+    public GameObject curIndicator, lungeIndicator, rainOfArrowIndicator;
 
     public Texture2D staminaBarImg, troopHealthBarImg;
     public bool controlled;
