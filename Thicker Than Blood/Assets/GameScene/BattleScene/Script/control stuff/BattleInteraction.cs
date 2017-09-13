@@ -53,6 +53,10 @@ public class BattleInteraction : MonoBehaviour {
                     {
                         skillMode = TroopSkill.walk;
                         walkToObj();
+                    } else
+                    {
+                        skillMode = TroopSkill.walk;
+                        curControlled.GetComponent<PlayerTroop>().hideIndicators();
                     }
                 }
             }
@@ -141,6 +145,30 @@ public class BattleInteraction : MonoBehaviour {
                 break;
             case TroopSkill.lunge:
                 curControlled.GetComponent<PlayerTroop>().lunge();
+                break;
+            case TroopSkill.whirlwind:
+                curControlled.GetComponent<PlayerTroop>().whirlwind();
+                break;
+            case TroopSkill.execute:
+                curControlled.GetComponent<PlayerTroop>().execute();
+                break;
+            case TroopSkill.fire:
+                curControlled.GetComponent<PlayerTroop>().fire();
+                break;
+            case TroopSkill.holdSteady:
+                curControlled.GetComponent<PlayerTroop>().holdSteady();
+                break;
+            case TroopSkill.quickDraw:
+                curControlled.GetComponent<PlayerTroop>().quickDraw();
+                break;
+            case TroopSkill.rainOfArrows:
+                curControlled.GetComponent<PlayerTroop>().rainOfArrow();
+                break;
+            case TroopSkill.phalanx:
+                curControlled.GetComponent<PlayerTroop>().phalanx();
+                break;
+            case TroopSkill.charge:
+                curControlled.GetComponent<PlayerTroop>().charge();
                 break;
         }
 

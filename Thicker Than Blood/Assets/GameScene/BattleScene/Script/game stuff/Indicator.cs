@@ -11,7 +11,7 @@ public class Indicator : BattleInteractable {
     private void Update()
     {
 
-        Debug.Log("collided: " + collided.Count);
+        //Debug.Log("collided: " + collided.Count);
     }
     public override void cameraFocusOn()
     {

@@ -260,7 +260,7 @@ public enum TroopSkill {
     fire,
     holdSteady,
     execute,
-    enGarde,
+    phalanx,
     charge,
     quickDraw,
     rainOfArrows

@@ -6,7 +6,6 @@ public class IndicatorModel : MonoBehaviour {
 
     public void OnCollisionEnter(Collision col)
     {
-        Debug.Log(col.gameObject.transform.parent.gameObject.tag);
         
         if (col.gameObject.transform.parent.gameObject.tag == "Grid")
         {

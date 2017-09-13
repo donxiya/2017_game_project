@@ -12,7 +12,7 @@ public class PlayerTroop : BattleInteractable {
     public Grid curGrid { get; set; }
 
     public GameObject statusPanel, troopStaminaBar, troopHealthBar, staminaTxt, healthTxt;
-    public GameObject curIndicator, lungeIndicator, rainOfArrowIndicator;
+    public GameObject curIndicator, lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, phalanxIndicator, rainOfArrowIndicator, quickDrawIndicator;
 
     public Texture2D staminaBarImg, troopHealthBarImg;
     public bool controlled;
@@ -115,14 +115,85 @@ public class PlayerTroop : BattleInteractable {
     
     public void hideIndicators()
     {
+        //lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, phalanxIndicator, rainOfArrowIndicator, quickDrawIndicator;
         lungeIndicator.SetActive(false);
+        whirlwindIndicator.SetActive(false);
+        executeIndicator.SetActive(false);
+        fireIndicator.SetActive(false);
+        phalanxIndicator.SetActive(false);
+        rainOfArrowIndicator.SetActive(false);
+        quickDrawIndicator.SetActive(false);
     }
     public void lunge()
     {
-        lungeIndicator.SetActive(true);
-        curIndicator = lungeIndicator;
+        if (!lungeIndicator.activeSelf)
+        {
+            lungeIndicator.SetActive(true);
+            curIndicator = lungeIndicator;
+        }
         lookAtMouse(lungeIndicator);
     }
+    public void whirlwind()
+    {
+        if (!whirlwindIndicator.activeSelf)
+        {
+            whirlwindIndicator.SetActive(true);
+            curIndicator = whirlwindIndicator;
+        }
+    }
+    public void execute()
+    {
+        if (!executeIndicator.activeSelf)
+        {
+            executeIndicator.SetActive(true);
+            curIndicator = executeIndicator;
+        }
+    }
+    public void fire()
+    {
+        if (!fireIndicator.activeSelf)
+        {
+            fireIndicator.SetActive(true);
+            curIndicator = fireIndicator;
+        }
+        lookAtMouse(fireIndicator);
+    }
+    public void quickDraw()
+    {
+        if (!fireIndicator.activeSelf)
+        {
+            quickDrawIndicator.SetActive(true);
+            curIndicator = quickDrawIndicator;
+        }
+        lookAtMouse(quickDrawIndicator);
+    }
+    public void holdSteady()
+    {
+
+    }
+    public void phalanx()
+    {
+        if (!phalanxIndicator.activeSelf)
+        {
+            phalanxIndicator.SetActive(true);
+            curIndicator = phalanxIndicator;
+        }
+    }
+    public void rainOfArrow()
+    {
+        if (!rainOfArrowIndicator.activeSelf)
+        {
+            rainOfArrowIndicator.SetActive(true);
+            curIndicator = rainOfArrowIndicator;
+        }
+        followMouse(rainOfArrowIndicator);
+    }
+    public void charge()
+    {
+
+    }
+
+
 
     public void makeDamage(List<Grid> attackedGrid)
     {
@@ -182,6 +253,20 @@ public class PlayerTroop : BattleInteractable {
                 obj.transform.Rotate(0, 180, 0);
             }
             
+        }
+    }
+    void followMouse(GameObject obj)
+    {
+        Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit interactionInfo;
+        if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
+        {
+            GameObject pointedObj = interactionInfo.collider.gameObject.transform.parent.gameObject;
+            if (pointedObj.tag == "Grid")
+            {
+                Vector3 pos = new Vector3(pointedObj.transform.position.x, transform.position.y, pointedObj.transform.position.z);
+                obj.transform.position = Vector3.Slerp(transform.position, pos, Time.deltaTime * 1000);
+            }
         }
     }
 
