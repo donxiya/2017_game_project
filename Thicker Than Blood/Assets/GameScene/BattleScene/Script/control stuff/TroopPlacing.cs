@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class TroopPlacing : MonoBehaviour {
-    public GameObject troopUnit, placingSwitch;
+    public GameObject troopUnit;
     public Text troopUnitName, troopUnitLevel;
     public RawImage troopIcon, troopBackground, maxHealthBar, healthBar,
         maxStamina, stamina;
@@ -19,7 +19,6 @@ public class TroopPlacing : MonoBehaviour {
     {
         gameObject.SetActive(false);
         
-        //placingSwitch.SetActive(false);
         panelOut = false;
         initialized = false;
         troopDict = new Dictionary<Person, GameObject>();
@@ -65,8 +64,6 @@ public class TroopPlacing : MonoBehaviour {
         }
         troopUnit.SetActive(false);
         initialized = true;
-        //placingSwitch.GetComponent<Button>().onClick.AddListener(delegate { showPlacingPanel(false); });
-        placingSwitch.SetActive(true);
     }
     void addToPlacing(Person unit)
     {
@@ -97,12 +94,9 @@ public class TroopPlacing : MonoBehaviour {
         if (show)
         {
             transform.position = Vector3.Slerp(transform.position, transform.position + new Vector3(150, 0, 0), Time.deltaTime * .1f);
-            placingSwitch.transform.position = Vector3.Slerp(placingSwitch.transform.position, placingSwitch.transform.position + new Vector3(150, 0, 0), Time.deltaTime * 1f);
         } else {
             transform.position = Vector3.Slerp(transform.position, transform.position + new Vector3(-150, 0, 0), Time.deltaTime * .1f);
-            placingSwitch.transform.position = Vector3.Slerp(placingSwitch.transform.position, placingSwitch.transform.position + new Vector3(-150, 0, 0), Time.deltaTime * 1f);
         }
-        placingSwitch.GetComponent<Button>().onClick.AddListener(delegate { showPlacingPanel(!show); });
     }
     bool placeTroop(Person unit)
     {
@@ -115,6 +109,7 @@ public class TroopPlacing : MonoBehaviour {
 
             if (interactedObject.tag == "Grid" )
             {
+                //TODO: restrain available spots
                 Grid gridInfo = BattleCentralControl.objToGrid[interactedObject];
                 if (!gridInfo.occupied && !unit.inBattle)
                 {
@@ -133,6 +128,9 @@ public class TroopPlacing : MonoBehaviour {
                 }
                 
                 
+            } else
+            {
+                Info.displayInfo("Please click on grids");
             }
         }
         return false;

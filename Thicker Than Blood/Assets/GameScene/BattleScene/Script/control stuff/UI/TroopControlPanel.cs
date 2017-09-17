@@ -35,9 +35,9 @@ public class TroopControlPanel : MonoBehaviour {
         whirlwind.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.whirlwind; hideIndicatorsInPanel(); });
         execute.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.execute; hideIndicatorsInPanel(); });
         phalanx.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.phalanx; hideIndicatorsInPanel(); });
-        charge.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.charge; hideIndicatorsInPanel(); });
+        charge.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.curControlled.GetComponent<PlayerTroop>().charge(); hideIndicatorsInPanel(); });
         fire.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.fire; hideIndicatorsInPanel(); });
-        holdSteady.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.holdSteady; hideIndicatorsInPanel(); });
+        holdSteady.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.curControlled.GetComponent<PlayerTroop>().holdSteady(); hideIndicatorsInPanel(); });
         rainOfArrows.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.rainOfArrows; hideIndicatorsInPanel(); });
         quickDraw.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.quickDraw; hideIndicatorsInPanel(); });
     }

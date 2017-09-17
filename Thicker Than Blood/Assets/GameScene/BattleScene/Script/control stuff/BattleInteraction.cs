@@ -11,12 +11,12 @@ public class BattleInteraction : MonoBehaviour {
     public static TroopSkill skillMode;
     public static GameObject curControlled;
     public static GameObject interactedObject;
-
+    public static GameObject inspectedObject;
     // Use this for initialization
     void Start()
     {
         player = GameObject.Find("player_party");
-        skillMode = TroopSkill.none;
+        skillMode = TroopSkill.walk;
     }
 
 
@@ -29,48 +29,56 @@ public class BattleInteraction : MonoBehaviour {
             showIndicator();
         }
         
+        
     }
     void inputKeysActions()
     {
-        if (Input.GetMouseButton(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButtonDown(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
-            if (curControlled == null || skillMode == TroopSkill.none || skillMode == TroopSkill.walk)
+            if (curControlled != null && skillMode != TroopSkill.walk)
             {
-                selectObject();
+                curControlled.GetComponent<PlayerTroop>().doSkill(curControlled.GetComponent<PlayerTroop>().indicatedGrid(), skillMode);
+                if (Input.GetMouseButtonDown(0))
+                {
+                    skillMode = TroopSkill.walk;
+                }
             } else
-            {
-                curControlled.GetComponent<PlayerTroop>().makeDamage(curControlled.GetComponent<PlayerTroop>().indicatedGrid());
+            {   
+                selectObject();
             }
-            
         }
-        if (Input.GetMouseButton(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButtonDown(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
             if (BattleCentralControl.playerTurn)
             {
                 if (curControlled != null)
                 {
-                    if (skillMode == TroopSkill.none || skillMode == TroopSkill.walk)
+                    if (skillMode == TroopSkill.walk)
                     {
-                        skillMode = TroopSkill.walk;
                         walkToObj();
-                    } else
+                    } else if (skillMode == TroopSkill.none && Input.GetMouseButtonDown(1))
                     {
                         skillMode = TroopSkill.walk;
+                    }
+                    else
+                    {
+                        skillMode = TroopSkill.none;
                         curControlled.GetComponent<PlayerTroop>().hideIndicators();
+                        
                     }
                 }
             }
-            
-            
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (skillMode == TroopSkill.none)
+            if (skillMode == TroopSkill.walk)
             {
                 SceneManager.LoadScene("MenuScene");
-            } else
+            }
+            else
             {
-                skillMode = TroopSkill.none;
+                skillMode = TroopSkill.walk;
+                
             }
         }
     }
@@ -79,6 +87,7 @@ public class BattleInteraction : MonoBehaviour {
         if (curControlled != null)
         {
             curControlled.GetComponent<PlayerTroop>().controlled = false;
+            curControlled.GetComponent<PlayerTroop>().cameraFocusOnExit();
             curControlled = null;
         }
         Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -103,6 +112,7 @@ public class BattleInteraction : MonoBehaviour {
             {
                 interactedObject.GetComponent<PlayerTroop>().cameraFocusOn();
                 curControlled = interactedObject;
+                skillMode = TroopSkill.walk;
             }
             else
             {
@@ -137,9 +147,6 @@ public class BattleInteraction : MonoBehaviour {
     {
         switch(skillMode)
         {
-            case TroopSkill.none:
-                curControlled.GetComponent<PlayerTroop>().hideIndicators();
-                break;
             case TroopSkill.walk:
                 curControlled.GetComponent<PlayerTroop>().hideIndicators();
                 break;
