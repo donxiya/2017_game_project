@@ -15,7 +15,6 @@ public class BattleInteraction : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        player = GameObject.Find("player_party");
         skillMode = TroopSkill.walk;
         inAction = false;
     }

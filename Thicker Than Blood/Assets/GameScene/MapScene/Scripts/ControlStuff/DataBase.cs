@@ -15,7 +15,52 @@ public class DataBase : MonoBehaviour {
         return 50;
         //return PersonBattleValue[troopName];
     }
-
+    public static TroopInfo getTroopInfo(Faction faction, TroopType tt, Ranking rk)
+    {
+        switch(faction)
+        {
+            case Faction.mercenary:
+                return mercGetTroopInfoHelper(tt, rk);
+            case Faction.bandits:
+                break;
+            case Faction.empire:
+                break;
+            case Faction.france:
+                break;
+            case Faction.pope:
+                break;
+            case Faction.italy:
+                break;
+        }
+        return new TroopInfo();
+    }
+    public static TroopInfo mercGetTroopInfoHelper(TroopType tt, Ranking rk)
+    {
+        TroopInfo result = new TroopInfo();
+        switch (tt)
+        {
+            case TroopType.recruitType:
+                result.battleValue = 10;
+                break;
+            case TroopType.crossbowman:
+                switch(rk)
+                {
+                    case Ranking.militia:
+                        result.battleValue = 20;
+                        break;
+                }
+                break;
+            case TroopType.musketeer:
+                break;
+            case TroopType.swordsman:
+                break;
+            case TroopType.halberdier:
+                break;
+            case TroopType.cavalry:
+                break;
+        }
+        return result;
+    }
     public static string troopTypeToString(TroopType tt)
     {
         switch (tt)
@@ -69,6 +114,14 @@ public class DataBase : MonoBehaviour {
         }
         return "";
     }
+
+
+
+
+
+
+
+
     void personInitialization()
     {
         //MERC
@@ -281,3 +334,7 @@ public class Item
         description = descriptionI;
     }
 }
+
+public class TroopInfo{
+    public int battleValue;
+ }
