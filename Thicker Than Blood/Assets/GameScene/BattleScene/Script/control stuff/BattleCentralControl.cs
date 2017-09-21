@@ -9,12 +9,16 @@ public class BattleCentralControl : MonoBehaviour {
     public static bool battleStart, playerTurn;
     public static Grid[,] map;
     public static int gridXMax, gridZMax;
+    public static MainParty playerParty;
+    public static List<Person> troopOnField;
+    public static Party enemyParty;
     public static Dictionary<Grid, GameObject> gridToObj;
     public static Dictionary<GameObject, Grid> objToGrid;
     private void Awake()
     {
         gridToObj = new Dictionary<Grid, GameObject>();
         objToGrid = new Dictionary<GameObject, Grid>();
+        troopOnField = new List<Person>();
     }
     // Use this for initialization
     void Start()
@@ -35,6 +39,13 @@ public class BattleCentralControl : MonoBehaviour {
     {
     }
 
+    public static void startTurnPrep(List<Person> units)
+    {
+        foreach(Person p in units)
+        {
+            p.stamina = p.getStaminaMax();
+        }
+    }
     public static List<GameObject> gridInLine(GameObject start, GameObject end)
     {
         List<GameObject> result = new List<GameObject>();
@@ -49,8 +60,6 @@ public class BattleCentralControl : MonoBehaviour {
         }
         return result;
     }
-    
-
     void generateMap(int x, int z)
     {
         for (int ix = 0; ix < x; ix++)

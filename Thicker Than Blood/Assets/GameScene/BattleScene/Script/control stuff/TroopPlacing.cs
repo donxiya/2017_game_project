@@ -72,6 +72,7 @@ public class TroopPlacing : MonoBehaviour {
         troopBackground.texture = unplacedBackground;
         GameObject newTroopUnit = Object.Instantiate(troopUnit);
         newTroopUnit.GetComponent<Button>().onClick.AddListener(delegate { placingTroopUnitOnClick(unit); });
+        // BattleInteraction.curControlled.GetComponent<PlayerTroop>().hideIndicators();
         troopDict.Add(unit, newTroopUnit);
         troopPlacedDict.Add(unit, false);
         newTroopUnit.transform.SetParent(troopUnit.transform.parent, false);
@@ -111,22 +112,25 @@ public class TroopPlacing : MonoBehaviour {
             {
                 //TODO: restrain available spots
                 Grid gridInfo = BattleCentralControl.objToGrid[interactedObject];
-                if (!gridInfo.occupied && !unit.inBattle)
+                if (gridInfo.z < BattleCentralControl.playerParty.leader.getTroopPlacingRange(BattleCentralControl.gridZMax))
                 {
-                    var pos = new Vector3(gridInfo.x, 1, gridInfo.z);
-                    var rot = new Quaternion(0, 0, 0, 0);
-                    GameObject unitToPlace = GameObject.Find("MainCharacter");
-                    unitToPlace = interactedObject.GetComponent<GridObject>().placeTroopOnGrid(unitToPlace, pos, rot);
-                    //unitToPlace.GetComponent<PlayerTroop>().person = unit;
-                    //unitToPlace.GetComponent<PlayerTroop>().curGrid = gridInfo;
-                    //unitToPlace.GetComponent<PlayerTroop>().person.stamina = unitToPlace.GetComponent<PlayerTroop>().person.getStaminaMax();
-                    unitToPlace.GetComponent<PlayerTroop>().placed(unit, gridInfo);
-                    
-                    gridInfo.occupied = true;
-                    unit.inBattle = true;
-                    return true;
+                    Info.clearInfo();
+                    if (!gridInfo.occupied && !unit.inBattle)
+                    {
+                        var pos = new Vector3(gridInfo.x, 1, gridInfo.z);
+                        var rot = new Quaternion(0, 0, 0, 0);
+                        GameObject unitToPlace = GameObject.Find("MainCharacter");
+                        unitToPlace = interactedObject.GetComponent<GridObject>().placeTroopOnGrid(unitToPlace, pos, rot);
+                        unitToPlace.GetComponent<Troop>().placed(unit, gridInfo);
+                        unit.inBattle = true;
+                        placing = false;
+                        BattleCentralControl.troopOnField.Add(unit);
+                        return true;
+                    }
+                } else
+                {
+                    Info.displayInfo("Please click on allowed grids" + BattleCentralControl.playerParty.leader.getTroopPlacingRange(BattleCentralControl.gridZMax));
                 }
-                
                 
             } else
             {

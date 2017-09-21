@@ -7,6 +7,7 @@ public class MainCharacter : Person {
     public MainCharacter(string nameI, Stats statsI, Ranking rk, TroopType tt, Faction factionI, Experience expI)
     {
         initialization(nameI, statsI, rk, tt, factionI, expI);
+
     }
 
     

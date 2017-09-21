@@ -26,7 +26,7 @@ public class GridObject : BattleInteractable {
     public void moveTroopToGrid(GameObject toMove)
     {
 
-        toMove.GetComponent<PlayerTroop>().troopMoveToPlace(BattleCentralControl.objToGrid[gameObject]);
+        toMove.GetComponent<Troop>().troopMoveToPlace(BattleCentralControl.objToGrid[gameObject]);
         
     }
 }

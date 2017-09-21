@@ -51,7 +51,6 @@ public class Person {
         troopType = tt;
         faction = factionI;
         exp = expI;
-        attackDmg = 10 * stats.strength * gearAttack;
         battleValue = getBattleValue();
         inBattle = false;
         stamina = getStaminaMax();
@@ -63,7 +62,7 @@ public class Person {
     }
     public virtual float getRangedAttackDmg()
     {
-        return stats.strength * 10;
+        return stats.strength * 5 + stats.perception * 5;
     }
     public virtual float getStaminaMax()
     {
@@ -73,7 +72,18 @@ public class Person {
     {
         return stats.endurance * 100;
     }
-
+    public virtual float getPhalanxIncrease()
+    {
+        return stats.endurance;
+    }
+    public virtual int getTroopPlacingRange(int maxRange)
+    {
+        return 2 + (int) 2 * stats.intelligence * maxRange / 100;
+    }
+    public virtual int getTroopMaxNum()
+    {
+        return 2 + (int)2 * stats.charisma;
+    }
     public int getBattleValue()
     {
         int result = DataBase.getBattleValue(DataBase.factionToString(faction) 

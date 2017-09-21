@@ -17,6 +17,8 @@ public class Grid {
     public float hideRate { get; set; }
     public float blockRate { get; set; }
     public float staminaCost { get; set; }
+    public float playerTempStaminaCost { get; set; }
+    public float enemyTempStaminaCost { get; set; }
 
     public Grid (int x, int z, GameObject model, GridType gridType)
     {
@@ -48,7 +50,20 @@ public class Grid {
                 staminaCost = 2f;
                 break;
         }
+        playerTempStaminaCost = 0;
+        enemyTempStaminaCost = 0;
         neighbors = new List<Grid>();
         path = new Queue<Grid>();
+    }
+    public float getStaminaCost(Faction faction)
+    {
+        if (faction == Faction.mercenary)
+        {
+            return staminaCost + playerTempStaminaCost;
+        } else
+        {
+            return staminaCost + enemyTempStaminaCost;
+        }
+        
     }
 }

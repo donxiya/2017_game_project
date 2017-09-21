@@ -199,6 +199,7 @@ public class Stats
         this.perception = perceptionI;
         this.endurance = enduranceI;
         this.charisma = charismaI;
+        this.intelligence = intelligenceI;
     }
 }
 public class Experience

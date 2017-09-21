@@ -4,18 +4,20 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class PlayerTroop : BattleInteractable {
+public class Troop : BattleInteractable {
 
     
     public GameObject controlPanel;
     public Person person { get; set; }
     public Grid curGrid { get; set; }
 
-    public GameObject statusPanel, troopStaminaBar, troopHealthBar, staminaTxt, healthTxt;
-    public GameObject curIndicator, lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, phalanxIndicator, rainOfArrowIndicator, quickDrawIndicator;
+    public GameObject statusPanel, troopStaminaBar, troopHealthBar, staminaTxt, healthTxt, nameTxt;
+    public GameObject walkIndicator, curIndicator, lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, phalanxIndicator, rainOfArrowIndicator, quickDrawIndicator;
 
     public Texture2D staminaBarImg, troopHealthBarImg;
-    public bool controlled, charging, holdSteadying;
+    public bool controlled, charging, holdSteadying, reachedDestination;
+    public float chargeStack;
+    public List<Grid> phalanxedGrids;
     float STATUS_BAR_HEIGHT, STATUS_BAR_WIDTH;
     NavMeshAgent navMeshAgent;
     Grid lastGrid;
@@ -27,11 +29,12 @@ public class PlayerTroop : BattleInteractable {
         navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
         hideIndicators();
         charging = holdSteadying = false;
+        phalanxedGrids = new List<Grid>();
     }
     public void Update() {
         if (BattleCentralControl.playerTurn && controlled)
         {
-            walk();
+            walkUpdate();
         }
         if (!controlled)
         {
@@ -39,6 +42,21 @@ public class PlayerTroop : BattleInteractable {
         }
         showStatus();
         lookAtCamera(statusPanel);
+        if (Vector3.Distance(navMeshAgent.destination, transform.position) <= .1)
+        {
+            reachedDestination = true;
+            if (curGrid.troop != person && curGrid.troop != null)
+            {
+                //goNearbyGrid(getCurrentGrid());
+            } else
+            {
+                curGrid.troop = person;
+            }
+            chargeStack = 0;
+        } else
+        {
+            reachedDestination = false;
+        }
     }
     public override void cameraFocusOn()
     {
@@ -55,6 +73,7 @@ public class PlayerTroop : BattleInteractable {
         base.cameraFocusOnExit();
         controlPanel.SetActive(false);
         controlled = false;
+        hideIndicators();
     }
     public void troopMoveToPlace(Grid grid)
     {
@@ -73,6 +92,7 @@ public class PlayerTroop : BattleInteractable {
     public void placed(Person personI, Grid curGridI)
     {
         personI.stamina = personI.getStaminaMax();
+        personI.health = personI.health;
         person = personI;
         curGrid = curGridI;
         curGrid.troop = person;
@@ -96,10 +116,8 @@ public class PlayerTroop : BattleInteractable {
     {
         if (curGrid != getCurrentGrid())
         {
-            curGrid.troop = null;
             lastGrid = curGrid;
             curGrid = getCurrentGrid();
-            curGrid.troop = person;
             return true;
         }
         return false;
@@ -110,6 +128,7 @@ public class PlayerTroop : BattleInteractable {
     public void hideIndicators()
     {
         //lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, phalanxIndicator, rainOfArrowIndicator, quickDrawIndicator;
+        walkIndicator.SetActive(false);
         lungeIndicator.SetActive(false);
         whirlwindIndicator.SetActive(false);
         executeIndicator.SetActive(false);
@@ -118,10 +137,11 @@ public class PlayerTroop : BattleInteractable {
         rainOfArrowIndicator.SetActive(false);
         quickDrawIndicator.SetActive(false);
     }
-    public void walk()
+    public void walkUpdate()
     {
         if (movedToNewGrid())
         {
+            clearPhalanx();
             if (charging)
             {
                 if (person.stamina < getCurrentGrid().staminaCost * 2)
@@ -130,21 +150,48 @@ public class PlayerTroop : BattleInteractable {
                 }
                 else
                 {
-                    person.stamina -= getCurrentGrid().staminaCost * 2;
+                    if (lastGrid.troop == person)
+                    {
+                        lastGrid.troop = null;
+                    }
+                    
+                    person.stamina -= getCurrentGrid().getStaminaCost(person.faction) * 2;
+                    if (chargeStack <= 20)
+                    {
+                        chargeStack += 5f/curGrid.getStaminaCost(person.faction);
+                    }
+
+                    if (curGrid.troop != null && curGrid.troop.faction != person.faction)
+                    {
+                        curGrid.troop.health -= .1f * person.getMeleeAttackDmg() * chargeStack;
+                    }
                 }
             } else
             {
-                if (person.stamina < getCurrentGrid().staminaCost)
+                if (person.stamina < getCurrentGrid().getStaminaCost(person.faction))
                 {
                     goBackToLastGrid();
                 }
                 else
                 {
-                    person.stamina -= getCurrentGrid().staminaCost;
+                    person.stamina -= getCurrentGrid().getStaminaCost(person.faction);
+                    if (lastGrid.troop == person)
+                    {
+                        lastGrid.troop = null;
+                    }
                 }
             }
             
         }
+    }
+    public void walk()
+    {
+        if (!walkIndicator.activeSelf)
+        {
+            walkIndicator.SetActive(true);
+            curIndicator = walkIndicator;
+        }
+        followMouse(walkIndicator);
     }
     public void lunge()
     {
@@ -201,6 +248,22 @@ public class PlayerTroop : BattleInteractable {
             curIndicator = phalanxIndicator;
         }
     }
+    public void clearPhalanx()
+    {
+        if (phalanxedGrids.Count > 0)
+        {
+            foreach(Grid g in phalanxedGrids)
+            {
+                if (person.faction == Faction.mercenary)
+                {
+                    g.enemyTempStaminaCost = 0;
+                } else
+                {
+                    g.playerTempStaminaCost = 0;
+                }
+            }
+        }
+    }
     public void rainOfArrow()
     {
         if (!rainOfArrowIndicator.activeSelf)
@@ -213,6 +276,7 @@ public class PlayerTroop : BattleInteractable {
     public void charge()
     {
         charging = !charging;
+        chargeStack = 0;
     }
 
 
@@ -225,7 +289,7 @@ public class PlayerTroop : BattleInteractable {
             case TroopSkill.lunge:
                 foreach (Grid g in attackedGrid)
                 {
-                    if (g.troop != null && g.troop != person)
+                    if (g.troop != null && g.troop.faction != person.faction)
                     {
                         g.troop.health -= person.getMeleeAttackDmg();
                     }
@@ -234,23 +298,65 @@ public class PlayerTroop : BattleInteractable {
             case TroopSkill.whirlwind:
                 foreach (Grid g in attackedGrid)
                 {
-                    if (g.troop != null && g.troop != person)
+                    if (g.troop != null && g.troop.faction != person.faction)
                     {
                         g.troop.health -= person.getMeleeAttackDmg();
                     }
                 }
                 break;
-            
+            case TroopSkill.execute:
+                if (Input.GetMouseButtonDown(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                {
+                    Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit interactionInfo;
+                    if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
+                    {
+                        GameObject interactedObject = interactionInfo.collider.gameObject.transform.parent.gameObject;
+                        if (interactedObject.tag == "EnemyTroop") //TODO: remove player troop later
+                        {
+                            interactedObject.GetComponent<Troop>().person.health -= 5 * person.getMeleeAttackDmg();
+                        } else
+                        {
+                            BattleInteraction.skillMode = TroopSkill.none;
+                        }
+                    }
+                }
+                break;
             case TroopSkill.rainOfArrows:
                 foreach (Grid g in attackedGrid)
                 {
                     if (g.troop != null)
                     {
-                        g.troop.health -= person.getMeleeAttackDmg();
+                        g.troop.health -= person.getRangedAttackDmg();
                     }
                 }
                 break;
             case TroopSkill.charge:
+                break;
+            case TroopSkill.holdSteady:
+                break;
+            case TroopSkill.fire:
+                foreach (Grid g in attackedGrid)
+                {
+                    if (g.troop != null && g.troop != person)
+                    {
+                        g.troop.health -= person.getRangedAttackDmg();
+                    }
+                }
+                break;
+            case TroopSkill.phalanx:
+                foreach (Grid g in attackedGrid)
+                {
+                    if (person.faction == Faction.mercenary)
+                    {
+                        g.enemyTempStaminaCost += person.getPhalanxIncrease();
+                    } else
+                    {
+                        g.playerTempStaminaCost += person.getPhalanxIncrease();
+                    }
+                    phalanxedGrids.Add(g);
+                    
+                }
                 break;
             case TroopSkill.quickDraw:
                 bool blocked = false;
@@ -258,7 +364,7 @@ public class PlayerTroop : BattleInteractable {
                 {
                     if (g.troop != null && !blocked && g.troop != person)
                     {
-                        g.troop.health -= person.getMeleeAttackDmg();
+                        g.troop.health -= person.getRangedAttackDmg();
                         blocked = true;
                     }
                 }
@@ -289,17 +395,28 @@ public class PlayerTroop : BattleInteractable {
             transform.position = Vector3.Slerp(transform.position, pos, Time.deltaTime * 1000);
         }
     }
-
+    void goNearbyGrid(Grid g) {
+        int randX = (int) Mathf.Clamp(Random.Range(-1, 2), -1, 1);
+        int randZ = (int)Mathf.Clamp(Random.Range(-1, 2), -1, 1);
+        while (randX == 0 && randZ == 0)
+        {
+            randX = (int)Mathf.Clamp(Random.Range(-1, 2), -1, 1);
+            randZ = (int)Mathf.Clamp(Random.Range(-1, 2), -1, 1);
+        }
+        Vector3 pos = new Vector3(curGrid.x + randX, transform.position.y, curGrid.z + randZ);
+        navMeshAgent.destination = pos;
+    }
     void showStatus()
     {
 
         if (person != null)
         {
             //Debug.Log("stamina and max: " + person.health + " " + person.getHealthMax());
-            troopHealthBar.GetComponent<RawImage>().rectTransform.sizeDelta = new Vector2(STATUS_BAR_WIDTH, STATUS_BAR_HEIGHT * (person.health / person.getHealthMax()));
-            troopStaminaBar.GetComponent<RawImage>().rectTransform.sizeDelta = new Vector2(STATUS_BAR_WIDTH, STATUS_BAR_HEIGHT * (person.stamina / person.getStaminaMax()));
+            troopHealthBar.GetComponent<RawImage>().rectTransform.sizeDelta = new Vector2(STATUS_BAR_WIDTH * (person.health / person.getHealthMax()), STATUS_BAR_HEIGHT);
+            troopStaminaBar.GetComponent<RawImage>().rectTransform.sizeDelta = new Vector2(STATUS_BAR_WIDTH * (person.stamina / person.getStaminaMax()), STATUS_BAR_HEIGHT);
             staminaTxt.GetComponent<Text>().text = person.stamina.ToString();
             healthTxt.GetComponent<Text>().text = person.health.ToString();
+            nameTxt.GetComponent<Text>().text = person.name;
         }
     }
     void lookAtCamera(GameObject obj)
@@ -336,7 +453,7 @@ public class PlayerTroop : BattleInteractable {
             if (pointedObj.tag == "Grid" || pointedObj.tag == "PlayerTroop" || pointedObj.tag == "EnemyTroop")
             {
                 Vector3 pos = new Vector3(pointedObj.transform.position.x, transform.position.y, pointedObj.transform.position.z);
-                obj.transform.position = Vector3.Slerp(transform.position, pos, Time.deltaTime * 1000);
+                obj.transform.position = Vector3.Slerp(obj.transform.position, pos, Time.deltaTime * 1000);
             }
         }
     }

@@ -8,7 +8,9 @@ public class EndTurnPanel : MonoBehaviour {
     public GameObject endTurnButton;
 	// Use this for initialization
 	void Start () {
-        endTurnButton.GetComponent<Button>().onClick.AddListener(delegate { BattleCentralControl.playerTurn = false; });
+        endTurnButton.GetComponent<Button>().onClick.AddListener(
+            delegate { BattleCentralControl.playerTurn = false;
+                BattleCentralControl.startTurnPrep(BattleCentralControl.enemyParty.partyMember); });
         gameObject.SetActive(false);
 	}
 	

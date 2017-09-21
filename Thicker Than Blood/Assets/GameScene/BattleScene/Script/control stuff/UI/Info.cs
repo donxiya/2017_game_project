@@ -21,6 +21,14 @@ public class Info : MonoBehaviour {
             infoChanged = false;
         }
 	}
+    public static void clearInfo()
+    {
+        if (curInfo != "")
+        {
+            infoChanged = true;
+            curInfo = "";
+        }
+    }
     public static void displayInfo(string info)
     {
         if (curInfo != info)

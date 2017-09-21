@@ -76,8 +76,8 @@ public class TroopSelection : MonoBehaviour {
     void initialization()
     {
         inSelecting = true;
-        curSelectingPerson = Player.mainCharacter;
-        selectingMembers = Player.mainParty.partyMember;
+        curSelectingPerson = BattleCentralControl.playerParty.leader;
+        selectingMembers = BattleCentralControl.playerParty.partyMember;
         selectedMembers = new List<Person>();
         troopDict = new Dictionary<Person, GameObject>();
         

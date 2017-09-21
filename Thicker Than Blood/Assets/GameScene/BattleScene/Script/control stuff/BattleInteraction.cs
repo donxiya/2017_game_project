@@ -7,7 +7,7 @@ public class BattleInteraction : MonoBehaviour {
     const float INTERACT_DIST = 1;
     GameObject player;
     List<GameObject> inspectedList = new List<GameObject>();
-    public static bool chasing;
+    public static bool inAction;
     public static TroopSkill skillMode;
     public static GameObject curControlled;
     public static GameObject interactedObject;
@@ -17,13 +17,17 @@ public class BattleInteraction : MonoBehaviour {
     {
         player = GameObject.Find("player_party");
         skillMode = TroopSkill.walk;
+        inAction = false;
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        inputKeysActions();
+        if (!inAction)
+        {
+            inputKeysActions();
+        }
         if (curControlled != null)
         {
             showIndicator();
@@ -37,7 +41,7 @@ public class BattleInteraction : MonoBehaviour {
         {
             if (curControlled != null && skillMode != TroopSkill.walk)
             {
-                curControlled.GetComponent<PlayerTroop>().doSkill(curControlled.GetComponent<PlayerTroop>().indicatedGrid(), skillMode);
+                curControlled.GetComponent<Troop>().doSkill(curControlled.GetComponent<Troop>().indicatedGrid(), skillMode);
                 if (Input.GetMouseButtonDown(0))
                 {
                     skillMode = TroopSkill.walk;
@@ -53,9 +57,13 @@ public class BattleInteraction : MonoBehaviour {
             {
                 if (curControlled != null)
                 {
+                    
                     if (skillMode == TroopSkill.walk)
                     {
-                        walkToObj();
+                        if (curControlled.GetComponent<Troop>().reachedDestination)
+                        {
+                            walkToObj();
+                        }
                     } else if (skillMode == TroopSkill.none && Input.GetMouseButtonDown(1))
                     {
                         skillMode = TroopSkill.walk;
@@ -63,8 +71,7 @@ public class BattleInteraction : MonoBehaviour {
                     else
                     {
                         skillMode = TroopSkill.none;
-                        curControlled.GetComponent<PlayerTroop>().hideIndicators();
-                        
+                        curControlled.GetComponent<Troop>().hideIndicators();
                     }
                 }
             }
@@ -86,8 +93,8 @@ public class BattleInteraction : MonoBehaviour {
     {
         if (curControlled != null)
         {
-            curControlled.GetComponent<PlayerTroop>().controlled = false;
-            curControlled.GetComponent<PlayerTroop>().cameraFocusOnExit();
+            curControlled.GetComponent<Troop>().controlled = false;
+            curControlled.GetComponent<Troop>().cameraFocusOnExit();
             curControlled = null;
         }
         Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -110,7 +117,7 @@ public class BattleInteraction : MonoBehaviour {
                 interactedObject.GetComponent<GridObject>().cameraFocusOn();
             } else if (interactedObject.tag == "PlayerTroop")
             {
-                interactedObject.GetComponent<PlayerTroop>().cameraFocusOn();
+                interactedObject.GetComponent<Troop>().cameraFocusOn();
                 curControlled = interactedObject;
                 skillMode = TroopSkill.walk;
             }
@@ -148,38 +155,37 @@ public class BattleInteraction : MonoBehaviour {
         switch(skillMode)
         {
             case TroopSkill.walk:
-                curControlled.GetComponent<PlayerTroop>().hideIndicators();
+                curControlled.GetComponent<Troop>().hideIndicators();
+                curControlled.GetComponent<Troop>().walk();
                 break;
             case TroopSkill.lunge:
-                curControlled.GetComponent<PlayerTroop>().lunge();
+                curControlled.GetComponent<Troop>().lunge();
                 break;
             case TroopSkill.whirlwind:
-                curControlled.GetComponent<PlayerTroop>().whirlwind();
+                curControlled.GetComponent<Troop>().whirlwind();
                 break;
             case TroopSkill.execute:
-                curControlled.GetComponent<PlayerTroop>().execute();
+                curControlled.GetComponent<Troop>().execute();
                 break;
             case TroopSkill.fire:
-                curControlled.GetComponent<PlayerTroop>().fire();
+                curControlled.GetComponent<Troop>().fire();
                 break;
             case TroopSkill.holdSteady:
-                curControlled.GetComponent<PlayerTroop>().holdSteady();
+                curControlled.GetComponent<Troop>().holdSteady();
                 break;
             case TroopSkill.quickDraw:
-                curControlled.GetComponent<PlayerTroop>().quickDraw();
+                curControlled.GetComponent<Troop>().quickDraw();
                 break;
             case TroopSkill.rainOfArrows:
-                curControlled.GetComponent<PlayerTroop>().rainOfArrow();
+                curControlled.GetComponent<Troop>().rainOfArrow();
                 break;
             case TroopSkill.phalanx:
-                curControlled.GetComponent<PlayerTroop>().phalanx();
+                curControlled.GetComponent<Troop>().phalanx();
                 break;
             case TroopSkill.charge:
-                curControlled.GetComponent<PlayerTroop>().charge();
+                curControlled.GetComponent<Troop>().charge();
                 break;
         }
 
     }
-    
-
 }
