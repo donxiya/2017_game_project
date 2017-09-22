@@ -12,15 +12,14 @@ public class BattleCamera : MonoBehaviour {
     private Vector3 positionOffset = Vector3.zero;
     private Vector3 positionOffsetBase = Vector3.zero;
     private int multiplier;
-    private int initial_map_size = 100;
     private int counter;
     private void Start()
     {
         multiplier = 4;
         positionOffsetBase = (new Vector3(1, 1, 1));
         positionOffset = multiplier * positionOffsetBase;
-        mapCenter.transform.position = (new Vector3(initial_map_size/2, 0, initial_map_size/2));
-        freeMoveTarget = GameObject.Find("FreeMoveTarget");
+        mapCenter.transform.position = new Vector3(BattleCentralControl.gridXMax/2, 0, BattleCentralControl.gridZMax/2);
+        freeMoveTarget = mapCenter;
         freeMoveTarget.transform.position = mapCenter.transform.position;
         target = mapCenter;
     }
@@ -35,6 +34,7 @@ public class BattleCamera : MonoBehaviour {
                 switch (cameraMode)
                 {
                     case CameraMode.toggleToCenter:
+                        freeMoveTarget = mapCenter;
                         transform.LookAt(mapCenter.transform);
                         transform.position = Vector3.Slerp(transform.position, mapCenter.transform.position + positionOffset, Time.deltaTime * 1f);
                         zoom();
@@ -49,8 +49,8 @@ public class BattleCamera : MonoBehaviour {
                     case CameraMode.mapObject:
                         var rotation = Quaternion.LookRotation(target.transform.position - transform.position);
                         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 1f);
-                        //transform.LookAt(target.transform);
                         transform.position = Vector3.Slerp(transform.position, target.transform.position + positionOffset, Time.deltaTime * 1f);
+                        freeMoveTarget = getGrid(target);
                         zoom();
                         rotate();
                         break;
@@ -140,17 +140,12 @@ public class BattleCamera : MonoBehaviour {
         var d = Input.GetAxis("Mouse ScrollWheel");
 
         //WASD
-        float xAxisValue = Input.GetAxis("Horizontal");
-        float zAxisValue = Input.GetAxis("Vertical");
+        float xAxisValue = Mathf.Clamp(Input.GetAxis("Horizontal"), 1, -1);
+        float zAxisValue = Mathf.Clamp(Input.GetAxis("Vertical"), 1 , -1);
         if (Camera.current != null)
         {
-            //transform.Translate(transform.forward*Time.deltaTime*20);
-            var curPos = transform.position.y;
-            transform.Translate(new Vector3(xAxisValue, 0.0f, zAxisValue));
-            var pos = transform.position;
-
-            pos.y = Mathf.Clamp(transform.position.y, curPos, curPos);
-            transform.position = pos;
+            Debug.Log(xAxisValue + " " + zAxisValue);
+            freeMoveTarget = getClosestGridObj(freeMoveTarget.transform.position - new Vector3(xAxisValue, 0.0f, zAxisValue));
         }
 
 
@@ -162,6 +157,25 @@ public class BattleCamera : MonoBehaviour {
         if (d < 0f && transform.position.z > 4)
         {
             target.transform.Translate(new Vector3(0, speed * Time.deltaTime, 0));
+        }
+    }
+    private GameObject getClosestGridObj(Vector3 pos)
+    {
+        Mathf.Clamp(pos.x, 0, BattleCentralControl.gridXMax);
+        Mathf.Clamp(pos.z, 0, BattleCentralControl.gridZMax);
+        return BattleCentralControl.gridToObj[BattleCentralControl.map[Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.z)]];
+    }
+    private GameObject getGrid(GameObject obj)
+    {
+        if (obj.tag == "Grid")
+        {
+            return obj;
+        } else if (obj.tag == "PlayerTroop" || obj.tag == "EnemyTroop")
+        {
+            return BattleCentralControl.gridToObj[obj.GetComponent<Troop>().curGrid];
+        } else
+        {
+            return null;
         }
     }
 }

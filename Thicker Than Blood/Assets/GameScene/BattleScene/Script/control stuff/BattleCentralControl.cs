@@ -14,15 +14,12 @@ public class BattleCentralControl : MonoBehaviour {
     public static Party enemyParty;
     public static Dictionary<Grid, GameObject> gridToObj;
     public static Dictionary<GameObject, Grid> objToGrid;
+    public static DataBase dataBase;
     private void Awake()
     {
         gridToObj = new Dictionary<Grid, GameObject>();
         objToGrid = new Dictionary<GameObject, Grid>();
         troopOnField = new List<Person>();
-    }
-    // Use this for initialization
-    void Start()
-    {
         playerTurn = true;
         battleStart = false;
         gridXMax = 100;
@@ -31,6 +28,12 @@ public class BattleCentralControl : MonoBehaviour {
         generateMap(gridXMax, gridZMax);
         placeOnMap(gridXMax, gridZMax);
         groundInitialization();
+        dataBase = GameObject.Find("DataBase").GetComponent<DataBase>();
+    }
+    // Use this for initialization
+    void Start()
+    {
+        
 
     }
 

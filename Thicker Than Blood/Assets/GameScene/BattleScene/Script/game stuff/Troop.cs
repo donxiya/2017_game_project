@@ -63,7 +63,7 @@ public class Troop : BattleInteractable {
         base.cameraFocusOn();
         if (BattleCentralControl.playerTurn)
         {
-            controlPanel.SetActive(true);
+            controlPanel.GetComponent<TroopControlPanel>().initializePanel();
             controlPanel.GetComponent<TroopControlPanel>().curControledTroop = gameObject;
             controlled = true;
         }

@@ -5,6 +5,49 @@ using UnityEngine;
 public class DataBase : MonoBehaviour {
     public static Dictionary<string, int> PersonBattleValue = new Dictionary<string, int>();
     public static List<Item> itemList = new List<Item>();
+    public GameObject mainCharacter, secCharacter;
+    public GameObject mercernaryRecruit, mercernaryMilitiaCrossbowman, mercernaryMilitiaMusketeer,
+        mercernaryMilitiaSwordsman, mercernaryMilitiaHalberdier, mercernaryMilitiaCavalry;
+    public GameObject mercernaryVeteranCrossbowman, mercernaryVeteranMusketeer,
+        mercernaryVeteranSwordsman, mercernaryVeteranHalberdier, mercernaryVeteranCavalry;
+    public GameObject mercernaryEliteCrossbowman, mercernaryEliteMusketeer,
+        mercernaryEliteSwordsman, mercernaryEliteHalberdier, mercernaryEliteCavalry;
+
+    public GameObject banditRecruit, banditMilitiaCrossbowman, banditMilitiaMusketeer,
+        banditMilitiaSwordsman, banditMilitiaHalberdier, banditMilitiaCavalry;
+    public GameObject banditVeteranCrossbowman, banditVeteranMusketeer,
+        banditVeteranSwordsman, banditVeteranHalberdier, banditVeteranCavalry;
+    public GameObject banditEliteCrossbowman, banditEliteMusketeer,
+        banditEliteSwordsman, banditEliteHalberdier, banditEliteCavalry;
+
+    public GameObject italianRecruit, italianMilitiaCrossbowman, italianMilitiaMusketeer,
+        italianMilitiaSwordsman, italianMilitiaHalberdier, italianMilitiaCavalry;
+    public GameObject italianVeteranCrossbowman, italianVeteranMusketeer,
+        italianVeteranSwordsman, italianVeteranHalberdier, italianVeteranCavalry;
+    public GameObject italianEliteCrossbowman, italianEliteMusketeer,
+        italianEliteSwordsman, italianEliteHalberdier, italianEliteCavalry;
+
+    public GameObject papalRecruit, papalMilitiaCrossbowman, papalMilitiaMusketeer,
+        papalMilitiaSwordsman, papalMilitiaHalberdier, papalMilitiaCavalry;
+    public GameObject papalVeteranCrossbowman, papalVeteranMusketeer,
+        papalVeteranSwordsman, papalVeteranHalberdier, papalVeteranCavalry;
+    public GameObject papalEliteCrossbowman, papalEliteMusketeer,
+        papalEliteSwordsman, papalEliteHalberdier, papalEliteCavalry;
+
+    public GameObject frenchRecruit, frenchMilitiaCrossbowman, frenchMilitiaMusketeer,
+        frenchMilitiaSwordsman, frenchMilitiaHalberdier, frenchMilitiaCavalry;
+    public GameObject frenchVeteranCrossbowman, frenchVeteranMusketeer,
+        frenchVeteranSwordsman, frenchVeteranHalberdier, frenchVeteranCavalry;
+    public GameObject frenchEliteCrossbowman, frenchEliteMusketeer,
+        frenchEliteSwordsman, frenchEliteHalberdier, frenchEliteCavalry;
+
+    public GameObject imperialRecruit, imperialMilitiaCrossbowman, imperialMilitiaMusketeer,
+        imperialMilitiaSwordsman, imperialMilitiaHalberdier, imperialMilitiaCavalry;
+    public GameObject imperialVeteranCrossbowman, imperialVeteranMusketeer,
+        imperialVeteranSwordsman, imperialVeteranHalberdier, imperialVeteranCavalry;
+    public GameObject imperialEliteCrossbowman, imperialEliteMusketeer,
+        imperialEliteSwordsman, imperialEliteHalberdier, imperialEliteCavalry;
+
     // Use this for initialization
     void Awake () {
         personInitialization();
@@ -15,7 +58,7 @@ public class DataBase : MonoBehaviour {
         return 50;
         //return PersonBattleValue[troopName];
     }
-    public static TroopInfo getTroopInfo(Faction faction, TroopType tt, Ranking rk)
+    public TroopInfo getTroopInfo(Faction faction, TroopType tt, Ranking rk)
     {
         switch(faction)
         {
@@ -34,29 +77,99 @@ public class DataBase : MonoBehaviour {
         }
         return new TroopInfo();
     }
-    public static TroopInfo mercGetTroopInfoHelper(TroopType tt, Ranking rk)
+    public TroopInfo mercGetTroopInfoHelper(TroopType tt, Ranking rk)
     {
         TroopInfo result = new TroopInfo();
         switch (tt)
         {
             case TroopType.recruitType:
                 result.battleValue = 10;
+                result.model = mercernaryRecruit;
                 break;
             case TroopType.crossbowman:
-                switch(rk)
+                switch (rk)
                 {
                     case Ranking.militia:
                         result.battleValue = 20;
+                        result.model = mercernaryMilitiaCrossbowman;
+                        break;
+                    case Ranking.veteran:
+                        result.battleValue = 50;
+                        result.model = mercernaryVeteranCrossbowman;
+                        break;
+                    case Ranking.elite:
+                        result.battleValue = 150;
+                        result.model = mercernaryEliteCrossbowman;
                         break;
                 }
                 break;
             case TroopType.musketeer:
+                switch (rk)
+                {
+                    case Ranking.militia:
+                        result.battleValue = 20;
+                        result.model = mercernaryMilitiaMusketeer;
+                        break;
+                    case Ranking.veteran:
+                        result.battleValue = 50;
+                        result.model = mercernaryVeteranMusketeer;
+                        break;
+                    case Ranking.elite:
+                        result.battleValue = 150;
+                        result.model = mercernaryEliteMusketeer;
+                        break;
+                }
                 break;
             case TroopType.swordsman:
+                switch (rk)
+                {
+                    case Ranking.militia:
+                        result.battleValue = 20;
+                        result.model = mercernaryMilitiaSwordsman;
+                        break;
+                    case Ranking.veteran:
+                        result.battleValue = 50;
+                        result.model = mercernaryVeteranSwordsman;
+                        break;
+                    case Ranking.elite:
+                        result.battleValue = 150;
+                        result.model = mercernaryEliteSwordsman;
+                        break;
+                }
                 break;
             case TroopType.halberdier:
+                switch (rk)
+                {
+                    case Ranking.militia:
+                        result.battleValue = 20;
+                        result.model = mercernaryMilitiaHalberdier;
+                        break;
+                    case Ranking.veteran:
+                        result.battleValue = 50;
+                        result.model = mercernaryVeteranHalberdier;
+                        break;
+                    case Ranking.elite:
+                        result.battleValue = 150;
+                        result.model = mercernaryEliteHalberdier;
+                        break;
+                }
                 break;
             case TroopType.cavalry:
+                switch (rk)
+                {
+                    case Ranking.militia:
+                        result.battleValue = 20;
+                        result.model = mercernaryMilitiaCavalry;
+                        break;
+                    case Ranking.veteran:
+                        result.battleValue = 50;
+                        result.model = mercernaryVeteranCavalry;
+                        break;
+                    case Ranking.elite:
+                        result.battleValue = 150;
+                        result.model = mercernaryEliteCavalry;
+                        break;
+                }
                 break;
         }
         return result;
@@ -337,4 +450,5 @@ public class Item
 
 public class TroopInfo{
     public int battleValue;
+    public GameObject model;
  }
