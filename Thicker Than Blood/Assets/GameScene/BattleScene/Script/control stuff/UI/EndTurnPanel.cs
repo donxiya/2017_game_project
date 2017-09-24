@@ -20,7 +20,8 @@ public class EndTurnPanel : MonoBehaviour {
         {
             gameObject.SetActive(true);
         }
-		if (BattleCentralControl.playerTurn)
+        //Debug.Log(BattleInteraction.inAction);
+		if (BattleCentralControl.playerTurn && !BattleInteraction.inAction)
         {
             endTurnButton.GetComponent<Button>().enabled = true;
         }

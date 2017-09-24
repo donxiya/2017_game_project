@@ -23,10 +23,7 @@ public class BattleInteraction : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (!inAction)
-        {
-            inputKeysActions();
-        }
+        inputKeysActions();
         if (curControlled != null)
         {
             showIndicator();
@@ -47,7 +44,10 @@ public class BattleInteraction : MonoBehaviour {
                 }
             } else
             {   
-                selectObject();
+                if (!inAction)
+                {
+                    selectObject();
+                }
             }
         }
         if (Input.GetMouseButtonDown(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())

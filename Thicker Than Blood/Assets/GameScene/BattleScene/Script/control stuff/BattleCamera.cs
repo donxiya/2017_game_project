@@ -91,11 +91,11 @@ public class BattleCamera : MonoBehaviour {
                         if (switchedMode)
                         {
                             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 13f);
-                            transform.position = Vector3.Slerp(transform.position, target.transform.position + positionOffset, Time.deltaTime * 5f);
+                            transform.position = Vector3.Slerp(transform.position, target.transform.position + positionOffset, Time.deltaTime * 3f);
                         } else
                         {
                             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 3f);
-                            transform.position = Vector3.Slerp(transform.position, target.transform.position + positionOffset, Time.deltaTime * 5f);
+                            transform.position = Vector3.Slerp(transform.position, target.transform.position + positionOffset, Time.deltaTime * 3f);
                             if (Vector3.Distance(transform.position, target.transform.position + positionOffset) < .01f)
                             {
                                 switchedMode = true;
@@ -154,7 +154,7 @@ public class BattleCamera : MonoBehaviour {
             {
                 multiplier += 3;
             }
-            multiplier = Mathf.Clamp(multiplier, 5, 13);
+            multiplier = Mathf.Clamp(multiplier, 5, 20);
             positionOffset = multiplier * positionOffsetBase;
         }
         

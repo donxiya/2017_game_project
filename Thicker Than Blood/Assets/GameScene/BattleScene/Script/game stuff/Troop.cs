@@ -16,9 +16,11 @@ public class Troop : BattleInteractable {
 
     public Texture2D staminaBarImg, troopHealthBarImg;
     public bool controlled, charging, holdSteadying, reachedDestination;
+    public bool activated = false;
     public float chargeStack;
     public List<Grid> phalanxedGrids;
     float STATUS_BAR_HEIGHT, STATUS_BAR_WIDTH;
+    Grid destinationGrid;
     NavMeshAgent navMeshAgent;
     Grid lastGrid;
     // Use this for initialization
@@ -32,30 +34,42 @@ public class Troop : BattleInteractable {
         phalanxedGrids = new List<Grid>();
     }
     public void Update() {
-        if (BattleCentralControl.playerTurn && controlled)
+        if (activated)
         {
-            walkUpdate();
-        }
-        if (!controlled)
-        {
-            stayOnGird();
-        }
-        showStatus();
-        lookAtCamera(statusPanel);
-        if (Vector3.Distance(navMeshAgent.destination, transform.position) <= .1)
-        {
-            reachedDestination = true;
-            if (curGrid.troop != person && curGrid.troop != null)
+            if (BattleCentralControl.playerTurn && controlled)
             {
-                //goNearbyGrid(getCurrentGrid());
-            } else
-            {
-                curGrid.troop = person;
+                walkUpdate();
             }
-            chargeStack = 0;
-        } else
-        {
-            reachedDestination = false;
+            if (!controlled)
+            {
+                stayOnGird();
+            }
+            showStatus();
+            lookAtCamera(statusPanel);
+            if (Vector3.Distance(navMeshAgent.destination, transform.position) <= .1f) 
+            {
+                reachedDestination = true;
+                if (curGrid.troop != person && curGrid.troop != null)
+                {
+                    //goNearbyGrid(getCurrentGrid());
+                }
+                else
+                {
+                    curGrid.troop = person;
+                }
+                chargeStack = 0;
+            }
+            else
+            {
+                reachedDestination = false;
+            }
+
+            if (destinationGrid != null && curGrid == destinationGrid)
+            {
+                BattleInteraction.inAction = false;
+                destinationGrid = null;
+            }
+            
         }
     }
     public override void cameraFocusOn()
@@ -82,6 +96,8 @@ public class Troop : BattleInteractable {
             if (person.stamina > 0)
             {
                 navMeshAgent.destination = new Vector3(grid.x, 1, grid.z);
+                BattleInteraction.inAction = true;
+                destinationGrid = grid;
             }
         } else
         {
@@ -96,6 +112,7 @@ public class Troop : BattleInteractable {
         person = personI;
         curGrid = curGridI;
         curGrid.troop = person;
+        activated = true;
         //person.stamina = person.getStaminaMax();
     }
 
@@ -109,6 +126,7 @@ public class Troop : BattleInteractable {
         navMeshAgent.destination = new Vector3(lastGrid.x, 1, lastGrid.z);
         //person.stamina += curGrid.staminaCost;
         curGrid = lastGrid;
+        BattleInteraction.inAction = false;
         
     }
 
@@ -312,9 +330,13 @@ public class Troop : BattleInteractable {
                     if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
                     {
                         GameObject interactedObject = interactionInfo.collider.gameObject.transform.parent.gameObject;
-                        if (interactedObject.tag == "EnemyTroop") //TODO: remove player troop later
+                        Troop attackedTroop = interactedObject.GetComponent<Troop>();
+                        if (attackedTroop != null) //TODO: remove player troop later
                         {
-                            interactedObject.GetComponent<Troop>().person.health -= 5 * person.getMeleeAttackDmg();
+                            if (attackedTroop.person.faction != person.faction && attackedGrid.Contains(attackedTroop.curGrid)) {
+                                attackedTroop.person.health -= 5 * person.getMeleeAttackDmg();
+                            }
+                            
                         } else
                         {
                             BattleInteraction.skillMode = TroopSkill.none;
