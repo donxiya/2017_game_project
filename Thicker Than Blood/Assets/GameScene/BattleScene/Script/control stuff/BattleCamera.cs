@@ -67,11 +67,16 @@ public class BattleCamera : MonoBehaviour {
                         {
                             transform.rotation = Quaternion.Slerp(transform.rotation, rotationFreeMove, Time.deltaTime * 13f);
                             transform.position = Vector3.Slerp(transform.position, freeMoveTarget.transform.position + curFreeMovePositionOffset, Time.deltaTime * 5f);
+                            if (Input.GetKey(KeyCode.S))
+                            {
+                                transform.rotation = Quaternion.Slerp(transform.rotation, rotationFreeMove, Time.deltaTime * 13f);
+                                transform.position = Vector3.Slerp(transform.position, freeMoveTarget.transform.position + curFreeMovePositionOffset, Time.deltaTime * 5f);
+                            }
                         } else
                         {
-                            transform.rotation = Quaternion.Slerp(transform.rotation, rotationFreeMove, Time.deltaTime * 3f);
+                            transform.rotation = Quaternion.Slerp(transform.rotation, rotationFreeMove, Time.deltaTime * 7f);
                             transform.position = Vector3.Slerp(transform.position, freeMoveTarget.transform.position + curFreeMovePositionOffset, Time.deltaTime * 3f);
-                            if (Vector3.Distance(transform.position, freeMoveTarget.transform.position + curFreeMovePositionOffset) < .1f)
+                            if (Vector3.Distance(transform.position, freeMoveTarget.transform.position + curFreeMovePositionOffset) < 3f)
                             {
                                 switchedMode = true;
                             }
