@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class TroopControlPanel : MonoBehaviour {
-    public GameObject panel, lunge, whirlwind, execute, phalanx, charge, fire, holdSteady, rainOfArrows, quickDraw;
-    public GameObject curControledTroop;
+    public GameObject panel, lunge, whirlwind, execute, guard, charge, fire, holdSteady, rainOfArrows, quickDraw;
+    public KeyCode lungeKey, whirlwindKey, executeKey, guardKey, chargeKey, fireKey, holdSteadyKey, rainOfArrowsKey, quickDrawkey;
+    public GameObject curControlledTroop;
     public static bool initialized;
 	// Use this for initialization
 	void Start () {
@@ -41,10 +42,46 @@ public class TroopControlPanel : MonoBehaviour {
                     break;
             }
             initialized = true;
-            
-            
         }
-        
+        if (gameObject.activeSelf)
+        {
+            if (Input.GetKeyUp(lungeKey))
+            {
+                BattleInteraction.skillMode = TroopSkill.lunge; hideIndicatorsInPanel();
+            }
+            if (Input.GetKeyUp(whirlwindKey))
+            {
+                BattleInteraction.skillMode = TroopSkill.whirlwind; hideIndicatorsInPanel();
+            }
+            if (Input.GetKeyUp(executeKey))
+            {
+                BattleInteraction.skillMode = TroopSkill.execute; hideIndicatorsInPanel();
+            }
+            if (Input.GetKeyUp(guardKey))
+            {
+                BattleInteraction.skillMode = TroopSkill.guard; hideIndicatorsInPanel();
+            }
+            if (Input.GetKeyUp(chargeKey))
+            {
+                BattleInteraction.curControlled.GetComponent<Troop>().charge(); hideIndicatorsInPanel();
+            }
+            if (Input.GetKeyUp(fireKey))
+            {
+                BattleInteraction.skillMode = TroopSkill.fire; hideIndicatorsInPanel();
+            }
+            if (Input.GetKeyUp(holdSteadyKey))
+            {
+                BattleInteraction.curControlled.GetComponent<Troop>().holdSteady(); hideIndicatorsInPanel();
+            }
+            if (Input.GetKeyUp(rainOfArrowsKey))
+            {
+                BattleInteraction.skillMode = TroopSkill.rainOfArrows; hideIndicatorsInPanel();
+            }
+            if (Input.GetKeyUp(quickDrawkey))
+            {
+                BattleInteraction.skillMode = TroopSkill.quickDraw; hideIndicatorsInPanel();
+            }
+        }
 	}
     void makeMainCharacterPanel()
     {
@@ -52,10 +89,17 @@ public class TroopControlPanel : MonoBehaviour {
         lunge.SetActive(true);
         whirlwind.SetActive(true);
         execute.SetActive(true);
-        phalanx.SetActive(true);
+        guard.SetActive(true);
         charge.SetActive(true);
         fire.SetActive(true);
         holdSteady.SetActive(true);
+        lungeKey = KeyCode.Alpha1;
+        whirlwindKey = KeyCode.Alpha2;
+        executeKey = KeyCode.Alpha3;
+        guardKey = KeyCode.Alpha4;
+        chargeKey = KeyCode.Alpha5;
+        fireKey = KeyCode.Alpha6;
+        holdSteadyKey = KeyCode.Alpha7;
     }
     void makeCrossbowmanPanel()
     {
@@ -63,6 +107,9 @@ public class TroopControlPanel : MonoBehaviour {
         whirlwind.SetActive(true);
         rainOfArrows.SetActive(true);
         quickDraw.SetActive(true);
+        whirlwindKey = KeyCode.Alpha1;
+        rainOfArrowsKey = KeyCode.Alpha2;
+        quickDrawkey = KeyCode.Alpha3;
     }
     void makeMusketeerPanel()
     {
@@ -70,6 +117,9 @@ public class TroopControlPanel : MonoBehaviour {
         whirlwind.SetActive(true);
         fire.SetActive(true);
         holdSteady.SetActive(true);
+        whirlwindKey = KeyCode.Alpha1;
+        fireKey = KeyCode.Alpha2;
+        holdSteadyKey = KeyCode.Alpha3;
     }
     void makeSwordsmanPanel()
     {
@@ -77,13 +127,19 @@ public class TroopControlPanel : MonoBehaviour {
         lunge.SetActive(true);
         whirlwind.SetActive(true);
         execute.SetActive(true);
+        lungeKey = KeyCode.Alpha1;
+        whirlwindKey = KeyCode.Alpha2;
+        executeKey = KeyCode.Alpha3;
     }
     void makeHalberdierPanel()
     {
         disableAllButton();
         lunge.SetActive(true);
         whirlwind.SetActive(true);
-        phalanx.SetActive(true);
+        guard.SetActive(true);
+        lungeKey = KeyCode.Alpha1;
+        whirlwindKey = KeyCode.Alpha2;
+        guardKey = KeyCode.Alpha3;
     }
     void makeCavalryPanel()
     {
@@ -91,13 +147,16 @@ public class TroopControlPanel : MonoBehaviour {
         lunge.SetActive(true);
         whirlwind.SetActive(true);
         charge.SetActive(true);
+        lungeKey = KeyCode.Alpha1;
+        whirlwindKey = KeyCode.Alpha2;
+        chargeKey = KeyCode.Alpha3;
     }
     void disableAllButton()
     {
         lunge.SetActive(false);
         whirlwind.SetActive(false);
         execute.SetActive(false);
-        phalanx.SetActive(false);
+        guard.SetActive(false);
         charge.SetActive(false);
         fire.SetActive(false);
         holdSteady.SetActive(false);
@@ -121,7 +180,7 @@ public class TroopControlPanel : MonoBehaviour {
         lunge.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.lunge; hideIndicatorsInPanel(); });
         whirlwind.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.whirlwind; hideIndicatorsInPanel(); });
         execute.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.execute; hideIndicatorsInPanel(); });
-        phalanx.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.phalanx; hideIndicatorsInPanel(); });
+        guard.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.guard; hideIndicatorsInPanel(); });
         charge.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.curControlled.GetComponent<Troop>().charge(); hideIndicatorsInPanel(); });
         fire.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.skillMode = TroopSkill.fire; hideIndicatorsInPanel(); });
         holdSteady.GetComponent<Button>().onClick.AddListener(delegate { BattleInteraction.curControlled.GetComponent<Troop>().holdSteady(); hideIndicatorsInPanel(); });

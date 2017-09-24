@@ -178,8 +178,8 @@ public class BattleInteraction : MonoBehaviour {
             case TroopSkill.rainOfArrows:
                 curControlled.GetComponent<Troop>().rainOfArrow();
                 break;
-            case TroopSkill.phalanx:
-                curControlled.GetComponent<Troop>().phalanx();
+            case TroopSkill.guard:
+                curControlled.GetComponent<Troop>().guard();
                 break;
             case TroopSkill.charge:
                 curControlled.GetComponent<Troop>().charge();

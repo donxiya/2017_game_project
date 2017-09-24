@@ -72,7 +72,7 @@ public class Person {
     {
         return stats.endurance * 100;
     }
-    public virtual float getPhalanxIncrease()
+    public virtual float getGuardedIncrease()
     {
         return stats.endurance;
     }

@@ -110,11 +110,24 @@ public class BattleCamera : MonoBehaviour {
                 }
                 if (Input.GetKey(KeyCode.Space) && cameraMode != CameraMode.toggleToCenter)
                 {
-                    switchedMode = false;
-                    cameraMode = CameraMode.toggleToCenter;
-                    positionOffsetBase = (new Vector3(0, 1, 2)).normalized;
-                    target = mapCenter;
-                    positionOffset = 4 * positionOffsetBase;
+                    if (BattleInteraction.curControlled == null)
+                    {
+                        switchedMode = false;
+                        cameraMode = CameraMode.toggleToCenter;
+                        positionOffsetBase = (new Vector3(0, 1, 2)).normalized;
+                        target = mapCenter;
+                        positionOffset = 4 * positionOffsetBase;
+                    } else
+                    {
+                        switchedMode = false;
+                        if (cameraMode == CameraMode.freeMove)
+                        {
+                            positionOffsetBase = curFreeMovePositionOffset.normalized;
+                        }
+
+                        cameraMode = CameraMode.mapObject;
+                    }
+                    
                 }
                 if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D)) && cameraMode != CameraMode.freeMove)
                 {

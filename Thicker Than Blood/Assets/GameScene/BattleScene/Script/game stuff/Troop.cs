@@ -12,13 +12,13 @@ public class Troop : BattleInteractable {
     public Grid curGrid { get; set; }
 
     public GameObject statusPanel, troopStaminaBar, troopHealthBar, staminaTxt, healthTxt, nameTxt;
-    public GameObject walkIndicator, curIndicator, lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, phalanxIndicator, rainOfArrowIndicator, quickDrawIndicator;
+    public GameObject walkIndicator, curIndicator, lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, guardIndicator, rainOfArrowIndicator, quickDrawIndicator;
 
     public Texture2D staminaBarImg, troopHealthBarImg;
     public bool controlled, charging, holdSteadying, reachedDestination;
     public bool activated = false;
     public float chargeStack;
-    public List<Grid> phalanxedGrids;
+    public List<Grid> guardedGrids;
     float STATUS_BAR_HEIGHT, STATUS_BAR_WIDTH;
     Grid destinationGrid;
     NavMeshAgent navMeshAgent;
@@ -31,7 +31,7 @@ public class Troop : BattleInteractable {
         navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
         hideIndicators();
         charging = holdSteadying = false;
-        phalanxedGrids = new List<Grid>();
+        guardedGrids = new List<Grid>();
     }
     public void Update() {
         if (activated)
@@ -78,7 +78,7 @@ public class Troop : BattleInteractable {
         if (BattleCentralControl.playerTurn)
         {
             controlPanel.GetComponent<TroopControlPanel>().initializePanel();
-            controlPanel.GetComponent<TroopControlPanel>().curControledTroop = gameObject;
+            controlPanel.GetComponent<TroopControlPanel>().curControlledTroop = gameObject;
             controlled = true;
         }
     }
@@ -145,13 +145,12 @@ public class Troop : BattleInteractable {
     
     public void hideIndicators()
     {
-        //lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, phalanxIndicator, rainOfArrowIndicator, quickDrawIndicator;
         walkIndicator.SetActive(false);
         lungeIndicator.SetActive(false);
         whirlwindIndicator.SetActive(false);
         executeIndicator.SetActive(false);
         fireIndicator.SetActive(false);
-        phalanxIndicator.SetActive(false);
+        guardIndicator.SetActive(false);
         rainOfArrowIndicator.SetActive(false);
         quickDrawIndicator.SetActive(false);
     }
@@ -159,7 +158,7 @@ public class Troop : BattleInteractable {
     {
         if (movedToNewGrid())
         {
-            clearPhalanx();
+            clearGuard();
             if (charging)
             {
                 if (person.stamina < getCurrentGrid().staminaCost * 2)
@@ -258,19 +257,19 @@ public class Troop : BattleInteractable {
     {
         holdSteadying = !holdSteadying;
     }
-    public void phalanx()
+    public void guard()
     {
-        if (!phalanxIndicator.activeSelf)
+        if (!guardIndicator.activeSelf)
         {
-            phalanxIndicator.SetActive(true);
-            curIndicator = phalanxIndicator;
+            guardIndicator.SetActive(true);
+            curIndicator = guardIndicator;
         }
     }
-    public void clearPhalanx()
+    public void clearGuard()
     {
-        if (phalanxedGrids.Count > 0)
+        if (guardedGrids.Count > 0)
         {
-            foreach(Grid g in phalanxedGrids)
+            foreach(Grid g in guardedGrids)
             {
                 if (person.faction == Faction.mercenary)
                 {
@@ -366,17 +365,17 @@ public class Troop : BattleInteractable {
                     }
                 }
                 break;
-            case TroopSkill.phalanx:
+            case TroopSkill.guard:
                 foreach (Grid g in attackedGrid)
                 {
                     if (person.faction == Faction.mercenary)
                     {
-                        g.enemyTempStaminaCost += person.getPhalanxIncrease();
+                        g.enemyTempStaminaCost += person.getGuardedIncrease();
                     } else
                     {
-                        g.playerTempStaminaCost += person.getPhalanxIncrease();
+                        g.playerTempStaminaCost += person.getGuardedIncrease();
                     }
-                    phalanxedGrids.Add(g);
+                    guardedGrids.Add(g);
                     
                 }
                 break;
