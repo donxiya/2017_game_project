@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class DialogueSystem : MonoBehaviour {
     public static DialogueSystem Instance { get; set; }
+    public static GameObject curInteracted;
     string npcName, snpcName, townName, cityName;
     public GameObject NPCInteractionPanel, SNPCInteractionPanel, townInteractionPanel,
         cityInteractionPanel, makeSurePanel, statusPanel;
@@ -169,13 +170,13 @@ public class DialogueSystem : MonoBehaviour {
     {
         makeSurePanel.SetActive(false);
         closeDialogue("NPC");
-        createBattleScene();
+        MapManagement.createBattleScene();
     }
     public void ambushNPC()
     {
         makeSurePanel.SetActive(false);
         closeDialogue("NPC");
-        createBattleScene();
+        MapManagement.createBattleScene();
     } //TODO: based on INT
     public void retreatNPC() //TODO: based on INT
     {
@@ -297,7 +298,7 @@ public class DialogueSystem : MonoBehaviour {
         cityRetreat.SetActive(false);
         cityMenuButtons(true);
         closeDialogue("city");
-        createBattleScene();
+        MapManagement.createBattleScene();
         
     }
     public void ransomCity()
@@ -494,7 +495,7 @@ public class DialogueSystem : MonoBehaviour {
         townPillage.SetActive(false);
         townRansom.SetActive(false);
         townRetreat.SetActive(false);
-        createBattleScene();
+        MapManagement.createBattleScene();
         closeDialogue("town");
     }
     public void ransomTown()
@@ -657,9 +658,6 @@ public class DialogueSystem : MonoBehaviour {
         statusPanel.SetActive(true);
         Time.timeScale = 1.0f;
     }
-    public void createBattleScene()
-    {
-        SceneManager.LoadScene("BattleScene");
-    }
+    
     
 }

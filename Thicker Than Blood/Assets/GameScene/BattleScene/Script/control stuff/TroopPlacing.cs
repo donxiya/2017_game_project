@@ -119,7 +119,11 @@ public class TroopPlacing : MonoBehaviour {
                     {
                         var pos = new Vector3(gridInfo.x, 1, gridInfo.z);
                         var rot = new Quaternion(0, 0, 0, 0);
-                        GameObject unitToPlace = GameObject.Find("MainCharacter");
+                        GameObject unitToPlace = BattleCentralControl.troopDataBase.getTroopObject(unit.faction, unit.troopType, unit.ranking);
+                        if (unitToPlace == null)
+                        {
+                            Debug.Log(unit.name);
+                        }
                         unitToPlace = interactedObject.GetComponent<GridObject>().placeTroopOnGrid(unitToPlace, pos, rot);
                         unitToPlace.GetComponent<Troop>().placed(unit, gridInfo);
                         unit.inBattle = true;

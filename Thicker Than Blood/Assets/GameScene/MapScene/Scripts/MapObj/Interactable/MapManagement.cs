@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MapManagement : MonoBehaviour {
     const int spawnRange = 20;
@@ -56,6 +57,10 @@ public class MapManagement : MonoBehaviour {
             var rot = new Quaternion(0, Random.Range(0, 360), 0, 0);
             Instantiate(toSpawn, spawnPoint.transform.position + pos, rot);
         }
+    }
+    public static void createBattleScene()
+    {
+        SceneManager.LoadScene("BattleScene");
     }
 
 }

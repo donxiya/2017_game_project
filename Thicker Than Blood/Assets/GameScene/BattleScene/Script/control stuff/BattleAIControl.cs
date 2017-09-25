@@ -67,7 +67,7 @@ public class BattleAIControl : MonoBehaviour {
 
                 var pos = new Vector3(posX, 1, posZ);
                 var rot = new Quaternion(0, 0, 0, 0);
-                GameObject unitToPlace = GameObject.Find("MainCharacter");
+                GameObject unitToPlace = BattleCentralControl.troopDataBase.getTroopObject(unit.faction, unit.troopType, unit.ranking);
                 GameObject gridToPlace = BattleCentralControl.gridToObj[BattleCentralControl.map[posX, posZ]];
                 unitToPlace = gridToPlace.GetComponent<GridObject>().placeTroopOnGrid(unitToPlace, pos, rot);
                 unitToPlace.GetComponent<Troop>().placed(unit, BattleCentralControl.map[posX, posZ]);

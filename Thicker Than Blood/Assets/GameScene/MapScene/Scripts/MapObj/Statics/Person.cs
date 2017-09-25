@@ -86,9 +86,9 @@ public class Person {
     }
     public int getBattleValue()
     {
-        int result = DataBase.getBattleValue(DataBase.factionToString(faction) 
-            + DataBase.rankingToString(ranking) 
-            + DataBase.troopTypeToString(troopType));
+        int result = TroopDataBase.getBattleValue(TroopDataBase.factionToString(faction) 
+            + TroopDataBase.rankingToString(ranking) 
+            + TroopDataBase.troopTypeToString(troopType));
         //Debug.Log(result);
         if (result == 0)
         {

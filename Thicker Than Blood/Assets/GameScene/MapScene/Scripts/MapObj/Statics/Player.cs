@@ -11,7 +11,11 @@ public class Player : MonoBehaviour {
     {
         initializeMainPlayers();
         initializeMainParty();
-        BattleCentralControl.playerParty = mainParty;
+        if (BattleCentralControl.playerParty == null)
+        {
+            BattleCentralControl.playerParty = mainParty;
+        }
+        
         initializeDummy();
     }
 
@@ -33,17 +37,18 @@ public class Player : MonoBehaviour {
         mainParty.addToParty(mainParty.makeGenericPerson(TroopType.cavalry, Ranking.veteran));
         mainParty.addToParty(mainParty.makeGenericPerson(TroopType.swordsman, Ranking.militia));
         mainParty.addToParty(mainParty.makeGenericPerson(TroopType.halberdier, Ranking.elite));
-        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.halberdier, Ranking.elite));
-        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.halberdier, Ranking.elite));
-        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.halberdier, Ranking.elite));
-        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.halberdier, Ranking.elite));
-        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.halberdier, Ranking.elite));
+        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.crossbowman, Ranking.elite));
+        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.musketeer, Ranking.elite));
         mainParty.cash = 200;
     }
     void initializeDummy()
     {
-        BattleCentralControl.enemyParty = new Party("bandit", Faction.bandits, 300);
-        makeParty(BattleCentralControl.enemyParty);
+        if (BattleCentralControl.enemyParty == null)
+        {
+            BattleCentralControl.enemyParty = new Party("bandit", Faction.bandits, 300);
+            makeParty(BattleCentralControl.enemyParty);
+        }
+        
     }
     void makeParty(Party npcParty)
     {

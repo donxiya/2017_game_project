@@ -231,7 +231,7 @@ public class Party {
     }
     public Person makeGenericPerson(TroopType tt, Ranking rk)
     {
-        string memberName = DataBase.rankingToString(rk) + " " + DataBase.troopTypeToString(tt);
+        string memberName = TroopDataBase.rankingToString(rk) + " " + TroopDataBase.troopTypeToString(tt);
         Stats gStats = new Stats(1, 1, 1, 1, 1, 1);
         if (rk == Ranking.recruit)
         {
@@ -252,7 +252,7 @@ public class Party {
         TroopType gTt = tt;
         Faction gF = faction;
         Person p = new Person(memberName, gStats, gRk, gTt, gF, gExp);
-        p.name = DataBase.rankingToString(gRk) + " " + DataBase.troopTypeToString(gTt);
+        p.name = TroopDataBase.rankingToString(gRk) + " " + TroopDataBase.troopTypeToString(gTt);
         return p;
     }
     public TroopType randomTroopType(int recruitC, int crossC, int musketC, int swordC, int halbC, int cavC)
