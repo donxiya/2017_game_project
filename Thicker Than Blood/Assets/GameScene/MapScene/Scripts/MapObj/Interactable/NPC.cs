@@ -24,8 +24,8 @@ public class NPC : Interactable {
     public override void interact()
     {
         base.interact();
-        DialogueSystem.Instance.addNewDialogue(name, dialogue, "NPC");
-        DialogueSystem.Instance.createDialogue("NPC");
+        DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.NPC);
+        DialogueSystem.Instance.createDialogue(PanelType.NPC);
     }
     public override void OnTriggerEnter(Collider col)
     {
@@ -33,8 +33,8 @@ public class NPC : Interactable {
         if (col.gameObject.tag == "Player")
         {
             //start dialogue
-            DialogueSystem.Instance.addNewDialogue(name, dialogue, "NPC");
-            DialogueSystem.Instance.createDialogue("NPC");
+            DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.NPC);
+            DialogueSystem.Instance.createDialogue(PanelType.NPC);
 
         }
     }

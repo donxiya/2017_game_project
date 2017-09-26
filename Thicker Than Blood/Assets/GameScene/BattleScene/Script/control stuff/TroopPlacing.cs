@@ -13,13 +13,13 @@ public class TroopPlacing : MonoBehaviour {
     public Dictionary<Person, GameObject> troopDict;
     public Dictionary<Person, bool> troopPlacedDict;
     public Person placingUnit;
-    public static bool panelOut;
+    public static bool pointerInPlacingPanel = false;
     public bool initialized, placing;
+    public Animator animator;
     private void Awake()
     {
         gameObject.SetActive(false);
         
-        panelOut = false;
         initialized = false;
         troopDict = new Dictionary<Person, GameObject>();
         troopPlacedDict = new Dictionary<Person, bool>();
@@ -142,5 +142,15 @@ public class TroopPlacing : MonoBehaviour {
             }
         }
         return false;
+    }
+    public void pointerEnterPlacing()
+    {
+        pointerInPlacingPanel = true;
+        animator.SetBool("showPanel", true);
+    }
+    public void pointerExitPlacing()
+    {
+        pointerInPlacingPanel = false;
+        animator.SetBool("showPanel", false);
     }
 }

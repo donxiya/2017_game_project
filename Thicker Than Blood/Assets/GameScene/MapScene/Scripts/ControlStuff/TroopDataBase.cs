@@ -6,12 +6,12 @@ public class TroopDataBase : MonoBehaviour {
     public static Dictionary<string, int> PersonBattleValue = new Dictionary<string, int>();
     public static List<Item> itemList = new List<Item>();
     public GameObject mainCharacter, secCharacter;
-    public GameObject mercernaryRecruit, mercernaryMilitiaCrossbowman, mercernaryMilitiaMusketeer,
-        mercernaryMilitiaSwordsman, mercernaryMilitiaHalberdier, mercernaryMilitiaCavalry;
-    public GameObject mercernaryVeteranCrossbowman, mercernaryVeteranMusketeer,
-        mercernaryVeteranSwordsman, mercernaryVeteranHalberdier, mercernaryVeteranCavalry;
-    public GameObject mercernaryEliteCrossbowman, mercernaryEliteMusketeer,
-        mercernaryEliteSwordsman, mercernaryEliteHalberdier, mercernaryEliteCavalry;
+    public GameObject mercenaryRecruit, mercenaryMilitiaCrossbowman, mercenaryMilitiaMusketeer,
+        mercenaryMilitiaSwordsman, mercenaryMilitiaHalberdier, mercenaryMilitiaCavalry;
+    public GameObject mercenaryVeteranCrossbowman, mercenaryVeteranMusketeer,
+        mercenaryVeteranSwordsman, mercenaryVeteranHalberdier, mercenaryVeteranCavalry;
+    public GameObject mercenaryEliteCrossbowman, mercenaryEliteMusketeer,
+        mercenaryEliteSwordsman, mercenaryEliteHalberdier, mercenaryEliteCavalry;
 
     public GameObject banditRecruit, banditMilitiaCrossbowman, banditMilitiaMusketeer,
         banditMilitiaSwordsman, banditMilitiaHalberdier, banditMilitiaCavalry;
@@ -97,22 +97,22 @@ public class TroopDataBase : MonoBehaviour {
         {
             case TroopType.recruitType:
                 result.battleValue = 10;
-                result.model = mercernaryRecruit;
+                result.model = mercenaryRecruit;
                 break;
             case TroopType.crossbowman:
                 switch (rk)
                 {
                     case Ranking.militia:
                         result.battleValue = 20;
-                        result.model = mercernaryMilitiaCrossbowman;
+                        result.model = mercenaryMilitiaCrossbowman;
                         break;
                     case Ranking.veteran:
                         result.battleValue = 50;
-                        result.model = mercernaryVeteranCrossbowman;
+                        result.model = mercenaryVeteranCrossbowman;
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
-                        result.model = mercernaryEliteCrossbowman;
+                        result.model = mercenaryEliteCrossbowman;
                         break;
                 }
                 break;
@@ -121,15 +121,15 @@ public class TroopDataBase : MonoBehaviour {
                 {
                     case Ranking.militia:
                         result.battleValue = 20;
-                        result.model = mercernaryMilitiaMusketeer;
+                        result.model = mercenaryMilitiaMusketeer;
                         break;
                     case Ranking.veteran:
                         result.battleValue = 50;
-                        result.model = mercernaryVeteranMusketeer;
+                        result.model = mercenaryVeteranMusketeer;
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
-                        result.model = mercernaryEliteMusketeer;
+                        result.model = mercenaryEliteMusketeer;
                         break;
                 }
                 break;
@@ -138,15 +138,15 @@ public class TroopDataBase : MonoBehaviour {
                 {
                     case Ranking.militia:
                         result.battleValue = 20;
-                        result.model = mercernaryMilitiaSwordsman;
+                        result.model = mercenaryMilitiaSwordsman;
                         break;
                     case Ranking.veteran:
                         result.battleValue = 50;
-                        result.model = mercernaryVeteranSwordsman;
+                        result.model = mercenaryVeteranSwordsman;
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
-                        result.model = mercernaryEliteSwordsman;
+                        result.model = mercenaryEliteSwordsman;
                         break;
                 }
                 break;
@@ -155,15 +155,15 @@ public class TroopDataBase : MonoBehaviour {
                 {
                     case Ranking.militia:
                         result.battleValue = 20;
-                        result.model = mercernaryMilitiaHalberdier;
+                        result.model = mercenaryMilitiaHalberdier;
                         break;
                     case Ranking.veteran:
                         result.battleValue = 50;
-                        result.model = mercernaryVeteranHalberdier;
+                        result.model = mercenaryVeteranHalberdier;
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
-                        result.model = mercernaryEliteHalberdier;
+                        result.model = mercenaryEliteHalberdier;
                         break;
                 }
                 break;
@@ -172,15 +172,15 @@ public class TroopDataBase : MonoBehaviour {
                 {
                     case Ranking.militia:
                         result.battleValue = 20;
-                        result.model = mercernaryMilitiaCavalry;
+                        result.model = mercenaryMilitiaCavalry;
                         break;
                     case Ranking.veteran:
                         result.battleValue = 50;
-                        result.model = mercernaryVeteranCavalry;
+                        result.model = mercenaryVeteranCavalry;
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
-                        result.model = mercernaryEliteCavalry;
+                        result.model = mercenaryEliteCavalry;
                         break;
                 }
                 break;

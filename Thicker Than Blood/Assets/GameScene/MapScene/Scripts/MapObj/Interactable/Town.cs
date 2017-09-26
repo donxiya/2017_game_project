@@ -20,8 +20,8 @@ public class Town : Interactable
     public override void interact()
     {
         //start dialogue
-        DialogueSystem.Instance.addNewDialogue(name, dialogue, "town");
-        DialogueSystem.Instance.createDialogue("town");
+        DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.town);
+        DialogueSystem.Instance.createDialogue(PanelType.town);
     }
 
     public override void OnTriggerEnter(Collider col)
@@ -32,8 +32,8 @@ public class Town : Interactable
             //to indicate obj interacting
             //objMaterial.color = new Color(0, objColor.g, objColor.b, objColor.a/100);
             //gameObject.GetComponent<MeshRenderer>().material = objMaterial;
-            DialogueSystem.Instance.addNewDialogue(name, dialogue, "town");
-            DialogueSystem.Instance.createDialogue("town");
+            DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.town);
+            DialogueSystem.Instance.createDialogue(PanelType.town);
         }
     }
     public override void OnTriggerExit(Collider col)
@@ -42,7 +42,7 @@ public class Town : Interactable
         {
             objMaterial.color = new Color(objColor.r, objColor.g, objColor.b, DEFAULT_ALPHA);
             gameObject.GetComponent<MeshRenderer>().material = objMaterial;
-            DialogueSystem.Instance.closeDialogue("town");
+            DialogueSystem.Instance.closeDialogue(PanelType.town);
         }**/
     }
 }

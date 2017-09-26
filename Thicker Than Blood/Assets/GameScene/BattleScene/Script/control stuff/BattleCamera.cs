@@ -11,26 +11,29 @@ public class BattleCamera : MonoBehaviour {
 
     private bool lockCamera = false;
     private Vector3 positionOffset = Vector3.zero;
+    private Vector3 freeMoveOffset = Vector3.zero;
     private FreeMoveMode freeMoveMode = FreeMoveMode.behind;
-    private Vector3 behindPositionOffset = new Vector3(0, 5, -10);
-    private Vector3 rightPositionOffset = new Vector3(10, 5, 0);
-    private Vector3 leftPositionOffset = new Vector3(-10, 5, 0);
-    private Vector3 frontPositionOffset = new Vector3(0, 5, 10);
-    private Vector3 curFreeMovePositionOffset, forward, right, left, backward;
+    private Vector3 behindPositionOffsetBase = new Vector3(0, 1, -2).normalized;
+    private Vector3 rightPositionOffsetBase = new Vector3(2, 1, 0).normalized;
+    private Vector3 leftPositionOffsetBase = new Vector3(-2, 1, 0).normalized;
+    private Vector3 frontPositionOffsetBase = new Vector3(0, 1, 2).normalized;
+    private Vector3 curFreeMovePositionOffsetBase, forward, right, left, backward;
     private Vector3 positionOffsetBase = Vector3.zero;
-    private int multiplier;
+    private int multiplier, freeMoveMultiplier;
     private int counter;
     private bool switchedMode = false;
     private void Start()
     {
         multiplier = 10;
+        freeMoveMultiplier = 8;
         positionOffsetBase = (new Vector3(0, 1, 2)).normalized;
         positionOffset = multiplier * positionOffsetBase;
         mapCenter.transform.position = new Vector3(BattleCentralControl.gridXMax/2, 0, BattleCentralControl.gridZMax/2);
         freeMoveTarget = mapCenter;
         freeMoveTarget.transform.position = mapCenter.transform.position;
         target = mapCenter;
-        curFreeMovePositionOffset = behindPositionOffset;
+        curFreeMovePositionOffsetBase = behindPositionOffsetBase;
+        freeMoveOffset = curFreeMovePositionOffsetBase * freeMoveMultiplier;
     }
 
     // Update is called once per frame
@@ -57,33 +60,34 @@ public class BattleCamera : MonoBehaviour {
                             }
 
                         }
-                        
-                        zoom();
+                        if (!TroopPlacing.pointerInPlacingPanel)
+                        {
+                            zoom();
+                        }
                         rotate();
                         break;
                     case CameraMode.freeMove:
                         var rotationFreeMove = Quaternion.LookRotation(freeMoveTarget.transform.position - transform.position);
+                        freeMoveOffset = freeMoveMultiplier * curFreeMovePositionOffsetBase;
                         if (switchedMode)
                         {
-                            transform.rotation = Quaternion.Slerp(transform.rotation, rotationFreeMove, Time.deltaTime * 13f);
-                            transform.position = Vector3.Slerp(transform.position, freeMoveTarget.transform.position + curFreeMovePositionOffset, Time.deltaTime * 5f);
-                            if (Input.GetKey(KeyCode.S))
-                            {
-                                transform.rotation = Quaternion.Slerp(transform.rotation, rotationFreeMove, Time.deltaTime * 13f);
-                                transform.position = Vector3.Slerp(transform.position, freeMoveTarget.transform.position + curFreeMovePositionOffset, Time.deltaTime * 5f);
-                            }
+                            transform.rotation = Quaternion.Slerp(transform.rotation, rotationFreeMove, Time.deltaTime * 10f);
+                            transform.position = Vector3.Slerp(transform.position, freeMoveTarget.transform.position + freeMoveOffset, Time.deltaTime * 5f);
                         } else
                         {
                             transform.rotation = Quaternion.Slerp(transform.rotation, rotationFreeMove, Time.deltaTime * 7f);
-                            transform.position = Vector3.Slerp(transform.position, freeMoveTarget.transform.position + curFreeMovePositionOffset, Time.deltaTime * 3f);
-                            if (Vector3.Distance(transform.position, freeMoveTarget.transform.position + curFreeMovePositionOffset) < 3f)
+                            transform.position = Vector3.Slerp(transform.position, freeMoveTarget.transform.position + freeMoveOffset, Time.deltaTime * 3f);
+                            if (Vector3.Distance(transform.position, freeMoveOffset) < 3f)
                             {
                                 switchedMode = true;
                             }
                         }
                         
                         freeMove();
-                        zoom();
+                        if (!TroopPlacing.pointerInPlacingPanel)
+                        {
+                            freeMoveZoom();
+                        }
                         break;
                     case CameraMode.mapObject:
                         var rotation = Quaternion.LookRotation(target.transform.position - transform.position);
@@ -104,7 +108,10 @@ public class BattleCamera : MonoBehaviour {
                         
                         freeMoveTarget = getGrid(target);
                         rotate();
-                        zoom();
+                        if (!TroopPlacing.pointerInPlacingPanel)
+                        {
+                            zoom();
+                        }
                         break;
 
                 }
@@ -122,7 +129,7 @@ public class BattleCamera : MonoBehaviour {
                         switchedMode = false;
                         if (cameraMode == CameraMode.freeMove)
                         {
-                            positionOffsetBase = curFreeMovePositionOffset.normalized;
+                            positionOffsetBase = curFreeMovePositionOffsetBase.normalized;
                         }
 
                         cameraMode = CameraMode.mapObject;
@@ -140,7 +147,7 @@ public class BattleCamera : MonoBehaviour {
                     switchedMode = false;
                     if (cameraMode == CameraMode.freeMove)
                     {
-                        positionOffsetBase = curFreeMovePositionOffset.normalized;
+                        positionOffsetBase = curFreeMovePositionOffsetBase.normalized;
                     }
                     
                     cameraMode = CameraMode.mapObject;
@@ -155,24 +162,6 @@ public class BattleCamera : MonoBehaviour {
     }
 
     private void zoom()
-    {
-        if (!lockCamera)
-        {
-            var d = Input.GetAxis("Mouse ScrollWheel");
-            if (d > 0f) //scroll up
-            {
-                multiplier -= 3;
-            }
-            if (d < 0f)
-            {
-                multiplier += 3;
-            }
-            multiplier = Mathf.Clamp(multiplier, 5, 20);
-            positionOffset = multiplier * positionOffsetBase;
-        }
-        
-    }
-    private void rotate()
     {
         if (!lockCamera)
         {
@@ -194,6 +183,39 @@ public class BattleCamera : MonoBehaviour {
                     counter = 0;
                 }
             }
+            var d = Input.GetAxis("Mouse ScrollWheel");
+            if (d > 0f) //scroll up
+            {
+                multiplier -= 3;
+            }
+            if (d < 0f)
+            {
+                multiplier += 3;
+            }
+            multiplier = Mathf.Clamp(multiplier, 5, 20);
+            positionOffset = multiplier * positionOffsetBase;
+        }
+        
+    }
+    private void freeMoveZoom()
+    {
+        var d = Input.GetAxis("Mouse ScrollWheel");
+        if (d > 0f) //scroll up
+        {
+            freeMoveMultiplier -= 3;
+        }
+        if (d < 0f)
+        {
+            freeMoveMultiplier += 3;
+        }
+        freeMoveMultiplier = Mathf.Clamp(freeMoveMultiplier, 5, 35);
+        freeMoveOffset = freeMoveMultiplier * curFreeMovePositionOffsetBase;
+    }
+    private void rotate()
+    {
+        if (!lockCamera)
+        {
+            
             if ((Input.mousePosition.x > Screen.width - 2 ) || (Input.GetKey(KeyCode.E))) //right
             {
                 positionOffsetBase = Quaternion.Euler(0, -1, 0) * positionOffsetBase;
@@ -310,28 +332,28 @@ public class BattleCamera : MonoBehaviour {
         switch(freeMoveMode)
         {
             case FreeMoveMode.behind:
-                curFreeMovePositionOffset = behindPositionOffset;
+                curFreeMovePositionOffsetBase = behindPositionOffsetBase;
                 forward = new Vector3(0, 0.0f, 1);
                 right = new Vector3(1, 0.0f, 0);
                 left = new Vector3(-1, 0.0f, 0);
                 backward = new Vector3(0, 0.0f, -1);
                 break;
             case FreeMoveMode.left:
-                curFreeMovePositionOffset = leftPositionOffset;
+                curFreeMovePositionOffsetBase = leftPositionOffsetBase;
                 forward = new Vector3(1, 0.0f, 0);
                 right = new Vector3(0, 0.0f, -1);
                 left = new Vector3(0, 0.0f, 1);
                 backward = new Vector3(-1, 0.0f, 0);
                 break;
             case FreeMoveMode.front:
-                curFreeMovePositionOffset = frontPositionOffset;
+                curFreeMovePositionOffsetBase = frontPositionOffsetBase;
                 forward = new Vector3(0, 0.0f, -1);
                 right = new Vector3(-1, 0.0f, 0);
                 left = new Vector3(1, 0.0f, 0);
                 backward = new Vector3(0, 0.0f, 1);
                 break;
             case FreeMoveMode.right:
-                curFreeMovePositionOffset = rightPositionOffset;
+                curFreeMovePositionOffsetBase = rightPositionOffsetBase;
                 forward = new Vector3(-1, 0.0f, 0);
                 right = new Vector3(0, 0.0f, 1);
                 left = new Vector3(0, 0.0f, -1);

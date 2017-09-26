@@ -20,8 +20,8 @@ public class City : Interactable {
     }
     public override void interact()
     {
-        DialogueSystem.Instance.addNewDialogue(name, dialogue, "city");
-        DialogueSystem.Instance.createDialogue("city");
+        DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.city);
+        DialogueSystem.Instance.createDialogue(PanelType.city);
     }
 
     public override void OnTriggerEnter(Collider col)
@@ -30,8 +30,8 @@ public class City : Interactable {
         if (col.gameObject.tag == "Player")
         {
             //start dialogue
-            DialogueSystem.Instance.addNewDialogue(name, dialogue, "city");
-            DialogueSystem.Instance.createDialogue("city");
+            DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.city);
+            DialogueSystem.Instance.createDialogue(PanelType.city);
 
         }
     }
@@ -42,7 +42,7 @@ public class City : Interactable {
             Debug.Log("exit coliided");
             objMaterial.color = new Color(objColor.r, objColor.g, objColor.b, DEFAULT_ALPHA);
             gameObject.GetComponent<MeshRenderer>().material = objMaterial;
-            DialogueSystem.Instance.closeDialogue("city");
+            DialogueSystem.Instance.closeDialogue(PanelType.city);
         }
     }**/
 }
