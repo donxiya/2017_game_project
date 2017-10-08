@@ -107,22 +107,17 @@ public class BattleInteraction : MonoBehaviour {
             
             interactedObject = interactionInfo.collider.gameObject.transform.parent.gameObject;
             
-            if (interactedObject.tag == "EnemyTroop" || interactedObject.tag == "NeutralTroop" )
-            {
-                //Debug.Log("Interactable");
-                interactedObject.GetComponent<BattleInteractable>().cameraFocusOn();
-            } else if (interactedObject.tag == "Grid")
-            {
-                interactedObject.GetComponent<GridObject>().cameraFocusOn();
-            } else if (interactedObject.tag == "PlayerTroop")
+            if (interactedObject.tag == "Troop")
             {
                 interactedObject.GetComponent<Troop>().cameraFocusOn();
                 curControlled = interactedObject;
                 skillMode = TroopSkill.walk;
-            }
-            else
+            } else if (interactedObject.tag == "Grid")
             {
-                Debug.Log(interactedObject.tag);
+                interactedObject.GetComponent<GridObject>().cameraFocusOn();
+            } else
+            {
+                Debug.Log(interactedObject.name);
             }
             
         }
@@ -145,6 +140,9 @@ public class BattleInteraction : MonoBehaviour {
                 {
                     interactedObject.GetComponent<GridObject>().cameraFocusOn();
                 }
+            } else
+            {
+                Debug.Log(interactedObject.name);
             }
         }
     }

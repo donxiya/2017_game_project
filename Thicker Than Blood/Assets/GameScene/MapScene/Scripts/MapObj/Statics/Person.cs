@@ -21,15 +21,13 @@ public class Person {
     public float health { get; set; }
     public float healthMax;
 
-    public float visionRate;
-    public float hideRate;
-    public float aimRate;
-    public float dodgeRate;
+    public float vision;
+    public float stealth;
+    public float accuracy;
+    public float evasion;
+    public float block;
     //gear
-    public float gearVision;
-    public float gearHide;
-    public float gearAttack;
-    public float gearProtect;
+    public GearInfo gearInfo;
 
     protected Person()
     {
@@ -45,6 +43,7 @@ public class Person {
     //ini gear
     public virtual void initialization(string nameI, Stats statsI, Ranking rk, TroopType tt, Faction factionI, Experience expI)
     {
+        gearInfo = TroopDataBase.troopDataBase.getGearInfo(faction, troopType, ranking);
         name = nameI;
         stats = statsI;
         ranking = rk;
@@ -55,27 +54,60 @@ public class Person {
         inBattle = false;
         stamina = getStaminaMax();
         health = getHealthMax();
+        
     }
-    public virtual float getMeleeAttackDmg()
-    {
-        return stats.strength * 10;
-    }
-    public virtual float getRangedAttackDmg()
-    {
-        return stats.strength * 5 + stats.perception * 5;
-    }
+
+
+    
     public virtual float getStaminaMax()
     {
-        return stats.agility * 10;
+        return stats.agility * 10 * ((gearInfo.evasionRating + 10) / 10);
     }
     public virtual float getHealthMax()
     {
-        return stats.endurance * 100;
+        return stats.endurance * 100 * ((gearInfo.armorRating + 10) / 10);
     }
     public virtual float getGuardedIncrease()
     {
-        return stats.endurance;
+        return stats.endurance * ((gearInfo.armorRating + 10) / 10);
     }
+    public virtual float getArmor()
+    {
+        return stats.endurance * ((gearInfo.armorRating + 10) / 10);
+    }
+    public virtual float getBlock()
+    {
+        return ((stats.perception + stats.strength) / 2) * ((gearInfo.armorRating + 10) / 10);
+    }
+    public virtual float getEvasion()
+    {
+        return ((stats.perception + stats.strength) / 2) * ((gearInfo.armorRating + 10) / 10);
+    }
+    public virtual float getVision()
+    {
+        return stats.perception * ((gearInfo.visionRating + 10) / 10);
+    }
+    public virtual float getStealth()
+    {
+        return stats.agility * ((gearInfo.stealthRating + 10) / 10);
+    }
+    public virtual float getAccuracy()
+    {
+        return stats.perception * ((gearInfo.accuracyRating + 10) / 10);
+    }
+    public virtual float getMeleeAttackDmg()
+    {
+        return stats.strength * ((gearInfo.dmgRating + 10) / 10);
+    }
+    public virtual float getRangedAttackDmg()
+    {
+        return (stats.strength + stats.perception) * 5 * ((gearInfo.dmgRating + 10) / 10);
+    }
+    public virtual float getMobility()
+    {
+        return (stats.agility) * ((gearInfo.mobilityRating + 10) / 10);
+    }
+
     public virtual int getTroopPlacingRange(int maxRange)
     {
         return 2 + (int) 2 * stats.intelligence * maxRange / 100;
@@ -84,11 +116,13 @@ public class Person {
     {
         return 2 + (int)2 * stats.charisma;
     }
+
+    
+
+
     public int getBattleValue()
     {
-        int result = TroopDataBase.getBattleValue(TroopDataBase.factionToString(faction) 
-            + TroopDataBase.rankingToString(ranking) 
-            + TroopDataBase.troopTypeToString(troopType));
+        int result = TroopDataBase.troopDataBase.getTroopInfo(faction, troopType, ranking).battleValue;
         //Debug.Log(result);
         if (result == 0)
         {

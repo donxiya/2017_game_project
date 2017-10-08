@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class DialogueSystem : MonoBehaviour {
     public static DialogueSystem Instance { get; set; }
-    public static GameObject curInteracted;
+    public static Party curInteractedParty;
     string npcName, snpcName, townName, cityName;
     public GameObject NPCInteractionPanel, SNPCInteractionPanel, townInteractionPanel,
         cityInteractionPanel, makeSurePanel, statusPanel;
@@ -170,13 +170,13 @@ public class DialogueSystem : MonoBehaviour {
     {
         makeSurePanel.SetActive(false);
         closeDialogue(PanelType.NPC);
-        MapManagement.createBattleScene();
+        MapManagement.createBattleScene(curInteractedParty);
     }
     public void ambushNPC()
     {
         makeSurePanel.SetActive(false);
         closeDialogue(PanelType.NPC);
-        MapManagement.createBattleScene();
+        MapManagement.createBattleScene(curInteractedParty);
     } //TODO: based on INT
     public void retreatNPC() //TODO: based on INT
     {
@@ -298,7 +298,7 @@ public class DialogueSystem : MonoBehaviour {
         cityRetreat.SetActive(false);
         cityMenuButtons(true);
         closeDialogue(PanelType.city);
-        MapManagement.createBattleScene();
+        MapManagement.createBattleScene(curInteractedParty);
         
     }
     public void ransomCity()
@@ -495,7 +495,7 @@ public class DialogueSystem : MonoBehaviour {
         townPillage.SetActive(false);
         townRansom.SetActive(false);
         townRetreat.SetActive(false);
-        MapManagement.createBattleScene();
+        MapManagement.createBattleScene(curInteractedParty);
         closeDialogue(PanelType.town);
     }
     public void ransomTown()
@@ -530,49 +530,50 @@ public class DialogueSystem : MonoBehaviour {
 
 
     //Common
-    public void addNewDialogue(string name, string[] lines, PanelType panelType) //panelType = "town", "city", "SNPC" or "NPC"
+    public void addNewDialogue(Party party, string[] lines, PanelType panelType) //panelType = "town", "city", "SNPC" or "NPC"
     {
         if (panelType == PanelType.NPC)
         {
             npcDialogueIndex = 0;
             npcDialogueLines = new List<string>(lines.Length);
             npcDialogueLines.AddRange(lines);
-            npcName = name;
-            createDialogue(PanelType.NPC);
+            npcName = party.name;
+            createDialogue(PanelType.NPC, party);
         }
         else if (panelType == PanelType.SNPC)
         {
             snpcDialogueIndex = 0;
             snpcDialogueLines = new List<string>(lines.Length);
             snpcDialogueLines.AddRange(lines);
-            snpcName = name;
-            createDialogue(PanelType.SNPC);
+            snpcName = party.name;
+            createDialogue(PanelType.SNPC, party);
         }
         else if (panelType == PanelType.city)
         {
             cityDialogueIndex = 0;
             cityDialogueLines = new List<string>(lines.Length);
             cityDialogueLines.AddRange(lines);
-            cityName = name;
-            createDialogue(PanelType.city);
+            cityName = party.name;
+            createDialogue(PanelType.city, party);
         }
         else if (panelType == PanelType.town)
         {
             townDialogueIndex = 0;
             townDialogueLines = new List<string>(lines.Length);
             townDialogueLines.AddRange(lines);
-            townName = name;
-            createDialogue(PanelType.town);
+            townName = party.name;
+            createDialogue(PanelType.town, party);
         }
         
         
     }
-    public void createDialogue(PanelType panelType)
+    public void createDialogue(PanelType panelType, Party party)
     {
         if (panelType == PanelType.NPC)
         {
             npcDialogueText.text = npcDialogueLines[npcDialogueIndex];
             npcNameText.text = npcName;
+            curInteractedParty = party;
             NPCInteractionPanel.SetActive(true);
         }
         else if (panelType == PanelType.SNPC)

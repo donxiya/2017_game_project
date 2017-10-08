@@ -12,8 +12,6 @@ public class NPC : Interactable {
     {
         base.Start();
         npcAgent = transform.GetComponent<NavMeshAgent>();
-        dialogue = new string[] { "hello", "i will kill u" };
-        name = "bandits";
         
     }
     public override void Update()
@@ -24,8 +22,8 @@ public class NPC : Interactable {
     public override void interact()
     {
         base.interact();
-        DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.NPC);
-        DialogueSystem.Instance.createDialogue(PanelType.NPC);
+        DialogueSystem.Instance.addNewDialogue(npcParty, dialogue, PanelType.NPC);
+        DialogueSystem.Instance.createDialogue(PanelType.NPC, npcParty);
     }
     public override void OnTriggerEnter(Collider col)
     {
@@ -33,8 +31,8 @@ public class NPC : Interactable {
         if (col.gameObject.tag == "Player")
         {
             //start dialogue
-            DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.NPC);
-            DialogueSystem.Instance.createDialogue(PanelType.NPC);
+            DialogueSystem.Instance.addNewDialogue(npcParty, dialogue, PanelType.NPC);
+            DialogueSystem.Instance.createDialogue(PanelType.NPC, npcParty);
 
         }
     }

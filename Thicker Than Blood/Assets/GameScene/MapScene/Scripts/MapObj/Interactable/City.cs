@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class City : Interactable {
-
+    public Party cityGuard;
     private Material objMaterial;    // Used to store material reference.
     private Color objColor;            // Used to store color reference.
     private const float DEFAULT_ALPHA = 255;
@@ -11,6 +11,7 @@ public class City : Interactable {
     {
         dialogue = new string[] { "hello", "welcome" };
         interactableType = Enums.InteractableType.city;
+        cityGuard = new Party(name + " Guard", Faction.italy, 800);
         //objMaterial = gameObject.GetComponent<MeshRenderer>().material;
         //objColor = objMaterial.color;
     }
@@ -20,8 +21,8 @@ public class City : Interactable {
     }
     public override void interact()
     {
-        DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.city);
-        DialogueSystem.Instance.createDialogue(PanelType.city);
+        DialogueSystem.Instance.addNewDialogue(cityGuard, dialogue, PanelType.city);
+        DialogueSystem.Instance.createDialogue(PanelType.city, cityGuard);
     }
 
     public override void OnTriggerEnter(Collider col)
@@ -29,9 +30,10 @@ public class City : Interactable {
 
         if (col.gameObject.tag == "Player")
         {
+            interact();
             //start dialogue
-            DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.city);
-            DialogueSystem.Instance.createDialogue(PanelType.city);
+            //DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.city);
+            //DialogueSystem.Instance.createDialogue(PanelType.city);
 
         }
     }

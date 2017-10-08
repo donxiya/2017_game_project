@@ -7,7 +7,7 @@ public class Player : MonoBehaviour {
     public static MainCharacter mainCharacter;
     public static MainCharacter secCharacter;
     public static MainParty mainParty;
-    void Awake()
+    void Start()
     {
         initializeMainPlayers();
         initializeMainParty();
@@ -45,7 +45,7 @@ public class Player : MonoBehaviour {
     {
         if (BattleCentralControl.enemyParty == null)
         {
-            BattleCentralControl.enemyParty = new Party("bandit", Faction.bandits, 300);
+            BattleCentralControl.enemyParty = new Party("bandit", Faction.bandits, 800);
             makeParty(BattleCentralControl.enemyParty);
         }
         

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Grid {
 
-    
+    public string name;
     public int x { get; set; }
     public int z { get; set; }
     public bool occupied;
@@ -35,16 +35,19 @@ public class Grid {
         switch (gridType)
         {
             case GridType.rockAndTree:
+                name = "Rock And Tree";
                 hideRate = .8f;
                 blockRate = .7f;
                 staminaCost = 5f;
                 break;
             case GridType.flatGrass:
+                name = "Flat Grass";
                 hideRate = .3f;
                 blockRate = .1f;
                 staminaCost = 1f;
                 break;
             case GridType.tree:
+                name = "Tree";
                 hideRate = .5f;
                 blockRate = .3f;
                 staminaCost = 2f;
@@ -65,5 +68,12 @@ public class Grid {
             return staminaCost + enemyTempStaminaCost;
         }
         
+    }
+    public void checkPersonStealth(Troop watcher)
+    {
+        if (troop != null)
+        {
+            BattleCentralControl.troopOnField[troop].GetComponent<Troop>().stealthCheck(watcher);
+        }
     }
 }

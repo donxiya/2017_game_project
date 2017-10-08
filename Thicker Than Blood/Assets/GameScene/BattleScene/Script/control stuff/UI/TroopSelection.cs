@@ -22,62 +22,72 @@ public class TroopSelection : MonoBehaviour {
     public GameObject troopPlacingPanel, endTurnPanel;
     public List<Person> selectingMembers, selectedMembers;
     Dictionary<Person, GameObject> troopDict;
+    bool initialized = false;
     // Use this for initialization
     void Start () {
-        initialization();
-        arrangeButtons();
-        selectingTroopUnitButton.SetActive(false);
-        selectedTroopUnitButton.SetActive(false);
-        inspectUnit(curSelectingPerson);
+        
         
     }
 	
 	// Update is called once per frame
 	void Update () {
-        if (inSelecting)
+        if (!initialized && BattleCentralControl.playerParty != null)
         {
-            if (curSelectingPerson != null)
+            initialization();
+            arrangeButtons();
+            selectingTroopUnitButton.SetActive(false);
+            selectedTroopUnitButton.SetActive(false);
+            inspectUnit(curSelectingPerson);
+            initialized = true;
+        }
+        if (initialized)
+        {
+            if (inSelecting)
             {
-                inspectUnit(curSelectingPerson);
+                if (curSelectingPerson != null)
+                {
+                    inspectUnit(curSelectingPerson);
+                }
             }
-        } else
-        {
-            if (curSelectedPerson != null)
+            else
             {
-                inspectUnit(curSelectedPerson);
+                if (curSelectedPerson != null)
+                {
+                    inspectUnit(curSelectedPerson);
+                }
+            }
+            if (selectedMembers.Contains(curSelectingPerson) || curSelectingButton == null || !inSelecting)
+            {
+                addButton.interactable = false;
+            }
+            else
+            {
+                addButton.interactable = true;
+            }
+            if (selectingMembers.Contains(curSelectedPerson) || curSelectedButton == null || inSelecting)
+            {
+                removeButton.interactable = false;
+            }
+            else
+            {
+                removeButton.interactable = true;
+            }
+            if (selectedMembers.Count == 0)
+            {
+                startButton.interactable = false;
+            }
+            else
+            {
+                startButton.interactable = true;
             }
         }
-        if (selectedMembers.Contains(curSelectingPerson) || curSelectingButton == null || !inSelecting)
-        {
-            addButton.interactable = false;
-        }
-        else
-        {
-            addButton.interactable = true;
-        }
-        if (selectingMembers.Contains(curSelectedPerson) || curSelectedButton == null || inSelecting)
-        {
-            removeButton.interactable = false;
-        }
-        else
-        {
-            removeButton.interactable = true;
-        }
-        if (selectedMembers.Count == 0)
-        {
-            startButton.interactable = false;
-        } else
-        {
-            startButton.interactable = true;
-        }
-
     }
 
     void initialization()
     {
         inSelecting = true;
+        selectingMembers = new List<Person>(BattleCentralControl.playerParty.partyMember);
         curSelectingPerson = BattleCentralControl.playerParty.leader;
-        selectingMembers = BattleCentralControl.playerParty.partyMember;
         selectedMembers = new List<Person>();
         troopDict = new Dictionary<Person, GameObject>();
         

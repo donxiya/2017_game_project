@@ -7,35 +7,46 @@ using UnityEngine.UI;
 public class Troop : BattleInteractable {
 
     
-    public GameObject controlPanel;
+    public GameObject controlPanel, inspectPanel;
     public Person person { get; set; }
     public Grid curGrid { get; set; }
 
     public GameObject statusPanel, troopStaminaBar, troopHealthBar, staminaTxt, healthTxt, nameTxt;
-    public GameObject walkIndicator, curIndicator, lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, guardIndicator, rainOfArrowIndicator, quickDrawIndicator;
-
-    public Texture2D staminaBarImg, troopHealthBarImg;
+    public GameObject visionIndicator, walkIndicator, curIndicator, lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, guardIndicator, rainOfArrowIndicator, quickDrawIndicator;
+    public GameObject seenStatus;
     public bool controlled, charging, holdSteadying, reachedDestination;
+    public Dictionary<Person, bool> stealthCheckDict = new Dictionary<Person, bool>();
     public bool activated = false;
     public float chargeStack;
     public List<Grid> guardedGrids;
     float STATUS_BAR_HEIGHT, STATUS_BAR_WIDTH;
     Grid destinationGrid;
     NavMeshAgent navMeshAgent;
+    MeshRenderer meshRenderer;
+    Color originalColor;
     Grid lastGrid;
     // Use this for initialization
     public void Start()
     {
-        STATUS_BAR_HEIGHT = troopStaminaBar.GetComponent<RawImage>().rectTransform.sizeDelta.y;
-        STATUS_BAR_WIDTH = troopStaminaBar.GetComponent<RawImage>().rectTransform.sizeDelta.x;
-        navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
-        hideIndicators();
-        charging = holdSteadying = false;
-        guardedGrids = new List<Grid>();
+        if (person != null)
+        {
+            STATUS_BAR_HEIGHT = troopStaminaBar.GetComponent<RawImage>().rectTransform.sizeDelta.y;
+            STATUS_BAR_WIDTH = troopStaminaBar.GetComponent<RawImage>().rectTransform.sizeDelta.x;
+            navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
+            meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
+            originalColor = meshRenderer.material.color;
+            hideIndicators();
+            charging = holdSteadying = false;
+            guardedGrids = new List<Grid>();
+            stealthCheckRefresh();
+        }
+        
     }
     public void Update() {
         if (activated)
         {
+            visionUpdate();
+            
             if (BattleCentralControl.playerTurn && controlled)
             {
                 walkUpdate();
@@ -49,9 +60,9 @@ public class Troop : BattleInteractable {
             if (Vector3.Distance(navMeshAgent.destination, transform.position) <= .1f) 
             {
                 reachedDestination = true;
-                if (curGrid.troop != person && curGrid.troop != null)
+                if (curGrid.troop != null && curGrid.troop != person)
                 {
-                    //goNearbyGrid(getCurrentGrid());
+                    goNearbyGrid(getCurrentGrid());
                 }
                 else
                 {
@@ -81,12 +92,16 @@ public class Troop : BattleInteractable {
             controlPanel.GetComponent<TroopControlPanel>().curControlledTroop = gameObject;
             controlled = true;
         }
+        BattleInspectPanel.person = person;
+        inspectPanel.SetActive(true);
     }
     public override void cameraFocusOnExit()
     {
         base.cameraFocusOnExit();
         controlPanel.SetActive(false);
         controlled = false;
+        BattleInspectPanel.person = null;
+        inspectPanel.SetActive(false);
         hideIndicators();
     }
     public void troopMoveToPlace(Grid grid)
@@ -113,7 +128,7 @@ public class Troop : BattleInteractable {
         curGrid = curGridI;
         curGrid.troop = person;
         activated = true;
-        //person.stamina = person.getStaminaMax();
+        BattleCentralControl.troopOnField.Add(person, gameObject);
     }
 
     public Grid getCurrentGrid()
@@ -154,6 +169,17 @@ public class Troop : BattleInteractable {
         rainOfArrowIndicator.SetActive(false);
         quickDrawIndicator.SetActive(false);
     }
+
+    public void visionUpdate()
+    {
+        visionIndicator.transform.localScale = new Vector3(person.getVision(), 1, person.getVision());
+        if (!visionIndicator.activeSelf)
+        {
+            visionIndicator.SetActive(true);
+        }
+    }
+
+
     public void walkUpdate()
     {
         if (movedToNewGrid())
@@ -399,6 +425,74 @@ public class Troop : BattleInteractable {
     {
 
     }
+    public void stealthCheckRefresh()
+    {
+        stealthCheckDict.Clear();
+        if (person.faction == Faction.mercenary)
+        {
+            foreach (Person p in BattleCentralControl.enemyParty.partyMember)
+            {
+                stealthCheckDict.Add(p, false);
+            }
+        } else
+        {
+            foreach (Person p in BattleCentralControl.playerParty.partyMember)
+            {
+                stealthCheckDict.Add(p, false);
+            }
+        }
+        
+        hidden();
+        
+    }
+    public void stealthCheck(Troop watcher)
+    {
+        if (stealthCheckDict.ContainsKey(watcher.person) && !stealthCheckDict[watcher.person])
+        {
+            if (person.ranking == Ranking.mainChar)
+            {
+                Debug.Log("hre watched by: " + watcher.person.name);
+            }
+            float rand = Random.Range(10.0f, watcher.person.getVision() + person.getStealth());
+            if ( rand < watcher.person.getVision())
+            {
+                hidden();
+            } else
+            {
+                revealed();
+            }
+            stealthCheckDict[watcher.person] = true;
+        }
+    }
+    public void hidden()
+    {
+        if (person.faction == Faction.mercenary)
+        {
+            if (seenStatus.activeSelf)
+            {
+                seenStatus.SetActive(false);
+            }
+        }
+        else
+        {
+            meshRenderer.material.color = new Color(0, 255, 0); //new Color(originalColor.r, originalColor.g, originalColor.b, 0.0f);
+        }
+    }
+    public void revealed()
+    {
+        if (person.faction == Faction.mercenary)
+        {
+            if (!seenStatus.activeSelf)
+            {
+                seenStatus.SetActive(true);
+            }
+        } else
+        {
+            meshRenderer.material.color = originalColor;
+        }
+    }
+
+
     public List<Grid> indicatedGrid()
     {
         List<Grid> result = new List<Grid>();

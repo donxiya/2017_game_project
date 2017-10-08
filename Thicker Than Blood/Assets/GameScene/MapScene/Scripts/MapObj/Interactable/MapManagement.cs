@@ -8,11 +8,11 @@ public class MapManagement : MonoBehaviour {
     int monthSCounter = TimeSystem.month;
     int monthECounter = TimeSystem.month;
     public GameObject[] banditSpawnPointList;
-    public GameObject bandit, frenchTroop, papalTroop, italianTroop, imperialTroop;
+    public GameObject banditTroop, frenchTroop, papalTroop, italianTroop, imperialTroop;
 	// Use this for initialization
 	void Awake () {
         banditInitialization();
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -31,7 +31,7 @@ public class MapManagement : MonoBehaviour {
         banditSpawnPointList = GameObject.FindGameObjectsWithTag("BanditSpawnPoint");
         foreach (GameObject sp in banditSpawnPointList)
         {
-            initialSpawn(sp, bandit);
+            initialSpawn(sp, banditTroop);
         }
     }
     void banditUpdate()
@@ -39,7 +39,7 @@ public class MapManagement : MonoBehaviour {
         banditSpawnPointList = GameObject.FindGameObjectsWithTag("BanditSpawnPoint");
         foreach (GameObject sp in banditSpawnPointList)
         {
-            normalSpawn(sp, bandit);
+            normalSpawn(sp, banditTroop);
         }
     }
     
@@ -58,8 +58,11 @@ public class MapManagement : MonoBehaviour {
             Instantiate(toSpawn, spawnPoint.transform.position + pos, rot);
         }
     }
-    public static void createBattleScene()
+    public static void createBattleScene(Party enemyParty)
     {
+        BattleCentralControl.enemyParty = enemyParty;
+        Debug.Log(enemyParty.name);
+        BattleCentralControl.playerParty = Player.mainParty;
         SceneManager.LoadScene("BattleScene");
     }
 

@@ -10,16 +10,15 @@ public class BattleCentralControl : MonoBehaviour {
     public static Grid[,] map;
     public static int gridXMax, gridZMax;
     public static MainParty playerParty;
-    public static List<Person> troopOnField;
+    public static Dictionary<Person, GameObject> troopOnField;
     public static Party enemyParty;
     public static Dictionary<Grid, GameObject> gridToObj;
     public static Dictionary<GameObject, Grid> objToGrid;
-    public static TroopDataBase troopDataBase;
     private void Awake()
     {
         gridToObj = new Dictionary<Grid, GameObject>();
         objToGrid = new Dictionary<GameObject, Grid>();
-        troopOnField = new List<Person>();
+        troopOnField = new Dictionary<Person, GameObject>();
         playerTurn = true;
         battleStart = false;
         gridXMax = 100;
@@ -28,7 +27,6 @@ public class BattleCentralControl : MonoBehaviour {
         generateMap(gridXMax, gridZMax);
         placeOnMap(gridXMax, gridZMax);
         groundInitialization();
-        troopDataBase = GameObject.Find("DataBase").GetComponent<TroopDataBase>();
     }
     // Use this for initialization
     void Start()
@@ -42,12 +40,18 @@ public class BattleCentralControl : MonoBehaviour {
     {
     }
 
-    public static void startTurnPrep(List<Person> units)
+    public static void startTurnPrep()
     {
-        foreach(Person p in units)
+        foreach (KeyValuePair<Person, GameObject> t in BattleCentralControl.troopOnField)
         {
-            p.stamina = p.getStaminaMax();
+            Troop troop = t.Value.GetComponent<Troop>();
+            if (troop.activated)
+            {
+                t.Key.stamina = t.Key.getStaminaMax();
+                troop.stealthCheckRefresh();
+            }
         }
+
     }
     public static List<GameObject> gridInLine(GameObject start, GameObject end)
     {

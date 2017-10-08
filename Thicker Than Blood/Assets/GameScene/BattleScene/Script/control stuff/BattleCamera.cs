@@ -372,7 +372,7 @@ public class BattleCamera : MonoBehaviour {
         if (obj.tag == "Grid")
         {
             return obj;
-        } else if (obj.tag == "PlayerTroop" || obj.tag == "EnemyTroop")
+        } else if (obj.tag == "Troop")
         {
             return BattleCentralControl.gridToObj[obj.GetComponent<Troop>().curGrid];
         } else

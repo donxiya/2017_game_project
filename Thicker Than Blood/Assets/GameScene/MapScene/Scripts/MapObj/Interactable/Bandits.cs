@@ -10,7 +10,7 @@ public class Bandits : NPC {
     public override void Start () {
         base.Start();
         dialogue = new string[] { "hello", "i will kill u" };
-        name = "Bandits";
+        name = "CoolBandits";
         npcParty = new Party(name, Faction.bandits, 300);
         npcParty.prestige = 0;
         npcParty.notoriety = 80;

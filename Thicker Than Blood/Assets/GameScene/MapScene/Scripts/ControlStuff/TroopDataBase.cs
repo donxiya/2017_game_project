@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TroopDataBase : MonoBehaviour {
-    public static Dictionary<string, int> PersonBattleValue = new Dictionary<string, int>();
+    public static TroopDataBase troopDataBase;
     public static List<Item> itemList = new List<Item>();
     public GameObject mainCharacter, secCharacter;
     public GameObject mercenaryRecruit, mercenaryMilitiaCrossbowman, mercenaryMilitiaMusketeer,
@@ -50,14 +50,10 @@ public class TroopDataBase : MonoBehaviour {
 
     // Use this for initialization
     void Awake () {
-        personInitialization();
+        troopDataBase = gameObject.GetComponent<TroopDataBase>();
 	}
 	
-    public static int getBattleValue(string troopName)
-    {
-        return 50;
-        //return PersonBattleValue[troopName];
-    }
+    
     public TroopInfo getTroopInfo(Faction faction, TroopType tt, Ranking rk)
     {
         switch(faction)
@@ -91,6 +87,7 @@ public class TroopDataBase : MonoBehaviour {
                 result.battleValue = 0;
                 result.model = secCharacter;
             }
+            result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f); //TODO
             return result;
         }
         switch (tt)
@@ -98,6 +95,7 @@ public class TroopDataBase : MonoBehaviour {
             case TroopType.recruitType:
                 result.battleValue = 10;
                 result.model = mercenaryRecruit;
+                result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
                 break;
             case TroopType.crossbowman:
                 switch (rk)
@@ -105,14 +103,17 @@ public class TroopDataBase : MonoBehaviour {
                     case Ranking.militia:
                         result.battleValue = 20;
                         result.model = mercenaryMilitiaCrossbowman;
+                        result.gear = new GearInfo(2.0f, 1.0f, 3.0f, 4.0f, 3.0f, 4.0f, 1.0f, 3.0f);
                         break;
                     case Ranking.veteran:
                         result.battleValue = 50;
                         result.model = mercenaryVeteranCrossbowman;
+                        result.gear = new GearInfo(4.0f, 2.0f, 5.0f, 6.0f, 6.0f, 7.0f, 4.0f, 6.0f);
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
                         result.model = mercenaryEliteCrossbowman;
+                        result.gear = new GearInfo(7.0f, 4.0f, 8.0f, 8.0f, 8.0f, 9.0f, 7.0f, 8.0f);
                         break;
                 }
                 break;
@@ -120,16 +121,19 @@ public class TroopDataBase : MonoBehaviour {
                 switch (rk)
                 {
                     case Ranking.militia:
-                        result.battleValue = 20;
+                        result.battleValue = 40;
                         result.model = mercenaryMilitiaMusketeer;
+                        result.gear = new GearInfo(2.0f, 1.0f, 3.0f, 4.0f, 1.0f, 2.0f, 3.0f, 2.0f);
                         break;
                     case Ranking.veteran:
-                        result.battleValue = 50;
+                        result.battleValue = 80;
                         result.model = mercenaryVeteranMusketeer;
+                        result.gear = new GearInfo(4.0f, 2.0f, 3.0f, 4.0f, 4.0f, 5.0f, 7.0f, 5.0f);
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
                         result.model = mercenaryEliteMusketeer;
+                        result.gear = new GearInfo(7.0f, 5.0f, 8.0f, 7.0f, 7.0f, 7.0f, 9.0f, 7.0f);
                         break;
                 }
                 break;
@@ -139,14 +143,17 @@ public class TroopDataBase : MonoBehaviour {
                     case Ranking.militia:
                         result.battleValue = 20;
                         result.model = mercenaryMilitiaSwordsman;
+                        result.gear = new GearInfo(3.0f, 2.0f, 3.0f, 1.0f, 3.0f, 0.0f, 3.0f, 3.0f);
                         break;
                     case Ranking.veteran:
                         result.battleValue = 50;
                         result.model = mercenaryVeteranSwordsman;
+                        result.gear = new GearInfo(5.0f, 5.0f, 6.0f, 2.0f, 7.0f, 0.0f, 7.0f, 7.0f);
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
                         result.model = mercenaryEliteSwordsman;
+                        result.gear = new GearInfo(8.0f, 7.0f, 8.0f, 5.0f, 9.0f, 0.0f, 9.0f, 9.0f);
                         break;
                 }
                 break;
@@ -156,14 +163,17 @@ public class TroopDataBase : MonoBehaviour {
                     case Ranking.militia:
                         result.battleValue = 20;
                         result.model = mercenaryMilitiaHalberdier;
+                        result.gear = new GearInfo(4.0f, 4.0f, 1.0f, 2.0f, 1.0f, 0.0f, 3.0f, 1.0f);
                         break;
                     case Ranking.veteran:
                         result.battleValue = 50;
                         result.model = mercenaryVeteranHalberdier;
+                        result.gear = new GearInfo(7.0f, 7.0f, 2.0f, 3.0f, 2.0f, 0.0f, 6.0f, 4.0f);
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
                         result.model = mercenaryEliteHalberdier;
+                        result.gear = new GearInfo(9.0f, 9.0f, 4.0f, 6.0f, 5.0f, 0.0f, 8.0f, 6.0f);
                         break;
                 }
                 break;
@@ -171,16 +181,19 @@ public class TroopDataBase : MonoBehaviour {
                 switch (rk)
                 {
                     case Ranking.militia:
-                        result.battleValue = 20;
+                        result.battleValue = 40;
                         result.model = mercenaryMilitiaCavalry;
+                        result.gear = new GearInfo(4.0f, 4.0f, 1.0f, 2.0f, 1.0f, 0.0f, 3.0f, 3.0f);
                         break;
                     case Ranking.veteran:
-                        result.battleValue = 50;
+                        result.battleValue = 80;
                         result.model = mercenaryVeteranCavalry;
+                        result.gear = new GearInfo(6.0f, 6.0f, 4.0f, 5.0f, 3.0f, 0.0f, 6.0f, 6.0f);
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
                         result.model = mercenaryEliteCavalry;
+                        result.gear = new GearInfo(9.0f, 9.0f, 6.0f, 7.0f, 7.0f, 0.0f, 9.0f, 9.0f);
                         break;
                 }
                 break;
@@ -282,6 +295,7 @@ public class TroopDataBase : MonoBehaviour {
                 }
                 break;
         }
+        result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         return result;
     }
     public TroopInfo italianGetTroopInfoHelper(TroopType tt, Ranking rk)
@@ -677,6 +691,20 @@ public class TroopDataBase : MonoBehaviour {
     {
         return getTroopInfo(f, tt, rk).model;
     }
+    public int getBattleValue(Faction f, TroopType tt, Ranking rk)
+    {
+        return getTroopInfo(f, tt, rk).battleValue;
+    }
+    public GearInfo getGearInfo(Faction f, TroopType tt, Ranking rk)
+    {
+        return getTroopInfo(f, tt, rk).gear;
+    }
+
+
+
+
+
+
     public static string troopTypeToString(TroopType tt)
     {
         switch (tt)
@@ -737,113 +765,7 @@ public class TroopDataBase : MonoBehaviour {
 
 
 
-
-    void personInitialization()
-    {
-        //MERC
-        PersonBattleValue.Add("MercenaryRecruit", 10);
-        PersonBattleValue.Add("MercenaryMilitiaCrossbowman", 30);
-        PersonBattleValue.Add("MercenaryMilitiaMusketeer", 50);
-        PersonBattleValue.Add("MercenaryMilitiaSwordsman", 20);
-        PersonBattleValue.Add("MercenaryMilitiaHalberdier", 30);
-        PersonBattleValue.Add("MercenaryMilitiaCavalry", 60);
-        PersonBattleValue.Add("MercenaryVeteranCrossbowman", 30);
-        PersonBattleValue.Add("MercenaryVeteranMusketeer", 30);
-        PersonBattleValue.Add("MercenaryVeteranSwordsman", 30);
-        PersonBattleValue.Add("MercenaryVeteranHalberdier", 30);
-        PersonBattleValue.Add("MercenaryVeteranCavalry", 30);
-        PersonBattleValue.Add("MercenaryEliteCrossbowman", 30);
-        PersonBattleValue.Add("MercenaryEliteMusketeer", 30);
-        PersonBattleValue.Add("MercenaryEliteSwordsman", 30);
-        PersonBattleValue.Add("MercenaryEliteHalberdier", 30);
-        PersonBattleValue.Add("MercenaryEliteCavalry", 30);
-        //BANDIT
-        PersonBattleValue.Add("BanditRecruit", 10);
-        PersonBattleValue.Add("BanditMilitiaCrossbowman", 30);
-        PersonBattleValue.Add("BanditMilitiaMusketeer", 30);
-        PersonBattleValue.Add("BanditMilitiaSwordsman", 30);
-        PersonBattleValue.Add("BanditMilitiaHalberdier", 30);
-        PersonBattleValue.Add("BanditMilitiaCavalry", 30);
-        PersonBattleValue.Add("BanditVeteranCrossbowman", 30);
-        PersonBattleValue.Add("BanditVeteranMusketeer", 30);
-        PersonBattleValue.Add("BanditVeteranSwordsman", 30);
-        PersonBattleValue.Add("BanditVeteranHalberdier", 30);
-        PersonBattleValue.Add("BanditVeteranCavalry", 30);
-        PersonBattleValue.Add("BanditEliteCrossbowman", 30);
-        PersonBattleValue.Add("BanditEliteMusketeer", 30);
-        PersonBattleValue.Add("BanditEliteSwordsman", 30);
-        PersonBattleValue.Add("BanditEliteHalberdier", 30);
-        PersonBattleValue.Add("BanditEliteCavalry", 30);
-        //Italian
-        PersonBattleValue.Add("ItalianRecruit", 10);
-        PersonBattleValue.Add("ItalianMilitiaCrossbowman", 30);
-        PersonBattleValue.Add("ItalianMilitiaMusketeer", 30);
-        PersonBattleValue.Add("ItalianMilitiaSwordsman", 30);
-        PersonBattleValue.Add("ItalianMilitiaHalberdier", 30);
-        PersonBattleValue.Add("ItalianMilitiaCavalry", 30);
-        PersonBattleValue.Add("ItalianVeteranCrossbowman", 30);
-        PersonBattleValue.Add("ItalianVeteranMusketeer", 30);
-        PersonBattleValue.Add("ItalianVeteranSwordsman", 30);
-        PersonBattleValue.Add("ItalianVeteranHalberdier", 30);
-        PersonBattleValue.Add("ItalianVeteranCavalry", 30);
-        PersonBattleValue.Add("ItalianEliteCrossbowman", 30);
-        PersonBattleValue.Add("ItalianEliteMusketeer", 30);
-        PersonBattleValue.Add("ItalianEliteSwordsman", 30);
-        PersonBattleValue.Add("ItalianEliteHalberdier", 30);
-        PersonBattleValue.Add("ItalianEliteCavalry", 30);
-        //PAPAL
-        PersonBattleValue.Add("PapalRecruit", 10);
-        PersonBattleValue.Add("PapalMilitiaCrossbowman", 30);
-        PersonBattleValue.Add("PapalMilitiaMusketeer", 30);
-        PersonBattleValue.Add("PapalMilitiaSwordsman", 30);
-        PersonBattleValue.Add("PapalMilitiaHalberdier", 30);
-        PersonBattleValue.Add("PapalMilitiaCavalry", 30);
-        PersonBattleValue.Add("PapalVeteranCrossbowman", 30);
-        PersonBattleValue.Add("PapalVeteranMusketeer", 30);
-        PersonBattleValue.Add("PapalVeteranSwordsman", 30);
-        PersonBattleValue.Add("PapalVeteranHalberdier", 30);
-        PersonBattleValue.Add("PapalVeteranCavalry", 30);
-        PersonBattleValue.Add("PapalEliteCrossbowman", 30);
-        PersonBattleValue.Add("PapalEliteMusketeer", 30);
-        PersonBattleValue.Add("PapalEliteSwordsman", 30);
-        PersonBattleValue.Add("PapalEliteHalberdier", 30);
-        PersonBattleValue.Add("PapalEliteCavalry", 30);
-        //FRANCE
-        PersonBattleValue.Add("FrenchRecruit", 10);
-        PersonBattleValue.Add("FrenchMilitiaCrossbowman", 30);
-        PersonBattleValue.Add("FrenchMilitiaMusketeer", 30);
-        PersonBattleValue.Add("FrenchMilitiaSwordsman", 30);
-        PersonBattleValue.Add("FrenchMilitiaHalberdier", 30);
-        PersonBattleValue.Add("FrenchMilitiaCavalry", 30);
-        PersonBattleValue.Add("FrenchVeteranCrossbowman", 30);
-        PersonBattleValue.Add("FrenchVeteranMusketeer", 30);
-        PersonBattleValue.Add("FrenchVeteranSwordsman", 30);
-        PersonBattleValue.Add("FrenchVeteranHalberdier", 30);
-        PersonBattleValue.Add("FrenchVeteranCavalry", 30);
-        PersonBattleValue.Add("FrenchEliteCrossbowman", 30);
-        PersonBattleValue.Add("FrenchEliteMusketeer", 30);
-        PersonBattleValue.Add("FrenchEliteSwordsman", 30);
-        PersonBattleValue.Add("FrenchEliteHalberdier", 30);
-        PersonBattleValue.Add("FrenchEliteCavalry", 30);
-        //IMPERIAL
-        PersonBattleValue.Add("ImperialRecruit", 10);
-        PersonBattleValue.Add("ImperialMilitiaCrossbowman", 30);
-        PersonBattleValue.Add("ImperialMilitiaMusketeer", 30);
-        PersonBattleValue.Add("ImperialMilitiaSwordsman", 30);
-        PersonBattleValue.Add("ImperialMilitiaHalberdier", 30);
-        PersonBattleValue.Add("ImperialMilitiaCavalry", 30);
-        PersonBattleValue.Add("ImperialVeteranCrossbowman", 30);
-        PersonBattleValue.Add("ImperialVeteranMusketeer", 30);
-        PersonBattleValue.Add("ImperialVeteranSwordsman", 30);
-        PersonBattleValue.Add("ImperialVeteranHalberdier", 30);
-        PersonBattleValue.Add("ImperialVeteranCavalry", 30);
-        PersonBattleValue.Add("ImperialEliteCrossbowman", 30);
-        PersonBattleValue.Add("ImperialEliteMusketeer", 30);
-        PersonBattleValue.Add("ImperialEliteSwordsman", 30);
-        PersonBattleValue.Add("ImperialEliteHalberdier", 30);
-        PersonBattleValue.Add("ImperialEliteCavalry", 30);
-
-    }
+    
     void itemInitialization()
     {
 
@@ -954,4 +876,23 @@ public class Item
 public class TroopInfo{
     public int battleValue;
     public GameObject model;
+    public GearInfo gear;
  }
+
+public class GearInfo
+{
+    public float armorRating, blockRating, evasionRating,
+        visionRating, stealthRating, accuracyRating, dmgRating, mobilityRating;
+    public GearInfo(float armorR, float blockR, float evasionR, float visionR,
+        float stealthR, float accuracyR, float dmgR, float mobilityR)
+    {
+        armorRating = armorR;
+        blockRating = blockR;
+        evasionRating = evasionR;
+        visionRating = visionR;
+        stealthRating = stealthR;
+        accuracyRating = accuracyR;
+        dmgRating = dmgR;
+        mobilityRating = mobilityR;
+    }
+}

@@ -10,7 +10,7 @@ public class EndTurnPanel : MonoBehaviour {
 	void Start () {
         endTurnButton.GetComponent<Button>().onClick.AddListener(
             delegate { BattleCentralControl.playerTurn = false;
-                BattleCentralControl.startTurnPrep(BattleCentralControl.enemyParty.partyMember); });
+                BattleCentralControl.startTurnPrep(); });
         gameObject.SetActive(false);
 	}
 	

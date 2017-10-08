@@ -14,19 +14,20 @@ public class TroopPlacing : MonoBehaviour {
     public Dictionary<Person, bool> troopPlacedDict;
     public Person placingUnit;
     public static bool pointerInPlacingPanel = false;
-    public bool initialized, placing;
+    public bool initialized, placing, showing;
     public Animator animator;
     private void Awake()
     {
         gameObject.SetActive(false);
         
         initialized = false;
+        showing = false;
         troopDict = new Dictionary<Person, GameObject>();
         troopPlacedDict = new Dictionary<Person, bool>();
     }
     // Use this for initialization
     void Start () {
-		
+        showing = true;
 	}
 	
 	// Update is called once per frame
@@ -89,16 +90,7 @@ public class TroopPlacing : MonoBehaviour {
             //BattleCamera.target   
         }
     }
-
-    void showPlacingPanel (bool show)
-    {
-        if (show)
-        {
-            transform.position = Vector3.Slerp(transform.position, transform.position + new Vector3(150, 0, 0), Time.deltaTime * .1f);
-        } else {
-            transform.position = Vector3.Slerp(transform.position, transform.position + new Vector3(-150, 0, 0), Time.deltaTime * .1f);
-        }
-    }
+    
     bool placeTroop(Person unit)
     {
         //write wait for click
@@ -119,7 +111,7 @@ public class TroopPlacing : MonoBehaviour {
                     {
                         var pos = new Vector3(gridInfo.x, 1, gridInfo.z);
                         var rot = new Quaternion(0, 0, 0, 0);
-                        GameObject unitToPlace = BattleCentralControl.troopDataBase.getTroopObject(unit.faction, unit.troopType, unit.ranking);
+                        GameObject unitToPlace = TroopDataBase.troopDataBase.getTroopObject(unit.faction, unit.troopType, unit.ranking);
                         if (unitToPlace == null)
                         {
                             Debug.Log(unit.name);
@@ -128,7 +120,6 @@ public class TroopPlacing : MonoBehaviour {
                         unitToPlace.GetComponent<Troop>().placed(unit, gridInfo);
                         unit.inBattle = true;
                         placing = false;
-                        BattleCentralControl.troopOnField.Add(unit);
                         return true;
                     }
                 } else
@@ -143,14 +134,17 @@ public class TroopPlacing : MonoBehaviour {
         }
         return false;
     }
+    public void showHidePanel()
+    {
+        showing = !showing;
+        animator.SetBool("showPanel", showing);
+    }
     public void pointerEnterPlacing()
     {
         pointerInPlacingPanel = true;
-        animator.SetBool("showPanel", true);
     }
     public void pointerExitPlacing()
     {
         pointerInPlacingPanel = false;
-        animator.SetBool("showPanel", false);
     }
 }

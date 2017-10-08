@@ -18,7 +18,7 @@ public class Interactable : MonoBehaviour {
 
     const float INTERACT_DIST = 1;
     public NavMeshAgent playerAgent;
-    public GameObject interactedObject;
+    //public GameObject interactedObject;
     public new string name;
     public Enums.InteractableType interactableType;
     public int hostility;
@@ -32,15 +32,15 @@ public class Interactable : MonoBehaviour {
     }
     public virtual void Update()
     {
-        if (!hasInteracted && playerAgent != null && !playerAgent.pathPending) //if we have a player and have found path
-        {
-            if (Vector3.Distance(playerAgent.transform.position, transform.position) <= INTERACT_DIST)
-            {   
-                interact();
-                hasInteracted = true;
-            }
+        //if (!hasInteracted && playerAgent != null && !playerAgent.pathPending) //if we have a player and have found path
+        //{
+            //if (Vector3.Distance(playerAgent.transform.position, transform.position) <= INTERACT_DIST)
+            //{   
+                //interact();
+                //hasInteracted = true;
+            //}
         }
-    }
+    //}
     
     public virtual void inspect(bool inspecting)
     {

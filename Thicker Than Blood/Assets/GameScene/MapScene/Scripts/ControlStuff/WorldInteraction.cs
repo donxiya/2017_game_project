@@ -87,7 +87,6 @@ public class WorldInteraction : MonoBehaviour
     {
 
         interactedObj.GetComponent<Interactable>().hasInteracted = false;
-        playerAgent.speed = Player.mainParty.getTravelSpeed();
         playerAgent.destination = this.transform.position;
         if (Vector3.Distance(playerAgent.transform.position, interactedObj.transform.position) >= INTERACT_DIST)
         {
