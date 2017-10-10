@@ -27,6 +27,7 @@ public class DialogueSystem : MonoBehaviour {
     public Text makeSureMsg, townRestockAmount, cityRestockAmount;
     public Texture2D cityTalkImg, cityThreatenImg, cityMarketImg, cityHallImg, cityArmoryImg,
         cityTavernImg, cityBrothelImg, cityChurchImg;
+    
 
     public List<string> npcDialogueLines = new List<string>();
     public List<string> snpcDialogueLines = new List<string>();
@@ -403,17 +404,8 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void cityMenuButtons(bool hide)
     {
-        cityTalk.SetActive(hide);
-        cityThreaten.SetActive(hide);
-        cityMarket.SetActive(hide);
-        cityHall.SetActive(hide);
-        cityArmory.SetActive(hide);
-        cityTavern.SetActive(hide);
-        cityBrothel.SetActive(hide);
-        cityChurch.SetActive(hide);
-        cityLeave.SetActive(hide);
-        cityFirstLayerPanel1.SetActive(hide);
-        cityFirstLayerPanel2.SetActive(hide);
+        cityFirstLayerPanel1.GetComponent<Animator>().SetBool("show", hide);
+        cityFirstLayerPanel2.GetComponent<Animator>().SetBool("show", hide);
         if (hide)
         {
             swapCityBackground(cityTalkImg);
@@ -569,6 +561,8 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void createDialogue(PanelType panelType, Party party)
     {
+        statusPanel.SetActive(false);
+        Time.timeScale = 0.0f;
         if (panelType == PanelType.NPC)
         {
             npcDialogueText.text = npcDialogueLines[npcDialogueIndex];
@@ -588,6 +582,8 @@ public class DialogueSystem : MonoBehaviour {
             cityDialogueText.text = cityDialogueLines[cityDialogueIndex];
             cityNameText.text = cityName;
             cityInteractionPanel.SetActive(true);
+            cityFirstLayerPanel1.GetComponent<Animator>().SetBool("show", true);
+            cityFirstLayerPanel2.GetComponent<Animator>().SetBool("show", true);
         }
         else if (panelType == PanelType.town)
         {
@@ -596,8 +592,7 @@ public class DialogueSystem : MonoBehaviour {
             townInteractionPanel.SetActive(true);
 
         }
-        statusPanel.SetActive(false);
-        Time.timeScale = 0.0f;
+        
     }
     public void continueDialogue(PanelType panelType)
     {
