@@ -11,7 +11,10 @@ public class VisionIndicator : MonoBehaviour {
             Troop troop = gameObject.transform.parent.transform.parent.GetComponent<Troop>();
             if (col.gameObject.transform.parent.gameObject.tag == "Grid")
             {
-                col.gameObject.transform.parent.GetComponent<GridObject>().becomeSeen();
+                if (troop.person.faction == Faction.mercenary)
+                {
+                    col.gameObject.transform.parent.GetComponent<GridObject>().becomeSeen();
+                }
                 col.gameObject.transform.parent.GetComponent<GridObject>().checkTroopOnGrid(troop);
             }
 

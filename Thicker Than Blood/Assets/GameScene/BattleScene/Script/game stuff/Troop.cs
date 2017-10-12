@@ -549,7 +549,7 @@ public class Troop : BattleInteractable {
         if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
         {
             GameObject pointedObj = interactionInfo.collider.gameObject.transform.parent.gameObject;
-            if (pointedObj.tag == "Grid" || pointedObj.tag == "PlayerTroop" || pointedObj.tag == "EnemyTroop")
+            if (pointedObj.tag == "Grid" || pointedObj.tag == "Troop")
             {
                 Vector3 v = pointedObj.transform.position - obj.transform.position;
                 v.x = v.z = 0.0f;
@@ -565,7 +565,7 @@ public class Troop : BattleInteractable {
         if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
         {
             GameObject pointedObj = interactionInfo.collider.gameObject.transform.parent.gameObject;
-            if (pointedObj.tag == "Grid" || pointedObj.tag == "PlayerTroop" || pointedObj.tag == "EnemyTroop")
+            if (pointedObj.tag == "Grid" || pointedObj.tag == "Troop")
             {
                 Vector3 pos = new Vector3(pointedObj.transform.position.x, transform.position.y, pointedObj.transform.position.z);
                 obj.transform.position = Vector3.Slerp(obj.transform.position, pos, Time.deltaTime * 1000);

@@ -30,38 +30,29 @@ public class Selection : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (gameObject.activeSelf)
         {
-            SceneManager.LoadScene("MapScene");
-        }
+            if (Time.timeScale != 0.0f)
+            {
+                Time.timeScale = 0.0f;
+            }
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown("tab"))
+            {
+                gameObject.SetActive(false);
+            }
+            
 
-        if (Input.GetKeyDown("tab"))
-        {
-            SceneManager.LoadScene("MapScene");
-        }
+            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                selectRight();
+                makeSelection();
+            }
 
-        if (Input.GetKeyDown(KeyCode.W) ||  Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            selectForward();
-            makeSelection();
-        }
-
-        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            selectBackward();
-            makeSelection();
-        }
-
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            selectRight();
-            makeSelection();
-        }
-
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            selectLeft();
-            makeSelection();
+            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                selectLeft();
+                makeSelection();
+            }
         }
     }
 
@@ -154,21 +145,12 @@ public class Selection : MonoBehaviour {
             currentSelection--;
         }
     }
-
-    void selectForward()
-    {
-        selected = true;
-        
-    }
-
-    void selectBackward()
-    {
-        selected = false;
-    }
+    
     
 
     void initializtion()
     {
+        gameObject.SetActive(false);
         sapePanel.SetActive(false);
         ciPanel.SetActive(false);
         factionPanel.SetActive(false);

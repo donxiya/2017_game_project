@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class WorldInteraction : MonoBehaviour
 {
     public GameObject player;
-
+    public GameObject tabCanvas;
     const float INTERACT_DIST = 1;
     NavMeshAgent playerAgent;
     List<GameObject> inspectedList = new List<GameObject>();
@@ -47,7 +47,7 @@ public class WorldInteraction : MonoBehaviour
         if (Input.GetKeyDown("tab"))
         {
             disInspect();
-            SceneManager.LoadScene("TabScene");
+            tabCanvas.SetActive(true);
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {

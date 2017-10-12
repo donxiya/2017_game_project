@@ -11,22 +11,22 @@ public class DialogueSystem : MonoBehaviour {
     public GameObject NPCInteractionPanel, SNPCInteractionPanel, townInteractionPanel,
         cityInteractionPanel, makeSurePanel, statusPanel;
     public GameObject cityFirstLayerPanel1, cityFirstLayerPanel2, townFirstLayerPanel1,
-        townFirstLayerPanel2;
+        townFirstLayerPanel2, cityNamePanel;
     public GameObject townRestockPanel, cityRestockPanel, townRestockBuy, townRestockCancel,
         townRestockSlideBar, cityRestockBuy, cityRestockCancel, cityRestockSlideBar;
     public GameObject cityBackground, townBackground, npcBckground, snpcBackground;
     public GameObject npcTalk, npcAttack, npcAmbush, npcRetreat, npcBribe, npcLeave;
     public GameObject snpcTalk, snpcOptOne, snpcOptTwo, snpcLeave;
-    public GameObject cityTalk, cityThreaten, cityMarket, cityHall, cityArmory, cityTavern,
-        cityBrothel, cityChurch, cityPillage, cityRansom, cityRetreat, cityRestock,
+    public GameObject cityGarrison, cityThreaten, cityMarket, cityHall, cityArmory, cityTavern,
+        cityBrothel, cityChurch, cityencampment, cityPillage, cityRansom, cityRetreat, cityRestock,
         cityTrade, cityBillboard, cityTroop, cityChar, cityRest, cityBartender,
-        cityGossip, cityBrothelRest, cityOrgy, cityIndulgence, cityLeave, cityReturn;
+        cityGossip, cityBrothelRest, cityOrgy, cityIndulgence, cityUpgradeencampment, cityTroopManage,
+        cityLeave, cityReturn;
     public GameObject townTalk, townRestock, townThreaten, townRecruit, townInvest,
         townLeave, townPillage, townRansom, townRetreat;
     public GameObject yesButton, noButton;
     public Text makeSureMsg, townRestockAmount, cityRestockAmount;
-    public Texture2D cityTalkImg, cityThreatenImg, cityMarketImg, cityHallImg, cityArmoryImg,
-        cityTavernImg, cityBrothelImg, cityChurchImg;
+    
     
 
     public List<string> npcDialogueLines = new List<string>();
@@ -41,7 +41,7 @@ public class DialogueSystem : MonoBehaviour {
     int npcDialogueIndex, snpcDialogueIndex, cityDialogueIndex, townDialogueIndex;
     
 
-    void Awake () {
+    void Start () {
         NPCPanelInitialization();
         SNPCPanelInitialization();
         cityPanelInitialization();
@@ -66,7 +66,7 @@ public class DialogueSystem : MonoBehaviour {
 
     public void NPCPanelInitialization()
     {
-        cityBackground.GetComponent<RawImage>().texture = cityTalkImg;
+        //cityBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.cityTalkImg;
         //npcTalk, npcAttack, npcAmbush, npcRetreat, npcBribe, npcLeave;
         npcTalk.GetComponent<Button>().onClick.AddListener(delegate { continueDialogue(PanelType.NPC); });
         npcAttack.GetComponent<Button>().onClick.AddListener(delegate () { npcConfirm("attackNPC"); });
@@ -81,7 +81,7 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void cityPanelInitialization()
     {
-        cityTalk.GetComponent<Button>().onClick.AddListener(delegate { continueDialogue(PanelType.city); });
+        cityGarrison.GetComponent<Button>().onClick.AddListener(delegate { garrisonCity(); });
         cityThreaten.GetComponent<Button>().onClick.AddListener(delegate { cityConfirm("threatenCity"); });
         cityMarket.GetComponent<Button>().onClick.AddListener(delegate { marketCity(); });
         cityHall.GetComponent<Button>().onClick.AddListener(delegate { hallCity(); });
@@ -89,6 +89,7 @@ public class DialogueSystem : MonoBehaviour {
         cityTavern.GetComponent<Button>().onClick.AddListener(delegate { tavernCity(); });
         cityBrothel.GetComponent<Button>().onClick.AddListener(delegate { brothelCity(); });
         cityChurch.GetComponent<Button>().onClick.AddListener(delegate { churchCity(); });
+        cityencampment.GetComponent<Button>().onClick.AddListener(delegate { encampmentCity(); });
         cityPillage.GetComponent<Button>().onClick.AddListener(delegate { pillageCity(); });
         cityRansom.GetComponent<Button>().onClick.AddListener(delegate { cityConfirm("ransomCity"); });
         cityRetreat.GetComponent<Button>().onClick.AddListener(delegate { cityConfirm("retreatCity"); });
@@ -103,13 +104,15 @@ public class DialogueSystem : MonoBehaviour {
         cityBrothelRest.GetComponent<Button>().onClick.AddListener(delegate { brothelRestCity(); });
         cityOrgy.GetComponent<Button>().onClick.AddListener(delegate { orgyCity(); });
         cityChurch.GetComponent<Button>().onClick.AddListener(delegate { churchCity(); });
+        cityUpgradeencampment.GetComponent<Button>().onClick.AddListener(delegate { upgradeencampmentCity(); });
+        cityTroopManage.GetComponent<Button>().onClick.AddListener(delegate { manageTroopCity(); });
         cityLeave.GetComponent<Button>().onClick.AddListener(delegate { leaveCity(); });
         cityReturn.GetComponent<Button>().onClick.AddListener(delegate { returnCity(); });
         cityRestockCancel.GetComponent<Button>().onClick.AddListener(delegate { restockCancelCity(); });
         cityRestockBuy.GetComponent<Button>().onClick.AddListener(delegate { restockBuyCity(); });
         cityRestockAmount.text = ((int)cityRestockSlideBar.GetComponent<Slider>().value).ToString();
         cityRestockSlideBar.GetComponent<Slider>().onValueChanged.AddListener(delegate {
-            cityRestockAmount.text = ((int)cityRestockSlideBar.GetComponent<Slider>().value).ToString(); });
+        cityRestockAmount.text = ((int)cityRestockSlideBar.GetComponent<Slider>().value).ToString(); });
         returnCity();
     }
     public void townPanelInitialization()
@@ -237,9 +240,14 @@ public class DialogueSystem : MonoBehaviour {
 
 
     }
+    public void garrisonCity()
+    {
+        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityGarrisonImg);
+        cityMenuButtons(false);
+    }
     public void threatenCity()
     {
-        swapCityBackground(cityThreatenImg);
+        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityThreatenImg);
         cityPillage.SetActive(true);
         cityRansom.SetActive(true);
         cityRetreat.SetActive(true);
@@ -247,7 +255,7 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void marketCity()
     {
-        swapCityBackground(cityMarketImg);
+        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityMarketImg);
         cityTrade.SetActive(true);
         cityRestock.SetActive(true);
         cityReturn.SetActive(true);
@@ -255,14 +263,14 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void hallCity()
     {
-        swapCityBackground(cityHallImg);
+        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityHallImg);
         cityBillboard.SetActive(true);
         cityReturn.SetActive(true);
         cityMenuButtons(false);
     }
     public void armoryCity()
     {
-        swapCityBackground(cityArmoryImg);
+        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityArmoryImg);
         cityTroop.SetActive(true);
         cityChar.SetActive(true);
         cityReturn.SetActive(true);
@@ -270,7 +278,7 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void tavernCity()
     {
-        swapCityBackground(cityTavernImg);
+        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityTavernImg);
         cityRest.SetActive(true);
         cityBartender.SetActive(true);
         cityGossip.SetActive(true);
@@ -279,7 +287,7 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void brothelCity()
     {
-        swapCityBackground(cityBrothelImg);
+        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityBrothelImg);
         cityBrothelRest.SetActive(true);
         cityOrgy.SetActive(true);
         cityReturn.SetActive(true);
@@ -287,8 +295,15 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void churchCity()
     {
-        swapCityBackground(cityChurchImg);
+        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityChurchImg);
         cityIndulgence.SetActive(true);
+        cityReturn.SetActive(true);
+        cityMenuButtons(false);
+    }
+    public void encampmentCity()
+    {
+        cityTroopManage.SetActive(true);
+        cityUpgradeencampment.SetActive(true);
         cityReturn.SetActive(true);
         cityMenuButtons(false);
     }
@@ -374,6 +389,14 @@ public class DialogueSystem : MonoBehaviour {
     {
 
     }
+    public void upgradeencampmentCity()
+    {
+
+    }
+    public void manageTroopCity()
+    {
+
+    }
     public void returnCity()
     {
         cityRestockPanel.SetActive(false);
@@ -391,6 +414,8 @@ public class DialogueSystem : MonoBehaviour {
         cityBrothelRest.SetActive(false);
         cityOrgy.SetActive(false);
         cityIndulgence.SetActive(false);
+        cityUpgradeencampment.SetActive(false);
+        cityTroopManage.SetActive(false);
         cityReturn.SetActive(false);
         cityMenuButtons(true);
     }
@@ -398,17 +423,25 @@ public class DialogueSystem : MonoBehaviour {
     {
         closeDialogue(PanelType.city);
     }
+    public void cityDefaultBackground()
+    {
+        cityBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.cityDefaultImg;
+        cityNamePanel.GetComponent<Animator>().SetBool("show", true);
+    }
+    
     public void swapCityBackground(Texture2D img)
     {
         cityBackground.GetComponent<RawImage>().texture = img;
+        cityNamePanel.GetComponent<Animator>().SetBool("show", false);
     }
-    public void cityMenuButtons(bool hide)
+    public void cityMenuButtons(bool show)
     {
-        cityFirstLayerPanel1.GetComponent<Animator>().SetBool("show", hide);
-        cityFirstLayerPanel2.GetComponent<Animator>().SetBool("show", hide);
-        if (hide)
+        cityFirstLayerPanel1.GetComponent<Animator>().SetBool("show", show);
+        cityFirstLayerPanel2.GetComponent<Animator>().SetBool("show", show);
+        cityNamePanel.GetComponent<Animator>().SetBool("show", show);
+        if (show)
         {
-            swapCityBackground(cityTalkImg);
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityDefaultImg);
         }
     }
 
@@ -578,12 +611,13 @@ public class DialogueSystem : MonoBehaviour {
         }
         else if (panelType == PanelType.city)
         {
-            swapCityBackground(cityTalkImg);
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityDefaultImg);
             cityDialogueText.text = cityDialogueLines[cityDialogueIndex];
             cityNameText.text = cityName;
             cityInteractionPanel.SetActive(true);
             cityFirstLayerPanel1.GetComponent<Animator>().SetBool("show", true);
             cityFirstLayerPanel2.GetComponent<Animator>().SetBool("show", true);
+            cityNamePanel.GetComponent<Animator>().SetBool("show", true);
         }
         else if (panelType == PanelType.town)
         {

@@ -294,7 +294,8 @@ public class BattleCamera : MonoBehaviour {
         if (Input.GetKeyUp(KeyCode.Q))
         {
             switchedMode = false;
-            switch(freeMoveMode)
+            Debug.Log(freeMoveMode);
+            switch (freeMoveMode)
             {
                 case FreeMoveMode.behind:
                     freeMoveMode = FreeMoveMode.left;
@@ -309,6 +310,7 @@ public class BattleCamera : MonoBehaviour {
                     freeMoveMode = FreeMoveMode.behind;
                     break;
             }
+            Debug.Log("after: " + freeMoveMode);
         }
         if (Input.GetKeyUp(KeyCode.E))
         {

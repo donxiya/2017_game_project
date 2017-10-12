@@ -109,7 +109,7 @@ public class TroopPlacing : MonoBehaviour {
                     Info.clearInfo();
                     if (!gridInfo.occupied && !unit.inBattle)
                     {
-                        var pos = new Vector3(gridInfo.x, 1, gridInfo.z);
+                        var pos = new Vector3(gridInfo.x, 1.5f, gridInfo.z);
                         var rot = new Quaternion(0, 0, 0, 0);
                         GameObject unitToPlace = TroopDataBase.troopDataBase.getTroopObject(unit.faction, unit.troopType, unit.ranking);
                         if (unitToPlace == null)
