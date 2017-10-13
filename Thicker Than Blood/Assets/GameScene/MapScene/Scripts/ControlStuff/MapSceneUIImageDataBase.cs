@@ -11,10 +11,16 @@ public class MapSceneUIImageDataBase : MonoBehaviour {
     // Use this for initialization
     void Awake () {
         dataBase = new MapSceneUIImageDataBase();
+        dataBase.cityDefaultImg = cityDefaultImg;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
 	}
+
+    public Texture2D getCityDefaultImg()
+    {
+        return cityDefaultImg;
+    }
 }

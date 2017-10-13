@@ -425,7 +425,7 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void cityDefaultBackground()
     {
-        cityBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.cityDefaultImg;
+        cityBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.getCityDefaultImg();
         cityNamePanel.GetComponent<Animator>().SetBool("show", true);
     }
     
@@ -441,7 +441,7 @@ public class DialogueSystem : MonoBehaviour {
         cityNamePanel.GetComponent<Animator>().SetBool("show", show);
         if (show)
         {
-            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityDefaultImg);
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.getCityDefaultImg());
         }
     }
 
