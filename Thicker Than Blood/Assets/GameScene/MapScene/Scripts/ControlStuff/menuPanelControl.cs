@@ -30,27 +30,23 @@ public class menuPanelControl : MonoBehaviour {
     
     void objectiveLink()
     {
-        Selection.currentSelection = 2;
-        Selection.selected = true;
-        SceneManager.LoadScene("TabScene");
+        //TabMenu.currentSelection = 2;
+        //TabMenu.selected = true;
     }
     void factionLink()
     {
-        Selection.currentSelection = 3;
-        Selection.selected = true;
-        SceneManager.LoadScene("TabScene");
+        //TabMenu.currentSelection = 3;
+        //TabMenu.selected = true;
     }
     void troopLink()
     {
-        Selection.currentSelection = 4;
-        Selection.selected = true;
-        SceneManager.LoadScene("TabScene");
+        //TabMenu.currentSelection = 4;
+        //TabMenu.selected = true;
     }
 
     void inventoryLink()
     {
-        Selection.currentSelection = 5;
-        Selection.selected = true;
-        SceneManager.LoadScene("TabScene");
+        //TabMenu.currentSelection = 5;
+        //TabMenu.selected = true;
     }
 }

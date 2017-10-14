@@ -39,7 +39,7 @@ public class DialogueSystem : MonoBehaviour {
     public Text npcNameText, snpcNameText, cityNameText, townNameText;
 
     int npcDialogueIndex, snpcDialogueIndex, cityDialogueIndex, townDialogueIndex;
-    
+    bool showCityFirstLayer = true;
 
     void Start () {
         NPCPanelInitialization();
@@ -242,70 +242,99 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void garrisonCity()
     {
-        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityGarrisonImg);
-        cityMenuButtons(false);
+        if (showCityFirstLayer)
+        {
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityGarrisonImg);
+            cityReturn.SetActive(true);
+            cityMenuButtons(false);
+        }
     }
     public void threatenCity()
     {
-        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityThreatenImg);
-        cityPillage.SetActive(true);
-        cityRansom.SetActive(true);
-        cityRetreat.SetActive(true);
-        cityMenuButtons(false);
+        if (showCityFirstLayer)
+        {
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityThreatenImg);
+            cityPillage.SetActive(true);
+            cityRansom.SetActive(true);
+            cityRetreat.SetActive(true);
+            cityMenuButtons(false);
+        }
     }
     public void marketCity()
     {
-        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityMarketImg);
-        cityTrade.SetActive(true);
-        cityRestock.SetActive(true);
-        cityReturn.SetActive(true);
-        cityMenuButtons(false);
+        if (showCityFirstLayer)
+        {
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityMarketImg);
+            cityTrade.SetActive(true);
+            cityRestock.SetActive(true);
+            cityReturn.SetActive(true);
+            cityMenuButtons(false);
+        }
     }
     public void hallCity()
     {
-        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityHallImg);
-        cityBillboard.SetActive(true);
-        cityReturn.SetActive(true);
-        cityMenuButtons(false);
+        if (showCityFirstLayer)
+        {
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityHallImg);
+            cityBillboard.SetActive(true);
+            cityReturn.SetActive(true);
+            cityMenuButtons(false);
+        }
     }
     public void armoryCity()
     {
-        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityArmoryImg);
-        cityTroop.SetActive(true);
-        cityChar.SetActive(true);
-        cityReturn.SetActive(true);
-        cityMenuButtons(false);
+        if (showCityFirstLayer)
+        {
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityArmoryImg);
+            cityTroop.SetActive(true);
+            cityChar.SetActive(true);
+            cityReturn.SetActive(true);
+            cityMenuButtons(false);
+        }
     }
     public void tavernCity()
     {
-        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityTavernImg);
-        cityRest.SetActive(true);
-        cityBartender.SetActive(true);
-        cityGossip.SetActive(true);
-        cityReturn.SetActive(true);
-        cityMenuButtons(false);
+        if (showCityFirstLayer)
+        {
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityTavernImg);
+            cityRest.SetActive(true);
+            cityBartender.SetActive(true);
+            cityGossip.SetActive(true);
+            cityReturn.SetActive(true);
+            cityMenuButtons(false);
+        }
     }
     public void brothelCity()
     {
-        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityBrothelImg);
-        cityBrothelRest.SetActive(true);
-        cityOrgy.SetActive(true);
-        cityReturn.SetActive(true);
-        cityMenuButtons(false);
+        if (showCityFirstLayer)
+        {
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityBrothelImg);
+            cityBrothelRest.SetActive(true);
+            cityOrgy.SetActive(true);
+            cityReturn.SetActive(true);
+            cityMenuButtons(false);
+        }
     }
     public void churchCity()
     {
-        swapCityBackground(MapSceneUIImageDataBase.dataBase.cityChurchImg);
-        cityIndulgence.SetActive(true);
-        cityReturn.SetActive(true);
-        cityMenuButtons(false);
+        if (showCityFirstLayer)
+        {
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityChurchImg);
+            cityIndulgence.SetActive(true);
+            cityReturn.SetActive(true);
+            cityMenuButtons(false);
+        }
     }
     public void encampmentCity()
     {
-        cityTroopManage.SetActive(true);
-        cityUpgradeencampment.SetActive(true);
-        cityReturn.SetActive(true);
-        cityMenuButtons(false);
+        if (showCityFirstLayer)
+        {
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.cityEncampmentImg);
+            cityTroopManage.SetActive(true);
+            cityUpgradeencampment.SetActive(true);
+            cityReturn.SetActive(true);
+            cityMenuButtons(false);
+        }
     }
     public void pillageCity()
     {
@@ -418,6 +447,8 @@ public class DialogueSystem : MonoBehaviour {
         cityTroopManage.SetActive(false);
         cityReturn.SetActive(false);
         cityMenuButtons(true);
+        cityBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.getCityDefaultImg();
+        cityNamePanel.GetComponent<Animator>().SetBool("show", true);
     }
     public void leaveCity()
     {
@@ -425,14 +456,20 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void cityDefaultBackground()
     {
-        cityBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.getCityDefaultImg();
-        cityNamePanel.GetComponent<Animator>().SetBool("show", true);
+        if (showCityFirstLayer)
+        {
+            cityBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.getCityDefaultImg();
+            cityNamePanel.GetComponent<Animator>().SetBool("show", true);
+        }
     }
     
     public void swapCityBackground(Texture2D img)
     {
-        cityBackground.GetComponent<RawImage>().texture = img;
-        cityNamePanel.GetComponent<Animator>().SetBool("show", false);
+        if (showCityFirstLayer)
+        {
+            cityBackground.GetComponent<RawImage>().texture = img;
+            cityNamePanel.GetComponent<Animator>().SetBool("show", false);
+        }
     }
     public void cityMenuButtons(bool show)
     {
@@ -442,6 +479,10 @@ public class DialogueSystem : MonoBehaviour {
         if (show)
         {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.getCityDefaultImg());
+            showCityFirstLayer = true;
+        } else
+        {
+            showCityFirstLayer = false;
         }
     }
 
