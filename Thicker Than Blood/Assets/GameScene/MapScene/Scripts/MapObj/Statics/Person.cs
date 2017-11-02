@@ -11,8 +11,8 @@ public class Person {
     public TroopType troopType { get; set; }
     public Faction faction { get; set; }
     public Experience exp { get; set; }
-    public bool inBattle;
-
+    public bool inBattle, renamed;
+    public Troop troop;
     //battleStats
     public int battleValue;
     public float attackDmg;
@@ -52,13 +52,91 @@ public class Person {
         exp = expI;
         battleValue = getBattleValue();
         inBattle = false;
+        renamed = false;
         stamina = getStaminaMax();
         health = getHealthMax();
         
     }
 
 
-    
+    public void setName(string newName)
+    {
+        if (ranking != Ranking.mainChar)
+        {
+            name = newName;
+            renamed = true;
+        }
+    }
+    public void setDefaultName()
+    {
+        if (ranking != Ranking.mainChar)
+        {
+            name = TroopDataBase.rankingToString(ranking)
+            + " " + TroopDataBase.troopTypeToString(troopType);
+            renamed = false;
+        }
+    }
+    public virtual int changeRankingTroopType(Ranking rankingN, TroopType ttN, int money, bool initializing)
+    {
+        int originalBattleValue = TroopDataBase.troopDataBase.getBattleValue(faction, troopType, ranking);
+        int newBattleValue = TroopDataBase.troopDataBase.getBattleValue(faction, ttN, rankingN);
+        if (money > newBattleValue - originalBattleValue/2 && !initializing)
+        {
+            ranking = rankingN;
+            troopType = ttN;
+            return money - newBattleValue + originalBattleValue / 2;
+        } else if (money > newBattleValue - originalBattleValue && initializing)
+        {
+            ranking = rankingN;
+            troopType = ttN;
+            return money - newBattleValue + originalBattleValue;
+        }
+        else
+        {
+            return money;
+        }
+        
+    }
+    public virtual void resetPerk()
+    {
+        stats.strength = 1;
+        stats.agility = 1;
+        stats.perception = 1;
+        stats.endurance = 1;
+        exp.sparedPoint = exp.level;
+    }
+
+    public virtual void incrementS()
+    {
+        stats.strength += 1;
+        exp.sparedPoint -= 1;
+    }
+    public virtual void incrementA()
+    {
+        stats.agility += 1;
+        exp.sparedPoint -= 1;
+    }
+    public virtual void incrementP()
+    {
+        stats.perception += 1;
+        exp.sparedPoint -= 1;
+    }
+    public virtual void incrementE()
+    {
+        stats.endurance += 1;
+        exp.sparedPoint -= 1;
+    }
+    public virtual void incrementC()
+    {
+        stats.charisma += 1;
+        exp.sparedPoint -= 1;
+    }
+    public virtual void incrementi()
+    {
+        stats.charisma += 1;
+        exp.sparedPoint -= 1;
+    }
+
     public virtual float getStaminaMax()
     {
         return stats.agility * 10 * ((gearInfo.evasionRating + 10) / 10);
@@ -67,6 +145,42 @@ public class Person {
     {
         return stats.endurance * 100 * ((gearInfo.armorRating + 10) / 10);
     }
+
+    public virtual float getWhirlwindStaminaCost()
+    {
+        return 5.0f;
+    }
+    public virtual float getLungeStaminaCost()
+    {
+        return 5.0f;
+    }
+    public virtual float getExecutionStaminaCost()
+    {
+        return 5.0f;
+    }
+    public virtual float getFireStaminaCost()
+    {
+        return 5.0f;
+    }
+    public virtual float getHoldSteadyStaminaCost()
+    {
+        return 5.0f;
+    }
+    public virtual float getGuardStaminaCost()
+    {
+        return 5.0f;
+    }
+    public virtual float getQuickDrawStaminaCost()
+    {
+        return 5.0f;
+    }
+    public virtual float getRainOfArrowsStaminaCost()
+    {
+        return 5.0f;
+    }
+
+
+
     public virtual float getGuardedIncrease()
     {
         return stats.endurance * ((gearInfo.armorRating + 10) / 10);
@@ -101,7 +215,7 @@ public class Person {
     }
     public virtual float getRangedAttackDmg()
     {
-        return (stats.strength + stats.perception) * 5 * ((gearInfo.dmgRating + 10) / 10);
+        return (stats.strength + stats.perception) * 5 * (((gearInfo.dmgRating + gearInfo.accuracyRating) / 2 + 10) / 10);
     }
     public virtual float getMobility()
     {
@@ -126,7 +240,7 @@ public class Person {
         //Debug.Log(result);
         if (result == 0)
         {
-            Debug.Log("troop value zero nad its name is: " + name);
+            //Debug.Log("troop value zero nad its name is: " + name);
         }
         return result;
     }

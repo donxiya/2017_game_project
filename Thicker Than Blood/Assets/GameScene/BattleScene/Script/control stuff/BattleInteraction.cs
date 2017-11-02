@@ -61,6 +61,7 @@ public class BattleInteraction : MonoBehaviour {
                     {
                         if (curControlled.GetComponent<Troop>().reachedDestination)
                         {
+                            curControlled.GetComponent<Troop>().cameraFocusOn();
                             walkToObj();
                         }
                     } else if (skillMode == TroopSkill.none && Input.GetMouseButtonDown(1))

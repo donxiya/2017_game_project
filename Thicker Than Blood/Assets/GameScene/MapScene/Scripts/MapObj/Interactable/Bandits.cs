@@ -68,31 +68,42 @@ public class Bandits : NPC {
     }
     public void makeParty()
     {
-        TroopType tt = npcParty.randomTroopType(20, 20, 10, 30, 10, 10);
-        Ranking rk = npcParty.randomRanking(0, 10, 10, 10);
-        if (tt == TroopType.recruitType)
+        for (int i = 0; i < npcParty.getPartySizeLimit(); i ++)
         {
-            rk = Ranking.recruit;
-        }
-        Person p = npcParty.makeGenericPerson(tt, rk);
-        if (npcParty.battleValue >= p.battleValue)
-        {
-            if (npcParty.addToParty(npcParty.makeGenericPerson(tt, rk)))
+            TroopType tt = npcParty.randomTroopType(20, 20, 10, 30, 10, 10);
+            Ranking rk = npcParty.randomRanking(0, 10, 10, 10);
+            if (tt == TroopType.recruitType)
             {
-                npcParty.battleValue -= p.battleValue;
-                npcParty.curBattleValue += p.battleValue;
+                rk = Ranking.recruit;
             }
-            if (npcParty.battleValue > 20)
+            Person p = npcParty.makeGenericPerson(tt, rk);
+            if (npcParty.battleValue >= p.battleValue)
             {
-                makeParty();
-            }
-        } else
-        {
-            if (npcParty.battleValue > 20)
-            {
-                makeParty();
+                if (npcParty.addToParty(npcParty.makeGenericPerson(tt, rk)))
+                {
+                    npcParty.battleValue -= p.battleValue;
+                }
             }
         }
-        
+        if (npcParty.battleValue > 0)
+        {
+            foreach(Person unit in npcParty.partyMember)
+            {
+                TroopType tt = unit.troopType;
+                Ranking rk = unit.ranking;
+                if (unit.ranking == Ranking.recruit)
+                {
+                    tt = npcParty.randomTroopType(0, 20, 10, 30, 10, 10);
+                    rk = npcParty.randomRanking(0, 10, 10, 10);
+                } else if (unit.ranking == Ranking.militia)
+                {
+                    rk = npcParty.randomRanking(0, 0, 10, 10);
+                } else if (unit.ranking == Ranking.veteran)
+                {
+                    rk = Ranking.elite;
+                }
+                npcParty.battleValue = unit.changeRankingTroopType(rk, tt, npcParty.battleValue, true);
+            }
+        }
     }
 }

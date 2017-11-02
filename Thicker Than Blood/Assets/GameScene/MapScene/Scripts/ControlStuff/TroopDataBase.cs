@@ -721,6 +721,8 @@ public class TroopDataBase : MonoBehaviour {
                 return "Halberdier";
             case TroopType.cavalry:
                 return "Cavalry";
+            case TroopType.mainCharType:
+                return "";
         }
         return "Recruit";
     }
@@ -736,6 +738,8 @@ public class TroopDataBase : MonoBehaviour {
                 return "Veteran";
             case Ranking.elite:
                 return "Elite";
+            case Ranking.mainChar:
+                return "";
         }
         return "";
     }

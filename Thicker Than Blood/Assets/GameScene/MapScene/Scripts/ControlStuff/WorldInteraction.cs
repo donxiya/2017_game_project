@@ -32,14 +32,14 @@ public class WorldInteraction : MonoBehaviour
     }
     void inputKeysActions()
     {
-        if (Input.GetMouseButton(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButton(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
             chasing = false;
             disInspect();
             playerAgent.isStopped = false;
             getInteraction();
         }
-        if (Input.GetMouseButton(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButton(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
             chasing = false;
             inspect();

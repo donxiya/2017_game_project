@@ -21,12 +21,13 @@ public class Player : MonoBehaviour {
 
     void initializeMainPlayers()
     {
-        Stats mStats = new Stats(10, 10, 10, 10, 10, 10);
+        Stats mStats = new Stats(8, 10, 7, 10, 10, 10);
         Experience mExp = new Experience(0, 1, 5);
-        mainCharacter = new MainCharacter("MAIN", mStats, Ranking.mainChar,
+        mainCharacter = new MainCharacter("Nicola Da Roma", mStats, Ranking.mainChar,
             TroopType.mainCharType, Faction.mercenary, mExp);
+        mainCharacter.skillTree.skillTreeInitialization();
         Experience sExp = new Experience(0, 1, 5);
-        secCharacter = new MainCharacter("SEC", mStats, Ranking.mainChar,
+        secCharacter = new MainCharacter("Rachele Sforza", mStats, Ranking.mainChar,
             TroopType.crossbowman, Faction.mercenary, sExp);
     }
     void initializeMainParty()
@@ -64,7 +65,6 @@ public class Player : MonoBehaviour {
             if (npcParty.addToParty(npcParty.makeGenericPerson(tt, rk)))
             {
                 npcParty.battleValue -= p.battleValue;
-                npcParty.curBattleValue += p.battleValue;
             }
             if (npcParty.battleValue > 20)
             {

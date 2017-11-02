@@ -39,6 +39,7 @@ public class TroopSelection : MonoBehaviour {
             selectedTroopUnitButton.SetActive(false);
             inspectUnit(curSelectingPerson);
             initialized = true;
+            updateTroopUnitBackground();
         }
         if (initialized)
         {
@@ -163,12 +164,12 @@ public class TroopSelection : MonoBehaviour {
                 curSelectingPerson = selectingMembers[index];
             } else
             {
-                index -= 1;
+                curSelectingPerson = selectingMembers[selectingMembers.Count - 1];
             }
             
         } else
         {
-            curSelectedPerson = null;
+            curSelectingPerson = null;
         }
         updateTroopUnitBackground();
     }
@@ -190,7 +191,7 @@ public class TroopSelection : MonoBehaviour {
                 curSelectedPerson = selectedMembers[index];
             } else
             {
-                index -= 1;
+                curSelectedPerson = selectedMembers[selectedMembers.Count - 1];
             }
             
         } else
@@ -292,7 +293,7 @@ public class TroopSelection : MonoBehaviour {
         List<Person> temp = new List<Person>();
         foreach (Person p in listToSort)
         {
-            if (p.troopType == TroopType.mainCharType)
+            if (p.ranking == Ranking.mainChar)
             {
                 temp.Add(p);
             }

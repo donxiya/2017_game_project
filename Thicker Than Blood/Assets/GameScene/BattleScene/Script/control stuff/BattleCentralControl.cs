@@ -14,6 +14,7 @@ public class BattleCentralControl : MonoBehaviour {
     public static Party enemyParty;
     public static Dictionary<Grid, GameObject> gridToObj;
     public static Dictionary<GameObject, Grid> objToGrid;
+    bool groundInitialized = false;
     private void Awake()
     {
         gridToObj = new Dictionary<Grid, GameObject>();
@@ -21,16 +22,11 @@ public class BattleCentralControl : MonoBehaviour {
         troopOnField = new Dictionary<Person, GameObject>();
         playerTurn = true;
         battleStart = false;
-        gridXMax = 100;
-        gridZMax = 100;
-        map = new Grid[gridXMax, gridZMax];
-        generateMap(gridXMax, gridZMax);
-        placeOnMap(gridXMax, gridZMax);
-        groundInitialization();
     }
     // Use this for initialization
     void Start()
     {
+        
         
 
     }
@@ -38,6 +34,18 @@ public class BattleCentralControl : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        if (!groundInitialized && playerParty != null && enemyParty != null)
+        {
+            gridXMax = playerParty.partySize + enemyParty.partySize;
+            gridZMax = playerParty.partySize + enemyParty.partySize;
+            map = new Grid[gridXMax, gridZMax];
+            generateMap(gridXMax, gridZMax);
+            placeOnMap(gridXMax, gridZMax);
+            groundInitialization();
+            groundInitialized = true;
+            BattleCamera.mapCenter = gridToObj[map[gridXMax / 2, gridZMax / 2]];
+            BattleCamera.target = BattleCamera.mapCenter;
+        }
     }
 
     public static void startTurnPrep()
@@ -109,6 +117,7 @@ public class BattleCentralControl : MonoBehaviour {
                 var pos = new Vector3(ix, 0, iz);
                 var rot = new Quaternion(0, 0, 0, 0);
                 var obj = Instantiate(map[ix, iz].mapSettingModel, pos, rot);
+                obj.GetComponent<GridObject>().becomeUnseen();
                 gridToObj.Add(map[ix, iz], obj);
                 objToGrid.Add(obj, map[ix, iz]);
             }
@@ -140,6 +149,9 @@ public class BattleCentralControl : MonoBehaviour {
     }
     void groundInitialization()
     {
+        GameObject.Find("flatGrass").SetActive(false);
+        GameObject.Find("rockAndTree").SetActive(false);
+        GameObject.Find("tree").SetActive(false);
         //Terrain terrain = ground.GetComponent<Terrain>();
         //ground.GetComponent<MeshRenderer>().enabled = false;
     }

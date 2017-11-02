@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BattleAIControl : MonoBehaviour {
     public bool enemyPlaced;
+    public Troop curControlled;
 	// Use this for initialization
 	void Start () {
         enemyPlaced = false;
@@ -18,6 +19,8 @@ public class BattleAIControl : MonoBehaviour {
         }
         if (!BattleCentralControl.playerTurn)
         {
+            aggressive(BattleCentralControl.enemyParty.leader.troop);
+
             BattleCentralControl.playerTurn = true;
             BattleCentralControl.startTurnPrep();
         }
@@ -74,5 +77,37 @@ public class BattleAIControl : MonoBehaviour {
                 memberInBattle += 1;
             }
         }
+    }
+
+
+    void aggressive(Troop troop)
+    {
+        troop.controlled = true;
+        if (getSeen().Count > 0)
+        {
+            blindForward(troop);
+        } else
+        {
+            blindForward(troop);
+        }
+    }
+    void blindForward(Troop troop)
+    {
+        //troop.curGrid.x, troop.curGrid.z - 10
+        troop.troopMoveToPlace(BattleCentralControl.map[troop.getCurrentGrid().x, troop.getCurrentGrid().z - 15]);
+
+        //BattleCentralControl.gridToObj[BattleCentralControl.map[1,1]].GetComponent<GridObject>().moveTroopToGrid(troop.gameObject);
+    }
+    List<Troop> getSeen()
+    {
+        List<Troop> result = new List<Troop>();
+        foreach(Person unit in BattleCentralControl.playerParty.partyMember)
+        {
+            if (unit.troop != null && unit.troop.seenStatus && !result.Contains(unit.troop))
+            {
+                result.Add(unit.troop);
+            }
+        }
+        return result;
     }
 }

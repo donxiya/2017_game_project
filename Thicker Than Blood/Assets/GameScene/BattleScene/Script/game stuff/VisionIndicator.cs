@@ -11,7 +11,7 @@ public class VisionIndicator : MonoBehaviour {
             Troop troop = gameObject.transform.parent.transform.parent.GetComponent<Troop>();
             if (col.gameObject.transform.parent.gameObject.tag == "Grid")
             {
-                if (troop.person.faction == Faction.mercenary)
+                if (troop.person.faction == Faction.mercenary) //reveal map if owner of this indicator is player troop
                 {
                     col.gameObject.transform.parent.GetComponent<GridObject>().becomeSeen();
                 }

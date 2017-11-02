@@ -29,7 +29,7 @@ public class InspectPanel : MonoBehaviour {
         partyNameText.text = party.name + " (" + party.partySize.ToString() + ")(" + party.getAverageLevel().ToString() + ")";
         leaderNameText.text = party.leader.name;
         tradeGoodValueText.text = party.getInventoryValue().ToString();
-        levelText.text = party.curBattleValue.ToString();
+        levelText.text = party.getBattleValue().ToString();
         prestigeText.text = party.getPrestige().ToString();
         notorietyText.text = party.getNotoriety().ToString();
 

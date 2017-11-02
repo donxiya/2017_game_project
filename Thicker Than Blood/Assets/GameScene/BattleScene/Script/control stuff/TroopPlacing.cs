@@ -102,7 +102,6 @@ public class TroopPlacing : MonoBehaviour {
 
             if (interactedObject.tag == "Grid" )
             {
-                //TODO: restrain available spots
                 Grid gridInfo = BattleCentralControl.objToGrid[interactedObject];
                 if (gridInfo.z < BattleCentralControl.playerParty.leader.getTroopPlacingRange(BattleCentralControl.gridZMax))
                 {
@@ -116,8 +115,8 @@ public class TroopPlacing : MonoBehaviour {
                         {
                             Debug.Log(unit.name);
                         }
-                        unitToPlace = interactedObject.GetComponent<GridObject>().placeTroopOnGrid(unitToPlace, pos, rot);
-                        unitToPlace.GetComponent<Troop>().placed(unit, gridInfo);
+                        var duplicatedUnitToPlace = interactedObject.GetComponent<GridObject>().placeTroopOnGrid(unitToPlace, pos, rot);
+                        duplicatedUnitToPlace.GetComponent<Troop>().placed(unit, gridInfo);
                         unit.inBattle = true;
                         placing = false;
                         return true;

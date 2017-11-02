@@ -64,17 +64,3 @@ public class MainParty : Party {
     
 }
 
-public class Perk
-{
-    public string tag;
-    public bool possess;
-    public Stats requirement;
-    public string description;
-    public Perk(string tagI, bool possessI, Stats reqI, string descriptionI)
-    {
-        tag = tagI;
-        possess = possessI;
-        requirement = reqI;
-        description = descriptionI;
-    }
-}

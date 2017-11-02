@@ -7,15 +7,19 @@ public class GridObject : BattleInteractable {
     public Color originalColor;
     public MeshRenderer meshRenderer;
     public GameObject infoPanel;
-    public void Start()
+    public void Awake()
+    {
+        //originalColor = meshRenderer.material.color;
+        
+    }
+    private void OnEnable()
     {
         meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
-        originalColor = meshRenderer.material.color;
-        becomeUnseen();
+        
     }
     public override void cameraFocusOn()
     {
-        base.cameraFocusOn();
+        //base.cameraFocusOn();
         infoPanel.SetActive(true);
         
         if (seen)
@@ -57,10 +61,14 @@ public class GridObject : BattleInteractable {
     }
     public void checkTroopOnGrid(Troop troop)
     {
-        BattleCentralControl.objToGrid[gameObject].checkPersonStealth(troop);
+        if (BattleCentralControl.objToGrid[gameObject].troop != null)
+        {
+            BattleCentralControl.objToGrid[gameObject].checkPersonStealth(troop);
+        }
     }
     public void becomeUnseen()
     {
+        originalColor = meshRenderer.material.color;
         meshRenderer.material.color = new Color(0f, 0f, 0f);
         seen = false;
     }

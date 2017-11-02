@@ -9,7 +9,6 @@ public class Party {
     public Person leader { get; set; }
     public List<Person> partyMember { get; set; }
     public List<Item> inventory { get; set; }
-    public int curBattleValue { get; set; }
     public int battleValue { get; set; }
     public int morale { get; set;}
     public int cash { get; set; }
@@ -37,7 +36,6 @@ public class Party {
         addToParty(leader);
         battleValue = battleValueI;
         PartyInitialization();
-        curBattleValue = leader.battleValue;
     }
     public Party(string nameI, Faction factionI, int battleValueI) //generic parties
     {
@@ -47,12 +45,12 @@ public class Party {
         leader = makeGenericPerson(randomTroopType(0, 20, 20, 20, 20, 20), randomRanking(0, 10, 10, 10));
         leader.stats.charisma = Random.Range(3,7);
         leader.stats.intelligence = Random.Range(3, 7);
+        leader.exp.level += (leader.stats.intelligence + leader.stats.charisma - 2);
         partyMember = new List<Person>();
         inventory = new List<Item>();
         partySize = 0;
         addToParty(leader);
         battleValue = battleValueI;
-        curBattleValue = leader.battleValue;
         PartyInitialization();
     }
 
@@ -70,10 +68,8 @@ public class Party {
         {
             partyMember.Add(member);
             partySize++;
-            //Debug.Log("count: " + partyMember.Count);
             return true;
         }
-        Debug.Log("out count: " + partySize + "limit " + getPartySizeLimit());
         return false;
     }
     public bool removeFromParty(Person member)
@@ -145,6 +141,15 @@ public class Party {
     public virtual float getInventoryWeightLimit()
     {
         return (getAverage().strength + getAverage().endurance) * 10.0f;
+    }
+    public virtual int getBattleValue()
+    {
+        int curBattleValue = 0;
+        foreach (Person p in partyMember)
+        {
+            curBattleValue += TroopDataBase.troopDataBase.getBattleValue(p.faction, p.troopType, p.ranking);
+        }
+        return curBattleValue;
     }
     public virtual int getInventoryValue()
     {
@@ -233,27 +238,45 @@ public class Party {
     {
         string memberName = TroopDataBase.rankingToString(rk) + " " + TroopDataBase.troopTypeToString(tt);
         Stats gStats = new Stats(1, 1, 1, 1, 1, 1);
+        int s = 1;
+        int a = 1;
+        int p = 1;
+        int e = 1;
         if (rk == Ranking.recruit)
         {
-            gStats = new Stats(Random.Range(1, 2), Random.Range(1, 2), Random.Range(1, 2), Random.Range(1, 2), 0, 0);
+            s = Random.Range(1, 2);
+            a = Random.Range(1, 2);
+            p = Random.Range(1, 2);
+            e = Random.Range(1, 2);
+            
         } else if (rk == Ranking.militia)
         {
-            gStats = new Stats(Random.Range(3, 5), Random.Range(3, 5), Random.Range(3, 5), Random.Range(3, 5), 0, 0);
+            s = Random.Range(3, 5);
+            a = Random.Range(3, 5);
+            p = Random.Range(3, 5);
+            e = Random.Range(3, 5);
         } else if (rk == Ranking.veteran)
         {
-            gStats = new Stats(Random.Range(5, 7), Random.Range(5, 7), Random.Range(5, 7), Random.Range(5, 7), 0, 0);
+            s = Random.Range(5, 7);
+            a = Random.Range(5, 7);
+            p = Random.Range(5, 7);
+            e = Random.Range(5, 7);
         } else if (rk == Ranking.elite)
         {
-            gStats = new Stats(Random.Range(7, 8), Random.Range(7, 8), Random.Range(3, 5), Random.Range(7, 8), 0, 0);
+            s = Random.Range(7, 8);
+            a = Random.Range(7, 8);
+            p = Random.Range(7, 8);
+            e = Random.Range(7, 8);
         }
+        gStats = new Stats(s, a, p, e, 0, 0);
         int level = gStats.strength + gStats.agility + gStats.perception + gStats.endurance - 4;
         Experience gExp = new Experience(0, level, 0);
         Ranking gRk = rk;
         TroopType gTt = tt;
         Faction gF = faction;
-        Person p = new Person(memberName, gStats, gRk, gTt, gF, gExp);
-        p.name = TroopDataBase.rankingToString(gRk) + " " + TroopDataBase.troopTypeToString(gTt);
-        return p;
+        Person per = new Person(memberName, gStats, gRk, gTt, gF, gExp);
+        per.name = TroopDataBase.rankingToString(gRk) + " " + TroopDataBase.troopTypeToString(gTt);
+        return per;
     }
     public TroopType randomTroopType(int recruitC, int crossC, int musketC, int swordC, int halbC, int cavC)
     {

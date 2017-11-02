@@ -7,6 +7,9 @@ public class TabMenu : MonoBehaviour {
     public GameObject defaultPanel;
     public Button objectiveButton, factionButton, sapeButton, ciButton,
         mainGearButton, secGearButton, inventoryButton, troopButton;
+    public Button objectiveButtonQuick, factionButtonQuick, sapeButtonQuick, ciButtonQuick,
+        mainGearButtonQuick, secGearButtonQuick, inventoryButtonQuick, troopButtonQuick;
+    public TroopManageInterface troopManageInterface;
     public Animator animator;
 	// Use this for initialization
 	void Start () {
@@ -20,6 +23,14 @@ public class TabMenu : MonoBehaviour {
         secGearButton.onClick.AddListener(delegate () { showPanel(TabPanelType.SecGearPanel, true); });
         inventoryButton.onClick.AddListener(delegate () { showPanel(TabPanelType.InventoryPanel, true); });
         troopButton.onClick.AddListener(delegate () { showPanel(TabPanelType.TroopPanel, true); });
+        objectiveButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.ObjectivePanel, true); });
+        factionButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.FactionPanel, true); });
+        sapeButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.SAPEPanel, true); });
+        ciButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.CIPanel, true); });
+        mainGearButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.MainGearPanel, true); });
+        secGearButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.SecGearPanel, true); });
+        inventoryButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.InventoryPanel, true); });
+        troopButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.TroopPanel, true); });
     }
 
     // Update is called once per frame
@@ -39,6 +50,7 @@ public class TabMenu : MonoBehaviour {
                 } else
                 {
                     gameObject.SetActive(false);
+                    troopManageInterface.leaveManagement();
                     Time.timeScale = 1.0f;
                 }
             }
@@ -51,6 +63,7 @@ public class TabMenu : MonoBehaviour {
 
     public void showPanel(TabPanelType tabPanelType, bool show)
     {
+        animator.SetBool("troopUpgradeShow", false);
         if (tabPanelType == TabPanelType.DefaultPanel)
         {
             defaultPanel.SetActive(show);
@@ -110,9 +123,17 @@ public class TabMenu : MonoBehaviour {
         if (tabPanelType == TabPanelType.TroopPanel)
         {
             animator.SetBool("troopShow", show);
+            if (!show) //if show is false
+            {
+                troopManageInterface.leaveManagement();
+            }
         } else
         {
             animator.SetBool("troopShow", !show);
+            if (show) //if !show is false
+            {
+                troopManageInterface.leaveManagement();
+            }
         }
         
     }
