@@ -10,7 +10,7 @@ public class BattleCentralControl : MonoBehaviour {
     public static Grid[,] map;
     public static int gridXMax, gridZMax;
     public static MainParty playerParty;
-    public static Dictionary<Person, GameObject> troopOnField;
+    public static Dictionary<Person, GameObject> playerTroopOnField, enemyTroopOnField;
     public static Party enemyParty;
     public static Dictionary<Grid, GameObject> gridToObj;
     public static Dictionary<GameObject, Grid> objToGrid;
@@ -19,7 +19,8 @@ public class BattleCentralControl : MonoBehaviour {
     {
         gridToObj = new Dictionary<Grid, GameObject>();
         objToGrid = new Dictionary<GameObject, Grid>();
-        troopOnField = new Dictionary<Person, GameObject>();
+        playerTroopOnField = new Dictionary<Person, GameObject>();
+        enemyTroopOnField = new Dictionary<Person, GameObject>();
         playerTurn = true;
         battleStart = false;
     }
@@ -48,17 +49,39 @@ public class BattleCentralControl : MonoBehaviour {
         }
     }
 
-    public static void startTurnPrep()
+    public static void endTurnPrep()
     {
-        foreach (KeyValuePair<Person, GameObject> t in BattleCentralControl.troopOnField)
+        if (playerTurn)
         {
-            Troop troop = t.Value.GetComponent<Troop>();
-            if (troop.activated)
+            foreach (KeyValuePair<Person, GameObject> t in BattleCentralControl.playerTroopOnField)
             {
-                t.Key.stamina = t.Key.getStaminaMax();
-                troop.stealthCheckRefresh();
+                Troop troop = t.Value.GetComponent<Troop>();
+                if (troop.activated)
+                {
+                    t.Key.stamina = t.Key.getStaminaMax();
+                    troop.stealthCheckRefresh();
+                }
+            }
+            BattleInteraction.curControlled = null;
+        }
+        if (!playerTurn)
+        {
+            foreach (KeyValuePair<Person, GameObject> t in BattleCentralControl.enemyTroopOnField)
+            {
+                Troop troop = t.Value.GetComponent<Troop>();
+                if (troop.activated)
+                {
+                    t.Key.stamina = t.Key.getStaminaMax();
+                    troop.stealthCheckRefresh();
+                }
+            }
+            foreach(KeyValuePair<Person, GameObject> pair in BattleCentralControl.playerTroopOnField)
+            {
+                BattleInteraction.curControlled = pair.Value;
+                break;
             }
         }
+
 
     }
     public static List<GameObject> gridInLine(GameObject start, GameObject end)
@@ -118,6 +141,10 @@ public class BattleCentralControl : MonoBehaviour {
                 var rot = new Quaternion(0, 0, 0, 0);
                 var obj = Instantiate(map[ix, iz].mapSettingModel, pos, rot);
                 obj.GetComponent<GridObject>().becomeUnseen();
+                if (iz <= BattleCentralControl.playerParty.leader.getTroopPlacingRange(BattleCentralControl.gridZMax))
+                {
+                    obj.GetComponent<GridObject>().becomeSeen();
+                }
                 gridToObj.Add(map[ix, iz], obj);
                 objToGrid.Add(obj, map[ix, iz]);
             }

@@ -9,8 +9,9 @@ public class EndTurnPanel : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         endTurnButton.GetComponent<Button>().onClick.AddListener(
-            delegate { BattleCentralControl.playerTurn = false;
-                BattleCentralControl.startTurnPrep(); });
+            delegate { BattleCentralControl.endTurnPrep();
+                BattleCentralControl.playerTurn = false;
+            });
         gameObject.SetActive(false);
 	}
 	
@@ -19,8 +20,15 @@ public class EndTurnPanel : MonoBehaviour {
         if (BattleCentralControl.battleStart)
         {
             gameObject.SetActive(true);
+
+            if (BattleCentralControl.playerTroopOnField.Count <= 0)
+            {
+                endTurnButton.GetComponent<Button>().interactable = false;
+            } else
+            {
+                endTurnButton.GetComponent<Button>().interactable = true;
+            }
         }
-        //Debug.Log(BattleInteraction.inAction);
 		if (BattleCentralControl.playerTurn && !BattleInteraction.inAction)
         {
             endTurnButton.GetComponent<Button>().enabled = true;

@@ -8,7 +8,7 @@ public class Grid {
     public int x { get; set; }
     public int z { get; set; }
     public bool occupied;
-    public Person troop { get; set; }
+    public Person personOnGrid { get; set; }
     public float mark { get; set; }
     public Queue<Grid> path { get; set; }
     public List<Grid> neighbors { get; set; }
@@ -28,6 +28,8 @@ public class Grid {
         this.gridType = gridType;
         occupied = false;
         mark = 0;
+        playerTempStaminaCost = 0;
+        enemyTempStaminaCost = 0;
         initialization();
     }
     void initialization ()
@@ -71,9 +73,9 @@ public class Grid {
     }
     public void checkPersonStealth(Troop watcher)
     {
-        if (troop != null)
+        if (personOnGrid != null)
         {
-            BattleCentralControl.troopOnField[troop].GetComponent<Troop>().stealthCheck(watcher);
+            personOnGrid.troop.stealthCheck(watcher);
         }
     }
 }

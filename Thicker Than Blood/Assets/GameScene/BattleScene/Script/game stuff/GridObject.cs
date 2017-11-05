@@ -7,14 +7,33 @@ public class GridObject : BattleInteractable {
     public Color originalColor;
     public MeshRenderer meshRenderer;
     public GameObject infoPanel;
+    public GameObject guardedByPlayerIndicator, guardedByEnemyIndicator;
+
     public void Awake()
     {
         //originalColor = meshRenderer.material.color;
         
     }
+    private void Update()
+    {
+        /**if (BattleCentralControl.objToGrid.ContainsKey(gameObject))
+        {
+            if (BattleCentralControl.objToGrid[gameObject].enemyTempStaminaCost > 0)
+            {
+                guardedByPlayer();
+            }
+            else if (BattleCentralControl.objToGrid[gameObject].playerTempStaminaCost > 0)
+            {
+                guardedByEnemy();
+            }
+        }**/
+    }
+
     private void OnEnable()
     {
         meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
+        guardedByPlayerIndicator.SetActive(false);
+        guardedByEnemyIndicator.SetActive(false);
         
     }
     public override void cameraFocusOn()
@@ -61,10 +80,18 @@ public class GridObject : BattleInteractable {
     }
     public void checkTroopOnGrid(Troop troop)
     {
-        if (BattleCentralControl.objToGrid[gameObject].troop != null)
+        if (BattleCentralControl.objToGrid[gameObject].personOnGrid != null)
         {
             BattleCentralControl.objToGrid[gameObject].checkPersonStealth(troop);
         }
+    }
+    public void guardedByPlayer(bool guarded)
+    {
+        guardedByPlayerIndicator.SetActive(guarded);
+    }
+    public void guardedByEnemy(bool guarded)
+    {
+        guardedByEnemyIndicator.SetActive(guarded);
     }
     public void becomeUnseen()
     {

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class IndicatorModel : MonoBehaviour {
 
-    public void OnCollisionEnter(Collision col)
+    
+    public void OnCollisionStay(Collision col)
     {
         
         if (col.gameObject.transform.parent.gameObject.tag == "Grid")

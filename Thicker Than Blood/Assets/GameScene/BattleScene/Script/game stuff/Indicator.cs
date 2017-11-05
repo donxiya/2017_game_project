@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Indicator : BattleInteractable {
-    public List<Grid> collided;
+    public List<Grid> collided = new List<Grid>();
     private void Start()
     {
-        collided = new List<Grid>();
-    }
-    private void Update()
-    {
 
-        //Debug.Log("collided: " + collided.Count);
+    }
+    
+    private void OnEnable()
+    {
+        collided.Clear();
     }
     public override void cameraFocusOn()
     {

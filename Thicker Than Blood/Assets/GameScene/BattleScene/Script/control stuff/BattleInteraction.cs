@@ -111,8 +111,11 @@ public class BattleInteraction : MonoBehaviour {
             if (interactedObject.tag == "Troop")
             {
                 interactedObject.GetComponent<Troop>().cameraFocusOn();
-                curControlled = interactedObject;
-                skillMode = TroopSkill.walk;
+                if (interactedObject.GetComponent<Troop>().person.faction == Faction.mercenary)
+                {
+                    curControlled = interactedObject;
+                    skillMode = TroopSkill.walk;
+                }
             } else if (interactedObject.tag == "Grid")
             {
                 interactedObject.GetComponent<GridObject>().cameraFocusOn();
