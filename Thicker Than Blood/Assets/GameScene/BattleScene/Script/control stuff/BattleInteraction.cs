@@ -35,7 +35,7 @@ public class BattleInteraction : MonoBehaviour {
     {
         if (Input.GetMouseButtonDown(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
-            if (curControlled != null && skillMode != TroopSkill.walk)
+            if (BattleCentralControl.playerTurn && curControlled != null && skillMode != TroopSkill.walk)
             {
                 curControlled.GetComponent<Troop>().doSkill(curControlled.GetComponent<Troop>().indicatedGrid(), skillMode);
                 if (Input.GetMouseButtonDown(0))
@@ -52,29 +52,28 @@ public class BattleInteraction : MonoBehaviour {
         }
         if (Input.GetMouseButtonDown(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
-            if (BattleCentralControl.playerTurn)
+            if (curControlled != null && BattleCentralControl.playerTurn)
             {
-                if (curControlled != null)
+
+                if (skillMode == TroopSkill.walk)
                 {
-                    
-                    if (skillMode == TroopSkill.walk)
+                    if (curControlled.GetComponent<Troop>().reachedDestination)
                     {
-                        if (curControlled.GetComponent<Troop>().reachedDestination)
-                        {
-                            curControlled.GetComponent<Troop>().cameraFocusOn();
-                            walkToObj();
-                        }
-                    } else if (skillMode == TroopSkill.none && Input.GetMouseButtonDown(1))
-                    {
-                        skillMode = TroopSkill.walk;
-                    }
-                    else
-                    {
-                        skillMode = TroopSkill.none;
-                        curControlled.GetComponent<Troop>().hideIndicators();
+                        curControlled.GetComponent<Troop>().cameraFocusOn();
+                        walkToObj();
                     }
                 }
+                else if (skillMode == TroopSkill.none && Input.GetMouseButtonDown(1))
+                {
+                    skillMode = TroopSkill.walk;
+                }
+                else
+                {
+                    skillMode = TroopSkill.none;
+                    curControlled.GetComponent<Troop>().hideIndicators();
+                }
             }
+            
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -144,6 +143,16 @@ public class BattleInteraction : MonoBehaviour {
                 {
                     interactedObject.GetComponent<GridObject>().cameraFocusOn();
                 }
+            } else if (interactedObject.tag == "Indicator")
+            {
+                if (interactedObject.name == "WalkIndicator")
+                {
+                    interactedObject.GetComponent<Indicator>().goToIndicatedGrid(curControlled);
+                } else
+                {
+                    interactedObject.transform.parent.GetComponent<Indicator>().goToIndicatedGrid(curControlled);
+                }
+                
             } else
             {
                 Debug.Log(interactedObject.name);

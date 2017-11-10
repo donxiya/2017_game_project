@@ -17,6 +17,10 @@ public class Indicator : BattleInteractable {
     {
         //base.cameraFocusOn();
     }
-
+    public void goToIndicatedGrid(GameObject troop) //only works for walk indicator
+    {
+        Grid curGrid = BattleCentralControl.map[Mathf.RoundToInt(gameObject.transform.position.x), Mathf.RoundToInt(gameObject.transform.position.z)];
+        troop.GetComponent<Troop>().troopMoveToPlace(curGrid);
+    }
     
 }

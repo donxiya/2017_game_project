@@ -17,25 +17,25 @@ public class EndTurnPanel : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (BattleCentralControl.battleStart)
+        if (BattleCentralControl.battleStart && !gameObject.activeSelf)
         {
             gameObject.SetActive(true);
-
-            if (BattleCentralControl.playerTroopOnField.Count <= 0)
-            {
-                endTurnButton.GetComponent<Button>().interactable = false;
-            } else
+        }
+        
+		if (BattleCentralControl.playerTurn && !BattleInteraction.inAction
+            && BattleCentralControl.playerTroopOnField.Count >= 1)
+        {
+            if (!endTurnButton.GetComponent<Button>().interactable)
             {
                 endTurnButton.GetComponent<Button>().interactable = true;
             }
         }
-		if (BattleCentralControl.playerTurn && !BattleInteraction.inAction)
-        {
-            endTurnButton.GetComponent<Button>().enabled = true;
-        }
         else{
-            endTurnButton.GetComponent<Button>().enabled = false;
+            if (endTurnButton.GetComponent<Button>().interactable)
+            {
+                endTurnButton.GetComponent<Button>().interactable = false;
+            }
         }
-	}
+    }
     
 }

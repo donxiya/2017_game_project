@@ -8,7 +8,7 @@ public class BattleCentralControl : MonoBehaviour {
 
     public static bool battleStart, playerTurn;
     public static Grid[,] map;
-    public static int gridXMax, gridZMax;
+    public static int gridXMax, gridZMax, curRound, oldRound;
     public static MainParty playerParty;
     public static Dictionary<Person, GameObject> playerTroopOnField, enemyTroopOnField;
     public static Party enemyParty;
