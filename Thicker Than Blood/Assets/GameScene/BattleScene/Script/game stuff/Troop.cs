@@ -14,11 +14,13 @@ public class Troop : BattleInteractable {
     public GameObject statusPanel, troopStaminaBar, troopHealthBar, staminaTxt, healthTxt, nameTxt;
     public GameObject visionIndicator, walkIndicator, curIndicator, lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, guardIndicator, rainOfArrowIndicator, quickDrawIndicator;
     public GameObject seenStatus;
-    public bool controlled, aiControlled, charging, holdSteadying, reachedDestination;
+    public bool controlled, aiControlled, charging, holdSteadying, reachedDestination, seen;
     public Dictionary<Person, bool> stealthCheckDict = new Dictionary<Person, bool>();
     public bool activated = false;
     public float chargeStack;
     public List<Grid> guardedGrids;
+    public Material invisible;
+    Material originalMaterial;
     float STATUS_BAR_HEIGHT, STATUS_BAR_WIDTH;
     bool travelCostFree = false;
     bool staminaCosted = false;
@@ -26,7 +28,6 @@ public class Troop : BattleInteractable {
     Grid destinationGrid;
     NavMeshAgent navMeshAgent;
     MeshRenderer meshRenderer;
-    Color originalColor;
     Grid lastGrid;
     // Use this for initialization
     public void Start()
@@ -37,13 +38,14 @@ public class Troop : BattleInteractable {
             STATUS_BAR_WIDTH = troopStaminaBar.GetComponent<RawImage>().rectTransform.sizeDelta.x;
             navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
             meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
-            originalColor = meshRenderer.material.color;
+            originalMaterial = meshRenderer.material;
             hideIndicators();
             charging = holdSteadying = false;
             guardedGrids = new List<Grid>();
             stealthCheckRefresh();
             controlled = false;
             aiControlled = false;
+            seen = false;
         }
         
     }
@@ -93,7 +95,7 @@ public class Troop : BattleInteractable {
     }
     public override void cameraFocusOn()
     {
-        base.cameraFocusOn();
+        
         if (BattleCentralControl.playerTurn)
         {
             controlPanel.GetComponent<TroopControlPanel>().initializePanel();
@@ -101,8 +103,12 @@ public class Troop : BattleInteractable {
 
             controlled = true;
         }
-        BattleInspectPanel.person = person;
-        inspectPanel.SetActive(true);
+        if (person.faction == Faction.mercenary || seen)
+        {
+            base.cameraFocusOn();
+            BattleInspectPanel.person = person;
+            inspectPanel.SetActive(true);
+        }
     }
     public override void cameraFocusOnExit()
     {
@@ -116,7 +122,7 @@ public class Troop : BattleInteractable {
     public void troopMoveToPlace(Grid grid) {
         reachedDestination = false;
         if (person.faction == Faction.mercenary) { //player case
-            if (grid.personOnGrid == null) //
+            if (grid != null && grid.personOnGrid == null) //
             {
                 if (person.stamina > 0)
                 {
@@ -130,13 +136,23 @@ public class Troop : BattleInteractable {
             }
             else
             {
+                if (person.stamina > 0)
+                {
+                    finalDest = new Vector3(grid.x, 1, grid.z);
+                    BattleInteraction.inAction = true;
+                    //destinationGrid = grid;
+                }
+                else
+                {
+                    destinationGrid = getCurrentGrid();
+                }
                 //goBackToLastGrid();
             }
         } else //enemy case
         {
             if (aiControlled)
             {
-                if (grid.personOnGrid == null)
+                if (grid != null && grid.personOnGrid == null)
                 {
                     if (person.stamina > 0)
                     {
@@ -144,13 +160,15 @@ public class Troop : BattleInteractable {
                         BattleAIControl.inAction = true;
                         //destinationGrid = grid;
                     }
-                    else
-                    {
-                        destinationGrid = getCurrentGrid();
-                    }
                 }
                 else
                 {
+                    //if (person.stamina > 0)
+                    //{
+                    //    finalDest = new Vector3(grid.x, 1, grid.z);
+                    //    BattleAIControl.inAction = true;
+                    //    //destinationGrid = grid;
+                    //}
                     //goBackToLastGrid();
                 }
             }
@@ -329,6 +347,7 @@ public class Troop : BattleInteractable {
                         charging = false;
                     }
                     navMeshAgent.destination = tempDest;
+                    //lookAtVector(tempDest);
                     
                 }
             } else { //ARRIVING
@@ -363,6 +382,7 @@ public class Troop : BattleInteractable {
             curIndicator = walkIndicator;
         }
         followMouse(walkIndicator);
+        //lookAtMouse(gameObject);
     }
     public void lunge()
     {
@@ -381,6 +401,7 @@ public class Troop : BattleInteractable {
             whirlwindIndicator.SetActive(true);
             curIndicator = whirlwindIndicator;
         }
+        lookAtMouse(gameObject);
     }
     public void execute()
     {
@@ -389,6 +410,7 @@ public class Troop : BattleInteractable {
             executeIndicator.SetActive(true);
             curIndicator = executeIndicator;
         }
+        lookAtMouse(gameObject);
     }
     public void fire()
     {
@@ -431,11 +453,11 @@ public class Troop : BattleInteractable {
                 if (person.faction == Faction.mercenary)
                 {
                     g.enemyTempStaminaCost -= person.getGuardStaminaCost();
-                    BattleCentralControl.gridToObj[g].GetComponent<GridObject>().guardedByPlayer(false);
+                    g.gridObject.GetComponent<GridObject>().guardedByPlayer(false);
                 } else
                 {
                     g.playerTempStaminaCost -= person.getGuardStaminaCost();
-                    BattleCentralControl.gridToObj[g].GetComponent<GridObject>().guardedByEnemy(false);
+                    g.gridObject.GetComponent<GridObject>().guardedByEnemy(false);
                 }
             }
             guardedGrids.Clear();
@@ -498,25 +520,71 @@ public class Troop : BattleInteractable {
                 }
                 break;
             case TroopSkill.execute:
-                if (Input.GetMouseButtonDown(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                if (controlled)
                 {
-                    Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    RaycastHit interactionInfo;
-                    if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
+                    if (person.stamina >= person.getExecuteStaminaCost())
                     {
-                        GameObject interactedObject = interactionInfo.collider.gameObject.transform.parent.gameObject;
-                        Troop attackedTroop = interactedObject.GetComponent<Troop>();
-                        if (attackedTroop != null && person.stamina >= person.getExecutionStaminaCost()) //TODO: remove player troop later
+                        if (Input.GetMouseButtonDown(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
                         {
-                            if (attackedTroop.person.faction != person.faction && attackedGrid.Contains(attackedTroop.curGrid)) {
-                                attackedTroop.person.health -= 5 * person.getMeleeAttackDmg();
+                            Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+                            RaycastHit interactionInfo;
+                            if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
+                            {
+                                GameObject interactedObject = interactionInfo.collider.gameObject.transform.parent.gameObject;
+                                Troop attackedTroop = interactedObject.GetComponent<Troop>();
+                                if (attackedTroop != null && attackedTroop.seenStatus && person.stamina >= person.getExecuteStaminaCost()) //TODO: remove player troop later
+                                {
+                                    if (attackedTroop.person.faction != person.faction && attackedGrid.Contains(attackedTroop.curGrid))
+                                    {
+                                        lookAtVector(attackedTroop.gameObject.transform.position);
+                                        float lostPercentage = 1 - (attackedTroop.person.health / attackedTroop.person.getHealthMax());
+                                        attackedTroop.person.health -= (lostPercentage*10 + 1) * person.getMeleeAttackDmg();
+                                        person.stamina -= person.getExecuteStaminaCost();
+                                    }
+                                }
+                                else if (person.faction == Faction.mercenary)
+                                {
+                                    BattleInteraction.skillMode = TroopSkill.none;
+                                }
                             }
-                        } else if (person.faction == Faction.mercenary)
-                        {
-                            BattleInteraction.skillMode = TroopSkill.none;
                         }
                     }
+                    else
+                    {
+                        BattleInteraction.skillMode = TroopSkill.none;
+                    }
+                } else if (aiControlled)
+                {
+                    if (person.stamina >= person.getExecuteStaminaCost())
+                    {
+                        float leastHp = 0;
+                        Person attackedPerson = null;
+                        foreach (Grid g in attackedGrid)
+                        {
+                            if (g.personOnGrid != null && g.personOnGrid.faction != person.faction)
+                            {
+                                if (leastHp == 0)
+                                {
+                                    leastHp = g.personOnGrid.health;
+                                    attackedPerson = g.personOnGrid;
+                                }
+                                else if (leastHp > g.personOnGrid.health)
+                                {
+                                    leastHp = g.personOnGrid.health;
+                                    attackedPerson = g.personOnGrid;
+                                }
+                            }
+                        }
+                        if (leastHp != 0 && attackedPerson != null)
+                        {
+                            attackedPerson.health -= 5 * person.getMeleeAttackDmg();
+                            person.stamina -= person.getExecuteStaminaCost();
+                        }
+                    }
+                    
+                    
                 }
+                
                 break;
             case TroopSkill.rainOfArrows:
                 if (person.stamina >= person.getRainOfArrowsStaminaCost())
@@ -536,10 +604,6 @@ public class Troop : BattleInteractable {
             case TroopSkill.charge:
                 break;
             case TroopSkill.holdSteady:
-                if (person.stamina < person.getFireStaminaCost() + person.getHoldSteadyStaminaCost())
-                {
-                    holdSteadying = false;
-                }
                 break;
             case TroopSkill.fire:
                 if (holdSteadying)
@@ -583,17 +647,18 @@ public class Troop : BattleInteractable {
             case TroopSkill.guard:
                 if (person.stamina >= person.getGuardStaminaCost())
                 {
+                    clearGuard();
                     foreach (Grid g in attackedGrid)
                     {
                         if (person.faction == Faction.mercenary)
                         {
                             g.enemyTempStaminaCost += person.getGuardedIncrease();
-                            BattleCentralControl.gridToObj[g].GetComponent<GridObject>().guardedByPlayer(true);
+                            g.gridObject.GetComponent<GridObject>().guardedByPlayer(true);
                         }
                         else
                         {
                             g.playerTempStaminaCost += person.getGuardedIncrease();
-                            BattleCentralControl.gridToObj[g].GetComponent<GridObject>().guardedByEnemy(true);
+                            g.gridObject.GetComponent<GridObject>().guardedByEnemy(true);
                         }
                         guardedGrids.Add(g);
                     }
@@ -622,7 +687,6 @@ public class Troop : BattleInteractable {
                 break;
 
         }
-        //Debug.Log("attacked grid num: " + attackedGrid.Count);
         
     }
     public void death()
@@ -656,16 +720,18 @@ public class Troop : BattleInteractable {
             float rand = Random.Range(10.0f, watcher.person.getVision() + person.getStealth());
             if ( rand < watcher.person.getVision())
             {
-                hidden();
+                //hidden();
             } else
             {
-                revealed();
+                //revealed();
             }
+            revealed();  //revealed when enter others' vision
             stealthCheckDict[watcher.person] = true;
         }
     }
     public void hidden()
     {
+        seen = false;
         if (person.faction == Faction.mercenary)
         {
             if (seenStatus.activeSelf)
@@ -675,11 +741,13 @@ public class Troop : BattleInteractable {
         }
         else
         {
-            meshRenderer.material.color = new Color(0, 255, 0); //new Color(originalColor.r, originalColor.g, originalColor.b, 0.0f);
+            statusPanel.SetActive(false);
+            meshRenderer.material = invisible; //new Color(originalColor.r, originalColor.g, originalColor.b, 0.0f);
         }
     }
     public void revealed()
     {
+        seen = true;
         if (person.faction == Faction.mercenary)
         {
             if (!seenStatus.activeSelf)
@@ -688,7 +756,8 @@ public class Troop : BattleInteractable {
             }
         } else
         {
-            meshRenderer.material.color = originalColor;
+            statusPanel.SetActive(true);
+            meshRenderer.material = originalMaterial;
         }
     }
 
@@ -740,6 +809,15 @@ public class Troop : BattleInteractable {
             nameTxt.GetComponent<Text>().text = person.name;
         }
     }
+
+    void lookAtVector(Vector3 pos)
+    {
+        Vector3 v = pos - gameObject.transform.position;
+        v.x = v.z = 0.0f;
+        gameObject.transform.LookAt(pos - v);
+        gameObject.transform.Rotate(0, 180, 0);
+    }
+
     void lookAtCamera(GameObject obj)
     {
         Vector3 v = Camera.main.transform.position - obj.transform.position;
@@ -773,7 +851,7 @@ public class Troop : BattleInteractable {
             GameObject pointedObj = interactionInfo.collider.gameObject.transform.parent.gameObject;
             if (pointedObj.tag == "Grid" || pointedObj.tag == "Troop")
             {
-                Vector3 pos = new Vector3(pointedObj.transform.position.x, transform.position.y, pointedObj.transform.position.z);
+                Vector3 pos = new Vector3(pointedObj.transform.position.x, 0, pointedObj.transform.position.z);
                 obj.transform.position = Vector3.Slerp(obj.transform.position, pos, Time.deltaTime * 1000);
             }
         }

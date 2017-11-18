@@ -12,6 +12,7 @@ public class BattleInteraction : MonoBehaviour {
     public static GameObject curControlled;
     public static GameObject interactedObject;
     public static GameObject inspectedObject;
+    public GameObject walkIndicator;
     // Use this for initialization
     void Start()
     {
@@ -110,7 +111,8 @@ public class BattleInteraction : MonoBehaviour {
             if (interactedObject.tag == "Troop")
             {
                 interactedObject.GetComponent<Troop>().cameraFocusOn();
-                if (interactedObject.GetComponent<Troop>().person.faction == Faction.mercenary)
+                if (interactedObject.GetComponent<Troop>().person.faction == Faction.mercenary
+                    && BattleCentralControl.playerTurn)
                 {
                     curControlled = interactedObject;
                     skillMode = TroopSkill.walk;
@@ -145,17 +147,12 @@ public class BattleInteraction : MonoBehaviour {
                 }
             } else if (interactedObject.tag == "Indicator")
             {
-                if (interactedObject.name == "WalkIndicator")
-                {
-                    interactedObject.GetComponent<Indicator>().goToIndicatedGrid(curControlled);
-                } else
-                {
-                    interactedObject.transform.parent.GetComponent<Indicator>().goToIndicatedGrid(curControlled);
-                }
+                curControlled.GetComponent<Troop>().walkIndicator.GetComponent<Indicator>().goToIndicatedGrid(curControlled);
+                
                 
             } else
             {
-                Debug.Log(interactedObject.name);
+                curControlled.GetComponent<Troop>().walkIndicator.GetComponent<Indicator>().goToIndicatedGrid(curControlled);
             }
         }
     }

@@ -102,7 +102,7 @@ public class TroopPlacing : MonoBehaviour {
 
             if (interactedObject.tag == "Grid" )
             {
-                Grid gridInfo = BattleCentralControl.objToGrid[interactedObject];
+                Grid gridInfo = interactedObject.GetComponent<GridObject>().grid;
                 if (gridInfo.z <= BattleCentralControl.playerParty.leader.getTroopPlacingRange(BattleCentralControl.gridZMax))
                 {
                     Info.clearInfo();

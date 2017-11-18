@@ -12,13 +12,13 @@ public class BattleCentralControl : MonoBehaviour {
     public static MainParty playerParty;
     public static Dictionary<Person, GameObject> playerTroopOnField, enemyTroopOnField;
     public static Party enemyParty;
-    public static Dictionary<Grid, GameObject> gridToObj;
-    public static Dictionary<GameObject, Grid> objToGrid;
+    //public static Dictionary<Grid, GameObject> gridToObj;
+    //public static Dictionary<GameObject, Grid> objToGrid;
     bool groundInitialized = false;
     private void Awake()
     {
-        gridToObj = new Dictionary<Grid, GameObject>();
-        objToGrid = new Dictionary<GameObject, Grid>();
+        //gridToObj = new Dictionary<Grid, GameObject>();
+        //objToGrid = new Dictionary<GameObject, Grid>();
         playerTroopOnField = new Dictionary<Person, GameObject>();
         enemyTroopOnField = new Dictionary<Person, GameObject>();
         playerTurn = true;
@@ -44,7 +44,7 @@ public class BattleCentralControl : MonoBehaviour {
             placeOnMap(gridXMax, gridZMax);
             groundInitialization();
             groundInitialized = true;
-            BattleCamera.mapCenter = gridToObj[map[gridXMax / 2, gridZMax / 2]];
+            BattleCamera.mapCenter = map[gridXMax / 2, gridZMax / 2].gridObject;
             BattleCamera.target = BattleCamera.mapCenter;
         }
     }
@@ -60,9 +60,24 @@ public class BattleCentralControl : MonoBehaviour {
                 {
                     t.Key.stamina = t.Key.getStaminaMax();
                     troop.stealthCheckRefresh();
+                    troop.charging = false;
+                    troop.holdSteadying = false;
                 }
             }
-            BattleInteraction.curControlled = null;
+            foreach (KeyValuePair<Person, GameObject> t in BattleCentralControl.enemyTroopOnField)
+            {
+                Troop troop = t.Value.GetComponent<Troop>();
+                if (troop.activated)
+                {
+                    troop.stealthCheckRefresh();
+                    troop.clearGuard();
+                }
+            }
+            if (BattleInteraction.curControlled != null)
+            {
+                BattleInteraction.curControlled.GetComponent<Troop>().cameraFocusOnExit();
+                BattleInteraction.curControlled = null;
+            }
         }
         if (!playerTurn)
         {
@@ -73,17 +88,37 @@ public class BattleCentralControl : MonoBehaviour {
                 {
                     t.Key.stamina = t.Key.getStaminaMax();
                     troop.stealthCheckRefresh();
+                    troop.charging = false;
+                    troop.holdSteadying = false;
                 }
             }
-            foreach(KeyValuePair<Person, GameObject> pair in BattleCentralControl.playerTroopOnField)
+            foreach (KeyValuePair<Person, GameObject> t in BattleCentralControl.playerTroopOnField)
+            {
+                Troop troop = t.Value.GetComponent<Troop>();
+                if (troop.activated)
+                {
+                    troop.stealthCheckRefresh();
+                    troop.clearGuard();
+                }
+            }
+        }
+    }
+    public static void startTurnPrep()
+    {
+        if (playerTurn)
+        {
+            foreach (KeyValuePair<Person, GameObject> pair in BattleCentralControl.playerTroopOnField)
             {
                 BattleInteraction.curControlled = pair.Value;
+                BattleInteraction.curControlled.GetComponent<Troop>().cameraFocusOn();
                 break;
             }
         }
-
-
+        if (!playerTurn)
+        {
+        }
     }
+
     public static List<GameObject> gridInLine(GameObject start, GameObject end)
     {
         List<GameObject> result = new List<GameObject>();
@@ -145,8 +180,10 @@ public class BattleCentralControl : MonoBehaviour {
                 {
                     obj.GetComponent<GridObject>().becomeSeen();
                 }
-                gridToObj.Add(map[ix, iz], obj);
-                objToGrid.Add(obj, map[ix, iz]);
+                map[ix, iz].gridObject = obj;
+                obj.GetComponent<GridObject>().grid = map[ix, iz];
+                //gridToObj.Add(map[ix, iz], obj);
+                //objToGrid.Add(obj, map[ix, iz]);
             }
         }
     }

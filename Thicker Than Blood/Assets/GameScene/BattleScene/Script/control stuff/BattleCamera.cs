@@ -395,7 +395,7 @@ public class BattleCamera : MonoBehaviour {
     {
         pos.x = Mathf.Clamp(pos.x, 0, BattleCentralControl.gridXMax - 1);
         pos.z = Mathf.Clamp(pos.z, 0, BattleCentralControl.gridZMax - 1);
-        return BattleCentralControl.gridToObj[BattleCentralControl.map[Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.z)]];
+        return BattleCentralControl.map[Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.z)].gridObject;
     }
     private GameObject getGrid(GameObject obj)
     {
@@ -404,7 +404,7 @@ public class BattleCamera : MonoBehaviour {
             return obj;
         } else if (obj.tag == "Troop")
         {
-            return BattleCentralControl.gridToObj[obj.GetComponent<Troop>().curGrid];
+            return obj.GetComponent<Troop>().curGrid.gridObject;
         } else
         {
             return null;

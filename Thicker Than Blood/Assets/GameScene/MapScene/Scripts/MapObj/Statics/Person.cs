@@ -154,7 +154,7 @@ public class Person {
     {
         return 5.0f;
     }
-    public virtual float getExecutionStaminaCost()
+    public virtual float getExecuteStaminaCost()
     {
         return 5.0f;
     }
@@ -228,7 +228,7 @@ public class Person {
     }
     public virtual int getTroopMaxNum()
     {
-        return 2 + (int)2 * stats.charisma;
+        return 3 + (int)2 * stats.charisma;
     }
 
     

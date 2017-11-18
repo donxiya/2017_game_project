@@ -11,6 +11,7 @@ public class EndTurnPanel : MonoBehaviour {
         endTurnButton.GetComponent<Button>().onClick.AddListener(
             delegate { BattleCentralControl.endTurnPrep();
                 BattleCentralControl.playerTurn = false;
+                BattleCentralControl.startTurnPrep();
             });
         gameObject.SetActive(false);
 	}

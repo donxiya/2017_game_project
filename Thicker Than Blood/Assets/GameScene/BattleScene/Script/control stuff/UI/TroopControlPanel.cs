@@ -18,7 +18,10 @@ public class TroopControlPanel : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (BattleInteraction.curControlled != null && !initialized)
+        if (BattleInteraction.curControlled == null)
+        {
+            hidePanel();
+        } else if (BattleInteraction.curControlled != null && !initialized)
         {
             switch (BattleInteraction.curControlled.GetComponent<Troop>().person.troopType)
             {
@@ -190,7 +193,10 @@ public class TroopControlPanel : MonoBehaviour {
 
     void hideIndicatorsInPanel()
     {
-        BattleInteraction.curControlled.GetComponent<Troop>().hideIndicators();
+        if (BattleInteraction.curControlled != null)
+        {
+            BattleInteraction.curControlled.GetComponent<Troop>().hideIndicators();
+        }
     }
     public void hidePanel()
     {

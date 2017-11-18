@@ -21,7 +21,7 @@ public class Player : MonoBehaviour {
 
     void initializeMainPlayers()
     {
-        Stats mStats = new Stats(10, 10, 10, 10, 10, 10);
+        Stats mStats = new Stats(10, 10, 10, 1, 10, 10);
         Experience mExp = new Experience(0, 1, 5);
         mainCharacter = new MainCharacter("Nicola Da Roma", mStats, Ranking.mainChar,
             TroopType.mainCharType, Faction.mercenary, mExp);

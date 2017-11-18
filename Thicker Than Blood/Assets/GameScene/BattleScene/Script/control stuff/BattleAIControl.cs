@@ -17,12 +17,15 @@ public class BattleAIControl : MonoBehaviour {
     bool tick = false;
     bool turnInitialized = false;
     bool scouted = false;
+    bool madeAttack = false;
     Queue<AIAction> actionQueue = new Queue<AIAction>();
     List<Person> halberdiers, swordsmen, cavalries, crossbowmen, musketeer;
+    public static List<Grid> futureGrids;
     int halberdierIndex, swordsmenIndex, cavalriesIndex, crossbowmenIndex, musketeerIndex;
     public static AIAction curAIAction;
-	// Use this for initialization
-	void Start () {
+    public static bool skippThisAction;
+    // Use this for initialization
+    void Start() {
         enemyPlaced = false;
         frontLine = 0;
         midLine = 0;
@@ -35,32 +38,22 @@ public class BattleAIControl : MonoBehaviour {
         cavalries = new List<Person>();
         crossbowmen = new List<Person>();
         musketeer = new List<Person>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		if (!enemyPlaced && BattleCentralControl.battleStart)
+        futureGrids = new List<Grid>();
+        skippThisAction = false;
+    }
+
+    // Update is called once per frame
+    void Update() {
+        if (!enemyPlaced && BattleCentralControl.battleStart)
         {
             mapSize = new Vector2(BattleCentralControl.gridXMax, BattleCentralControl.gridZMax);
+            decideAttackMode();
+            categorizeTroop();
             placeEnemyOnMap();
             enemyPlaced = true;
-            decideAttackMode();
         } //occur on battle start
 
-        //if (actionQueue.Count != 0)
-        //{
-        //    Debug.Log(actionQueue.Count + " " + inAction);
-        //}
-        //if (curAIAction != null)
-        //{
-        //    Debug.Log(curAIAction.troop.name + " " + curAIAction.skillMode + " " + inAction);
-        //}
-        //if (inAction)
-        //{
-        //    Debug.Log("cord: " + curAIAction.troop.transform.position.x + " " + curAIAction.troop.transform.position.z);
-        //    Debug.Log("cord grid: " + curAIAction.troop.getCurrentGrid().x + " " + curAIAction.troop.getCurrentGrid().z);
-        //}
-        
+
 
         if (!BattleCentralControl.playerTurn)
         {
@@ -71,7 +64,9 @@ public class BattleAIControl : MonoBehaviour {
                 curAIAction = null;
                 turnInitialized = false;
                 scouted = false;
+                madeAttack = false;
                 BattleCentralControl.playerTurn = true;
+                BattleCentralControl.startTurnPrep();
                 return;
             } else
             {
@@ -84,71 +79,167 @@ public class BattleAIControl : MonoBehaviour {
                 aiControl();
                 doAction();
             }
-            
+
         } //occur on player finish their moves
-        
+
 
     }
     void placeEnemyOnMap()
     {
         int randX = (int)Random.Range(0, BattleCentralControl.gridXMax);
+        troopCenter = new Vector2(randX, mapSize.y - ((int)BattleCentralControl.enemyParty.leader.getTroopPlacingRange(BattleCentralControl.gridZMax) / 2) - 1);
         int memberInBattle = 0;
-        foreach (Person unit in BattleCentralControl.enemyParty.partyMember)
-        {
-            if (memberInBattle <= BattleCentralControl.enemyParty.leader.getTroopMaxNum())
-            {
-                List<Grid> placedGrids = new List<Grid>();
-                int posZ, posX;
-                int zRange = BattleCentralControl.enemyParty.leader.getTroopPlacingRange(BattleCentralControl.gridZMax);
-                posZ = BattleCentralControl.gridZMax;
-                switch (unit.troopType)
-                {
-                    case TroopType.crossbowman:
-                        posZ = (int)(BattleCentralControl.gridZMax - 1 - zRange / 3);
-                        backLine = posZ;
-                        break;
-                    case TroopType.musketeer:
-                        posZ = (int)(BattleCentralControl.gridZMax - 1 - zRange / 3);
-                        backLine = posZ;
-                        break;
-                    case TroopType.swordsman:
-                        posZ = (int)(BattleCentralControl.gridZMax - 1 - zRange * 2 / 3);
-                        midLine = posZ;
-                        break;
-                    case TroopType.halberdier:
-                        posZ = (int)(BattleCentralControl.gridZMax - 1 - zRange);
-                        frontLine = posZ;
-                        break;
-                    case TroopType.cavalry:
-                        posZ = (int)(BattleCentralControl.gridZMax - 1 - zRange);
-                        frontLine = posZ;
-                        break;
-                    case TroopType.recruitType:
-                        posZ = (int)(BattleCentralControl.gridZMax - 1 - zRange * 2 / 3);
-                        frontLine = posZ;
-                        break;
-                }
-                
-                posX = randX;
-                while (BattleCentralControl.map[posX, posZ].personOnGrid != null)
-                {
-                    if (posX >= BattleCentralControl.gridXMax - 1)
-                    {
-                        posX = 0;
-                    }
-                    posX += 1;
-                }
+        frontLine = (int)(mapSize.y - BattleCentralControl.enemyParty.leader.getTroopPlacingRange(BattleCentralControl.gridZMax));
+        midLine = (int)(troopCenter.y);
+        backLine = (int)(mapSize.y - 1);
+        memberInBattle += 1;
 
-                var pos = new Vector3(posX, 1, posZ);
-                var rot = new Quaternion(0, 0, 0, 0);
-                GameObject unitToPlace = TroopDataBase.troopDataBase.getTroopObject(unit.faction, unit.troopType, unit.ranking);
-                GameObject gridToPlace = BattleCentralControl.gridToObj[BattleCentralControl.map[posX, posZ]];
-                unitToPlace = gridToPlace.GetComponent<GridObject>().placeTroopOnGrid(unitToPlace, pos, rot);
-                unitToPlace.GetComponent<Troop>().placed(unit, BattleCentralControl.map[posX, posZ]);
-                memberInBattle += 1;
-            }
+        switch (BattleCentralControl.enemyParty.leader.troopType) {
+            case TroopType.cavalry:
+                placeTroop((int)troopCenter.x, midLine, BattleCentralControl.enemyParty.leader);
+                break;
+            case TroopType.swordsman:
+                placeTroop((int)troopCenter.x, midLine, BattleCentralControl.enemyParty.leader);
+                break;
+            case TroopType.recruitType:
+                placeTroop((int)troopCenter.x, midLine, BattleCentralControl.enemyParty.leader);
+                break;
+            case TroopType.halberdier:
+                placeTroop((int)troopCenter.x, frontLine, BattleCentralControl.enemyParty.leader);
+                break;
+            case TroopType.musketeer:
+                placeTroop((int)troopCenter.x, backLine, BattleCentralControl.enemyParty.leader);
+                break;
+            case TroopType.crossbowman:
+                placeTroop((int)troopCenter.x, backLine, BattleCentralControl.enemyParty.leader);
+                break;
         }
+        int frontLineNum = halberdiers.Count;
+        int midLineNum = cavalries.Count + swordsmen.Count;
+        int backLineNum = crossbowmen.Count + musketeer.Count;
+        //Debug.Log(frontLine + "||" + midLine + "||" + backLine + " ||| " + mapSize.y);
+        int index = -((int)frontLineNum / 2);
+        foreach (Person unit in halberdiers)
+        {
+            int posX = (int)Mathf.Clamp(troopCenter.x + index * getOffsetX(frontLineNum), 0, mapSize.x - 1);
+            while (BattleCentralControl.map[posX, frontLine].personOnGrid != null)
+            {
+                posX++;
+                if (posX > mapSize.x - 1)
+                {
+                    posX = 0;
+                }
+            }
+            if (memberInBattle < BattleCentralControl.enemyParty.leader.getTroopMaxNum() && unit.troop == null)
+            {
+                placeTroop(posX, frontLine, unit);
+                memberInBattle++;
+            }
+            index++;
+        }
+        index = -((int)backLineNum / 2);
+        foreach (Person unit in crossbowmen)
+        {
+            int posX = (int)Mathf.Clamp(troopCenter.x + index * getOffsetX(backLineNum), 0, mapSize.x - 1);
+            while (BattleCentralControl.map[posX, backLine].personOnGrid != null)
+            {
+                posX++;
+                if (posX > mapSize.x - 1)
+                {
+                    posX = 0;
+                }
+            }
+            if (memberInBattle < BattleCentralControl.enemyParty.leader.getTroopMaxNum() && unit.troop == null)
+            {
+                placeTroop(posX, backLine, unit);
+                memberInBattle++;
+            }
+            index++;
+        }
+        index = -((int)backLineNum / 2);
+        foreach (Person unit in musketeer)
+        {
+            int posX = (int)Mathf.Clamp(troopCenter.x + index * getOffsetX(backLineNum), 0, mapSize.x - 1);
+            while (BattleCentralControl.map[posX, backLine].personOnGrid != null)
+            {
+                posX++;
+                if (posX > mapSize.x - 1)
+                {
+                    posX = 0;
+                }
+            }
+            if (memberInBattle < BattleCentralControl.enemyParty.leader.getTroopMaxNum() && unit.troop == null)
+            {
+                placeTroop(posX, backLine, unit);
+                memberInBattle++;
+            }
+            index++;
+        }
+        //MIDLINE
+        midLineNum = Mathf.Clamp(midLineNum, midLineNum, BattleCentralControl.enemyParty.leader.getTroopMaxNum() - memberInBattle);
+        index = -((int)midLineNum / 2);
+        foreach (Person unit in cavalries)
+        {
+            int posX = (int)Mathf.Clamp(troopCenter.x + index * getOffsetX(midLineNum), 0, mapSize.x - 1);
+            while (BattleCentralControl.map[posX, midLine].personOnGrid != null)
+            {
+                posX++;
+                if (posX > mapSize.x - 1)
+                {
+                    posX = 0;
+                }
+            }
+            if (memberInBattle < BattleCentralControl.enemyParty.leader.getTroopMaxNum() && unit.troop == null)
+            {
+                placeTroop(posX, midLine, unit);
+                memberInBattle++;
+            }
+            index++;
+        }
+        foreach (Person unit in swordsmen)
+        {
+            int posX = (int)Mathf.Clamp(troopCenter.x + index * getOffsetX(midLineNum), 0, mapSize.x - 1);
+            while (BattleCentralControl.map[posX, midLine].personOnGrid != null)
+            {
+                posX++;
+                if (posX > mapSize.x - 1)
+                {
+                    posX = 0;
+                }
+            }
+            if (memberInBattle < BattleCentralControl.enemyParty.leader.getTroopMaxNum()
+                 && unit.troopType == TroopType.swordsman && unit.troop == null)
+            {
+                placeTroop(posX, midLine, unit);
+                memberInBattle++;
+            }
+            index++;
+        }
+        foreach (Person unit in swordsmen)
+        {
+            int posX = (int)Mathf.Clamp(troopCenter.x + index * getOffsetX(midLineNum), 0, mapSize.x - 1);
+            while (BattleCentralControl.map[posX, midLine].personOnGrid != null)
+            {
+                posX++;
+                if (posX > mapSize.x - 1)
+                {
+                    posX = 0;
+                }
+            }
+            if (memberInBattle < BattleCentralControl.enemyParty.leader.getTroopPlacingRange(BattleCentralControl.gridZMax)
+                && unit.troopType == TroopType.recruitType && unit.troop != null)
+            {
+                placeTroop(posX, midLine, unit);
+                memberInBattle++;
+            }
+            index++;
+        }
+
+
+
     }
+
+
     void doAction()
     {
         if (actionQueue.Count != 0 && !inAction)
@@ -172,8 +263,8 @@ public class BattleAIControl : MonoBehaviour {
                 actionQueue.Clear();
             }
             curAIAction.doAIAction(); //do the first half
+            //Debug.Log(curAIAction.troop.person.name + "||" + curAIAction.skillMode + "||" + curAIAction.troop.charging);
 
-            Debug.Log("here");
             if (!waited) //reset clock
             {
                 timer = 0;
@@ -184,92 +275,711 @@ public class BattleAIControl : MonoBehaviour {
             clockTick();
             if (tick)
             {
-
                 curAIAction.finishAIAction();
                 waited = false;
                 curAIAction.finished = true;
-
             }
-            Debug.Log("here finish");
+            if (skippThisAction)
+            {
+                waited = false;
+                curAIAction.finished = true;
+                skippThisAction = false;
+            }
 
         }
     }
     void aiControl()
     {
-        //Debug.Log("aic");
-        if (!scouted)
+
+        if (getSeen().Count == 0)
         {
-           // Debug.Log("aic1");
-            scout();
-            scouted = true;
+            if (!scouted)
+            {
+                decideLinesBlind();
+                probeAttack();
+                forwardToLines();
+                guard();
+                scouted = true;
+            }
+        } else
+        {
+            if (!madeAttack)
+            {
+                actionQueue.Clear();
+                decideLinesSeen();
+                backLineEngage();
+                midLineAttack();
+                frontLineAttack();
+
+                //forwardToLines();
+                madeAttack = true;
+            }
+
+            //Debug.Log(getSeen().Count);
         }
-        
-
-
+        actionQueue.Enqueue(new AIAction(BattleCentralControl.enemyParty.leader.troop, TroopSkill.none));
     }
-
-    void scout()
+    void frontLineAttack()
     {
-        int xOffset = (int)mapSize.x / (cavalries.Count + swordsmen.Count + 1);
-        int index = 0;
+        halberdierEngage();
+    }
+    void midLineAttack()
+    {
+        cavalriesEngage();
+        swordsmenEngage();
+    }
+    void backLineEngage()
+    {
+        musketeerEngage();
+        crossbowmenEngage();
+    }
+    void forwardToLines()
+    {
         foreach (Person unit in cavalries)
         {
-            int posX = (int) Mathf.Clamp(xOffset * index, 0, mapSize.x);
-            index++;
             if (unit.troop != null)
             {
-                
-                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, BattleCentralControl.map[unit.troop.getCurrentGrid().x, unit.troop.getCurrentGrid().z - 10]));
-                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.fire, BattleCentralControl.playerParty.leader.troop));
+                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, findEmptyGrid(BattleCentralControl.map[unit.troop.curGrid.x, midLine], Direction.negZ)));
             }
         }
         foreach (Person unit in swordsmen)
         {
-            int posX = (int)Mathf.Clamp(xOffset * index, 0, mapSize.x);
-            index++;
             if (unit.troop != null)
             {
-                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, BattleCentralControl.map[unit.troop.getCurrentGrid().x, unit.troop.getCurrentGrid().z - 10]));
-                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.fire, BattleCentralControl.playerParty.leader.troop));
+                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, findEmptyGrid(BattleCentralControl.map[unit.troop.curGrid.x, midLine], Direction.negZ)));
             }
         }
         foreach (Person unit in halberdiers)
         {
             if (unit.troop != null)
             {
-                //actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, BattleCentralControl.map[unit.troop.getCurrentGrid().x, unit.troop.getCurrentGrid().z - 3]));
-                //actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.fire, BattleCentralControl.playerParty.leader.troop));
+                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, findEmptyGrid(BattleCentralControl.map[unit.troop.curGrid.x, frontLine], Direction.negZ)));
             }
         }
-        actionQueue.Enqueue(new AIAction(BattleCentralControl.enemyParty.leader.troop, TroopSkill.none));
-        
+        foreach (Person unit in musketeer)
+        {
+            if (unit.troop != null)
+            {
+                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, findEmptyGrid(BattleCentralControl.map[unit.troop.curGrid.x, backLine], Direction.negZ)));
+            }
+        }
+        foreach (Person unit in crossbowmen)
+        {
+            if (unit.troop != null)
+            {
+                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, findEmptyGrid(BattleCentralControl.map[unit.troop.curGrid.x, backLine], Direction.negZ)));
+            }
+        }
 
     }
-    
-
-    void blindForward(Troop troop, int distance)
+    void probeAttack()
     {
-        //troop.curGrid.x, troop.curGrid.z - 10
-        troop.troopMoveToPlace(BattleCentralControl.map[troop.getCurrentGrid().x, troop.getCurrentGrid().z - distance]);
-        //doIt = false;
-        //BattleCentralControl.gridToObj[BattleCentralControl.map[1,1]].GetComponent<GridObject>().moveTroopToGrid(troop.gameObject);
+        foreach (Person unit in musketeer)
+        {
+            if (unit.troop != null)
+            {
+                int assumedZ = (int)Random.Range(2, BattleCentralControl.playerParty.leader.getTroopPlacingRange((int)mapSize.y));
+                int assumedX = (int)Random.Range(unit.troop.curGrid.x - 5, unit.troop.curGrid.x + 5);
+                assumedX = Mathf.Clamp(assumedX, 0, (int)mapSize.x - 1);
+                assumedZ = Mathf.Clamp(assumedZ, 0, (int)mapSize.y - 1);
+                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, findEmptyGrid(BattleCentralControl.map[unit.troop.curGrid.x, backLine], Direction.negZ)));
+            }
+        }
+        foreach (Person unit in crossbowmen)
+        {
+            if (unit.troop != null)
+            {
+                int assumedZ = (int)Random.Range(2, BattleCentralControl.playerParty.leader.getTroopPlacingRange((int)mapSize.y));
+                int assumedX = (int)Random.Range(unit.troop.curGrid.x - 2, unit.troop.curGrid.x + 2);
+                assumedX = Mathf.Clamp(assumedX, 0, (int)mapSize.x - 1);
+                assumedZ = Mathf.Clamp(assumedZ, 0, (int)mapSize.y - 1);
+                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, findEmptyGrid(BattleCentralControl.map[unit.troop.curGrid.x, backLine], Direction.negZ)));
+            }
+        }
+        foreach (Person unit in musketeer)
+        {
+            if (unit.troop != null)
+            {
+                float staminaLeft = unit.stamina * .7f;
+                while (staminaLeft >= 0)
+                {
+                    int assumedZ = (int)Random.Range(2, BattleCentralControl.playerParty.leader.getTroopPlacingRange((int)mapSize.y));
+                    int assumedX = (int)Random.Range(unit.troop.curGrid.x - 5, unit.troop.curGrid.x + 5);
+                    assumedX = Mathf.Clamp(assumedX, 0, (int)mapSize.x - 1);
+                    assumedZ = Mathf.Clamp(assumedZ, 0, (int)mapSize.y - 1);
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.fire, BattleCentralControl.map[assumedX, assumedZ].gridObject));
+                    staminaLeft -= unit.getFireStaminaCost();
+                }
+            }
+        }
+        foreach (Person unit in crossbowmen)
+        {
+            if (unit.troop != null)
+            {
+                float staminaLeft = unit.stamina * .7f;
+                while (staminaLeft >= 0)
+                {
+                    int assumedZ = (int)Random.Range(2, BattleCentralControl.playerParty.leader.getTroopPlacingRange((int)mapSize.y));
+                    int assumedX = (int)Random.Range(unit.troop.curGrid.x - 5, unit.troop.curGrid.x + 5);
+                    assumedX = Mathf.Clamp(assumedX, 0, (int)mapSize.x - 1);
+                    assumedZ = Mathf.Clamp(assumedZ, 0, (int)mapSize.y - 1);
+                    float decider = Random.Range(-1, 1);
+                    if (decider >= 0)
+                    {
+                        actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.quickDraw, BattleCentralControl.map[assumedX, assumedZ].gridObject));
+                        staminaLeft -= unit.getQuickDrawStaminaCost();
+                    } else
+                    {
+                        actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.rainOfArrows, BattleCentralControl.map[assumedX, assumedZ].gridObject));
+                        staminaLeft -= unit.getRainOfArrowsStaminaCost();
+                    }
+                }
+            }
+        }
     }
 
-    
+
+    void swordsmenEngage()
+    {
+        foreach (Person unit in swordsmen)
+        {
+            if (unit.troop != null)
+            {
+                //Debug.Log(unit.name);
+                Troop target = getNearest(unit.troop);
+
+                Grid futureGrid = findEmptyBlockGrid(BattleCentralControl.map[target.curGrid.x, target.curGrid.z], 2);
+                if (futureGrid != null)
+                {
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, futureGrid));
+                    futureGrids.Add(futureGrid);
+
+                    float staminaLeft = unit.stamina;
+                    float distance = getDistance(futureGrid, target.curGrid);
+                    while (staminaLeft >= 0)
+                    {
+                        if (distance < 2)
+                        {
+                            if (getNearbyTroop(unit.troop, 1).Count > 1)
+                            {
+                                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.whirlwind, target.gameObject));
+                                staminaLeft -= unit.getWhirlwindStaminaCost();
+                            }
+                            else
+                            {
+                                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.execute));
+                                staminaLeft -= unit.getExecuteStaminaCost();
+                            }
+                        }
+                        else if (distance >= 2 && distance <= 3)
+                        {
+                            actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.lunge, target.gameObject));
+                            staminaLeft -= unit.getLungeStaminaCost();
+                        }
+                        else
+                        {
+                            Debug.Log("not attacking" + distance);
+                        }
+                    }
+                    
+                }
+
+
+            }
+
+        }
+    }
+    void cavalriesEngage()
+    {
+        foreach (Person unit in cavalries)
+        {
+            if (unit.troop != null)
+            {
+                Troop target = getNearest(unit.troop);
+                //if (attackMode == AIAttackMode.aggressive)
+                //{
+                //    target = getHPLeast();
+                //}
+                Grid futureGrid;
+                if (Mathf.Abs(target.curGrid.x - unit.troop.curGrid.x) <= Mathf.Abs(target.curGrid.z - unit.troop.curGrid.z)) //match z first
+                {
+                    Direction dir = Direction.negZ;
+                    if (unit.troop.curGrid.z - target.curGrid.z < 0)
+                    {
+                        dir = Direction.posZ;
+                    }
+                    if ((int)Mathf.Abs(target.curGrid.x - unit.troop.curGrid.x) != 0)
+                    {
+                        futureGrid = findEmptyGrid(BattleCentralControl.map[unit.troop.curGrid.x, target.curGrid.z], dir);
+                        actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, futureGrid));
+                        futureGrids.Add(futureGrid);
+                    }
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.charge));
+                    futureGrid = findEmptyGrid(BattleCentralControl.map[target.curGrid.x, target.curGrid.z], dir);
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, futureGrid));
+                    futureGrids.Add(futureGrid);
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.charge));
+                } else
+                {
+                    Direction dir = Direction.negX;
+                    if (unit.troop.curGrid.x - target.curGrid.x < 0)
+                    {
+                        dir = Direction.posX;
+                    }
+                    if ((int)Mathf.Abs(target.curGrid.z - unit.troop.curGrid.z) == 0)
+                    {
+                        futureGrid = findEmptyGrid(BattleCentralControl.map[target.curGrid.x, unit.troop.curGrid.z], dir);
+                        actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, futureGrid));
+                        futureGrids.Add(futureGrid);
+                    }
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.charge));
+                    futureGrid = findEmptyGrid(BattleCentralControl.map[target.curGrid.x, target.curGrid.z], dir);
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, futureGrid));
+                    futureGrids.Add(futureGrid);
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.charge));
+                }
+                if (futureGrid != null)
+                {
+                    float staminaLeft = unit.stamina;
+                    float distance = getDistance(futureGrid, target.curGrid);
+                    while (staminaLeft >= 0)
+                    {
+                        if (distance < 2)
+                        {
+                            actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.whirlwind, target.gameObject));
+                            staminaLeft -= unit.getWhirlwindStaminaCost();
+                        }
+                        else if (distance >= 2 && distance <= 3)
+                        {
+                            actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.lunge, target.gameObject));
+                            staminaLeft -= unit.getLungeStaminaCost();
+                        }
+                        else
+                        {
+                            Debug.Log("cav not attacking" + distance);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    void halberdierEngage()
+    {
+        foreach (Person unit in halberdiers)
+        {
+            if (unit.troop != null)
+            {
+                //Debug.Log(unit.name);
+                if (getNearbyTroop(unit.troop, (int) unit.getVision() * 2).Count > 0)
+                {
+                    Troop target = getNearest(unit.troop);
+                    Grid futureGrid = findEmptyBlockGrid(BattleCentralControl.map[target.curGrid.x, target.curGrid.z], 2);
+                    if (futureGrid != null)
+                    {
+                        actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, futureGrid));
+                        futureGrids.Add(futureGrid);
+
+                        float staminaLeft = unit.stamina * .6f;
+                        float distance = getDistance(futureGrid, target.curGrid);
+                        while (staminaLeft >= 0)
+                        {
+                            if (distance < 2)
+                            {
+                                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.whirlwind, target.gameObject));
+                                staminaLeft -= unit.getWhirlwindStaminaCost();
+                            }
+                            else if (distance >= 2 && distance <= 3)
+                            {
+                                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.lunge, target.gameObject));
+                                staminaLeft -= unit.getLungeStaminaCost();
+                            }
+                            else
+                            {
+                                Debug.Log("not attacking" + distance);
+                            }
+                        }
+
+                    }
+                } else
+                {
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, BattleCentralControl.map[unit.troop.curGrid.x, frontLine]));
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.guard));
+                }
+            }
+        }
+    }
+    void musketeerEngage()
+    {
+        foreach (Person unit in musketeer)
+        {
+            if (unit.troop != null)
+            {
+                if (getNearbyTroop(unit.troop, 2).Count > 0)
+                {
+                    Troop target = getNearest(unit.troop);
+                    Grid futureGrid = findEmptyBlockGrid(BattleCentralControl.map[target.curGrid.x, target.curGrid.z], 1);
+                    if (futureGrid != null)
+                    {
+                        actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, futureGrid));
+                        futureGrids.Add(futureGrid);
+
+                        float staminaLeft = unit.stamina * .6f;
+                        float distance = getDistance(futureGrid, target.curGrid);
+                        while (staminaLeft >= 0)
+                        {
+                            if (distance < 2)
+                            {
+                                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.whirlwind, target.gameObject));
+                                staminaLeft -= unit.getWhirlwindStaminaCost();
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    Grid futureGrid = findEmptyBlockGrid(BattleCentralControl.map[unit.troop.curGrid.x, backLine], 2);
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, futureGrid));
+                    futureGrids.Add(futureGrid);
+                    //Finding target
+                    Troop target = getHPLeast();
+                    float distance = getDistance(futureGrid, target.curGrid);
+                    List<Troop> checkedTroop = new List<Troop>();
+                    checkedTroop.Add(target);
+                    while (distance >= 50 && target != null)
+                    {
+                        target = getHPLeast(checkedTroop);
+                    }
+                    if (target == null)
+                    {
+                        target = getNearest(unit.troop);
+                    }
+                    //attacking
+                    float staminaLeft = unit.stamina * .8f;
+                    bool goingToHoldSteady = false;
+                    if (unit.stamina >= unit.getFireStaminaCost() + unit.getHoldSteadyStaminaCost())
+                    {
+                        actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.holdSteady));
+                        goingToHoldSteady = true;
+                    }
+                    while (staminaLeft >= 0)
+                    {
+                        if (distance <= 50)
+                        {
+
+                            actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.fire, target.gameObject));
+                            staminaLeft -= unit.getFireStaminaCost();
+                            if (goingToHoldSteady)
+                            {
+                                staminaLeft -= unit.getHoldSteadyStaminaCost();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    void crossbowmenEngage()
+    {
+        foreach (Person unit in crossbowmen)
+        {
+            if (unit.troop != null)
+            {
+                if (getNearbyTroop(unit.troop, 2).Count > 0)
+                {
+                    Troop target = getNearest(unit.troop);
+                    Grid futureGrid = findEmptyBlockGrid(BattleCentralControl.map[target.curGrid.x, target.curGrid.z], 1);
+                    if (futureGrid != null)
+                    {
+                        actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, futureGrid));
+                        futureGrids.Add(futureGrid);
+
+                        float staminaLeft = unit.stamina * .6f;
+                        float distance = getDistance(futureGrid, target.curGrid);
+                        while (staminaLeft >= 0)
+                        {
+                            if (distance < 2)
+                            {
+                                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.whirlwind, target.gameObject));
+                                staminaLeft -= unit.getWhirlwindStaminaCost();
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    Grid futureGrid = findEmptyBlockGrid(BattleCentralControl.map[unit.troop.curGrid.x, backLine], 2);
+                    actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, futureGrid));
+                    futureGrids.Add(futureGrid);
+                    //Finding target
+                    Troop target = getHPLeast();
+                    float distance = getDistance(futureGrid, target.curGrid);
+                    List<Troop> checkedTroop = new List<Troop>();
+                    checkedTroop.Add(target);
+                    while (distance >= 60 && target != null)
+                    {
+                        target = getHPLeast(checkedTroop);
+                    }
+                    if (target == null)
+                    {
+                        target = getNearest(unit.troop);
+                    }
+                    //attacking
+                    float staminaLeft = unit.stamina * .8f;
+                    while (staminaLeft >= 0)
+                    {
+                        if (distance >= 60 && getNearbyTroop(target, 2).Count <= 1) //getNearbyTroop will return AI troops
+                        {
+                            actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.rainOfArrows, target.gameObject));
+                            staminaLeft -= unit.getRainOfArrowsStaminaCost();
+                        } else
+                        {
+                            actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.quickDraw, target.gameObject));
+                            staminaLeft -= unit.getQuickDrawStaminaCost();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    void guard()
+    {
+
+        foreach (Person unit in halberdiers)
+        {
+            if (unit.troop != null)
+            {
+                actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.guard));
+            }
+        }
+    }
+
+
+
+
+
+    int getOffsetX(int num)
+    {
+        if (attackMode == AIAttackMode.aggressive)
+        {
+            return (int) (mapSize.x / (num + 1));
+        } else if (attackMode == AIAttackMode.cautious) {
+            return 1;
+        } else
+        {
+            return (int) (mapSize.x / (2 * num));
+        }
+    }
+
+    Grid findEmptyBlockGrid(Grid center, int offset)
+    {
+        Grid result = null;
+        float highestBlockRate = 0;
+        for (int i = -offset; i <= offset; i++)
+        {
+            for (int j = -offset; j <= offset; j++)
+            {
+                if (center.x + i >= 0 && center.x + i <= mapSize.x - 1 && center.z + j >= 0 && center.z + j <= mapSize.y - 1)
+                {
+                    if (BattleCentralControl.map[center.x + i, center.z + j].personOnGrid == null
+                        && !futureGrids.Contains(BattleCentralControl.map[center.x + i, center.z + j])
+                            && BattleCentralControl.map[center.x + i, center.z + j].blockRate > highestBlockRate)
+                    {
+                        highestBlockRate = BattleCentralControl.map[center.x + i, center.z + j].blockRate;
+                        result = BattleCentralControl.map[center.x + i, center.z + j];
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    Grid findEmptyGrid(Grid toCheck, Direction dir)
+    {
+        Grid result = toCheck;
+        while (result.personOnGrid != null || futureGrids.Contains(result))
+        {
+            if (result.z >= mapSize.y - 1 || result.z <= 0 
+                || result.x >= mapSize.x - 1 || result.x <= 0)
+            {
+                return result;
+            } else
+            {
+                switch(dir)
+                {
+                    case Direction.negX:
+                        result = BattleCentralControl.map[result.x - 1, result.z];
+                        break;
+                    case Direction.posX:
+                        result = BattleCentralControl.map[result.x + 1, result.z];
+                        break;
+                    case Direction.negZ:
+                        result = BattleCentralControl.map[result.x, result.z - 1];
+                        break;
+                    case Direction.posZ:
+                        result = BattleCentralControl.map[result.x, result.z + 1];
+                        break;
+                }
+                
+            }
+        }
+        return result;
+    }
+    void decideLinesBlind()
+    {
+        int offSetZ = (int) mapSize.y / 10;
+        switch (attackMode) {
+            case AIAttackMode.aggressive:
+                backLine = frontLine;
+                frontLine -= 2 * offSetZ;
+                midLine -= 2 * offSetZ;
+                break;
+            case AIAttackMode.cautious:
+                //frontLine -= offSetZ;
+                midLine -= 2 * offSetZ;
+                //backLine -= offSetZ;
+                break;
+            case AIAttackMode.neutral:
+                backLine = frontLine;
+                frontLine = backLine - offSetZ;
+                midLine = frontLine - 2 * offSetZ;
+                break;
+        }
+        frontLine = Mathf.Clamp(frontLine, 2, (int)mapSize.y - 2);
+        midLine = Mathf.Clamp(midLine, 2, (int)mapSize.y - 2);
+        backLine = Mathf.Clamp(backLine, 2, (int)mapSize.y - 2);
+    }
+    void decideLinesSeen()
+    {
+        int offSetZ = (int)mapSize.y / 10;
+        int playerTroopFront = 0;
+        int playerTroopBack = (int)mapSize.y - 1;
+        foreach (Troop p in getSeen())
+        {
+            if (playerTroopFront < p.curGrid.z)
+            {
+                playerTroopFront = (int)p.curGrid.z;
+            }
+            if (playerTroopBack > p.curGrid.z)
+            {
+                playerTroopBack = (int)p.curGrid.z;
+            }
+
+        }
+        switch (attackMode)
+        {
+            case AIAttackMode.aggressive:
+                frontLine = playerTroopFront;
+                midLine = (playerTroopBack + playerTroopFront) / 2;
+                backLine -= offSetZ;
+                break;
+            case AIAttackMode.cautious:
+                //frontLine -= offSetZ;
+                midLine = playerTroopFront;
+                //backLine -= offSetZ;
+                break;
+            case AIAttackMode.neutral:
+                frontLine = playerTroopFront;
+                midLine = playerTroopFront - 1;
+                //backLine -= offSetZ;
+                break;
+        }
+        frontLine = Mathf.Clamp(frontLine, 2, (int) mapSize.y - 2);
+        midLine = Mathf.Clamp(midLine, 2, (int) mapSize.y - 2);
+        backLine = Mathf.Clamp(backLine, 2, (int) mapSize.y - 2);
+    }
+    Troop getNearest(Troop troop)
+    {
+        List<Troop> seenTroop = getSeen();
+        if (seenTroop.Count > 0)
+        {
+            float leastDistance = Vector3.Distance(seenTroop[0].gameObject.transform.position, troop.gameObject.transform.position);
+            Troop closestTroop = seenTroop[0];
+            foreach (Troop playerTroop in seenTroop)
+            {
+                if (leastDistance > Vector3.Distance(playerTroop.gameObject.transform.position, troop.gameObject.transform.position))
+                {
+                    leastDistance = Vector3.Distance(playerTroop.gameObject.transform.position, troop.gameObject.transform.position);
+                    closestTroop = playerTroop;
+                }
+            }
+            return closestTroop;
+        }
+        return null;
+    }
+    Troop getHPLeast()
+    {
+        List<Troop> seenTroop = getSeen();
+        if (seenTroop.Count > 0)
+        {
+            float leastHP = seenTroop[0].person.health;
+            Troop leastTroop = seenTroop[0];
+            foreach (Troop playerTroop in seenTroop)
+            {
+                if (leastHP > playerTroop.person.health)
+                {
+                    leastHP = playerTroop.person.health;
+                    leastTroop = playerTroop;
+                }
+            }
+            return leastTroop;
+        }
+        return null;
+    }
+    Troop getHPLeast(List<Troop> checkedTroop)
+    {
+        List<Troop> seenTroop = getSeen();
+        if (seenTroop.Count > 0)
+        {
+            float leastHP = seenTroop[0].person.health;
+            Troop leastTroop = seenTroop[0];
+            foreach (Troop playerTroop in seenTroop)
+            {
+                if (leastHP > playerTroop.person.health && checkedTroop.Contains(playerTroop))
+                {
+                    leastHP = playerTroop.person.health;
+                    leastTroop = playerTroop;
+                }
+            }
+            return leastTroop;
+        }
+        return null;
+    }
+    List<Troop> getNearbyTroop(Troop troop, int offset)
+    {
+        List<Troop> result = new List<Troop>();
+        Grid center = troop.curGrid;
+        for (int i = -offset; i <= offset; i++)
+        {
+            for (int j = -offset; j <= offset; j++)
+            {
+                if (center.x + i >= 0 && center.x + i <= mapSize.x - 1 && center.z + j >= 0 && center.z + j <= mapSize.y - 1)
+                {
+                    if (BattleCentralControl.map[center.x + i, center.z + j].personOnGrid != null
+                        && BattleCentralControl.map[center.x + i, center.z + j].personOnGrid.faction != troop.person.faction)
+                    {
+                        result.Add(BattleCentralControl.map[center.x + i, center.z + j].personOnGrid.troop);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+
 
     List<Troop> getSeen()
     {
         List<Troop> result = new List<Troop>();
         foreach(Person unit in BattleCentralControl.playerParty.partyMember)
         {
-            if (unit.troop != null && unit.troop.seenStatus && !result.Contains(unit.troop))
+            if (unit.troop != null && unit.troop.seen && !result.Contains(unit.troop))
             {
                 result.Add(unit.troop);
             }
         }
         return result;
     }
-
     void categorizeTroop()
     {
         halberdiers.Clear();
@@ -280,42 +990,46 @@ public class BattleAIControl : MonoBehaviour {
 
         foreach(Person p in BattleCentralControl.enemyParty.partyMember)
         {
-            if (p.troop != null && p != BattleCentralControl.enemyParty.leader)
+            switch (p.troopType)
             {
-                switch (p.troopType)
-                {
-                    case TroopType.halberdier:
-                        halberdiers.Add(p);
-                        break;
-                    case TroopType.cavalry:
-                        cavalries.Add(p);
-                        break;
-                    case TroopType.swordsman:
-                        //swordsmen.Add(p);
-                        break;
-                    case TroopType.crossbowman:
-                        crossbowmen.Add(p);
-                        break;
-                    case TroopType.musketeer:
-                        musketeer.Add(p);
-                        break;
-                    case TroopType.recruitType:
-                        swordsmen.Add(p);
-                        break;
-                }
-            }
-            if (p != BattleCentralControl.enemyParty.leader)
-            {
-
+                case TroopType.halberdier:
+                    halberdiers.Add(p);
+                    break;
+                case TroopType.cavalry:
+                    cavalries.Add(p);
+                    break;
+                case TroopType.swordsman:
+                    swordsmen.Add(p);
+                    break;
+                case TroopType.crossbowman:
+                    crossbowmen.Add(p);
+                    break;
+                case TroopType.musketeer:
+                    musketeer.Add(p);
+                    break;
+                case TroopType.recruitType:
+                    swordsmen.Add(p);
+                    break;
             }
         }
-        halberdiers = sortListByGridX(halberdiers);
-        cavalries = sortListByGridX(cavalries);
-        swordsmen = sortListByGridX(swordsmen);
-        musketeer = sortListByGridX(musketeer);
-        crossbowmen = sortListByGridX(crossbowmen);
+        if (enemyPlaced)
+        {
+            halberdiers = sortListByGridX(halberdiers);
+            cavalries = sortListByGridX(cavalries);
+            swordsmen = sortListByGridX(swordsmen);
+            musketeer = sortListByGridX(musketeer);
+            crossbowmen = sortListByGridX(crossbowmen);
+        }
     }
-
+    void placeTroop(int posX, int posZ, Person unit)
+    {
+        var pos = new Vector3(posX, 1, posZ);
+        var rot = new Quaternion(0, 0, 0, 0);
+        GameObject unitToPlace = TroopDataBase.troopDataBase.getTroopObject(unit.faction, unit.troopType, unit.ranking);
+        GameObject gridToPlace = BattleCentralControl.map[posX, posZ].gridObject;
+        unitToPlace = gridToPlace.GetComponent<GridObject>().placeTroopOnGrid(unitToPlace, pos, rot);
+        unitToPlace.GetComponent<Troop>().placed(unit, BattleCentralControl.map[posX, posZ]);
+    }
     void decideAttackMode()
     {
         int cautiousChance = 10;
@@ -355,8 +1069,18 @@ public class BattleAIControl : MonoBehaviour {
             attackMode = AIAttackMode.neutral;
         }
     }
-
-
+    float getDistance(Grid gridOne, Grid gridTwo)
+    {
+        if (gridOne == null)
+        {
+            Debug.Log(gridOne.x + " " + gridOne.z);
+        }
+        if (gridTwo == null)
+        {
+            Debug.Log(gridTwo.x + " " + gridTwo.z);
+        }
+        return Vector2.Distance(new Vector2(gridOne.x, gridOne.z), new Vector2(gridTwo.x,  gridTwo.z));
+    }
     void clockTick()
     {
         timer += Time.deltaTime;
@@ -379,20 +1103,27 @@ public class BattleAIControl : MonoBehaviour {
             Person temp;
             for (int i = 0; i < personL.Count - 1; i++)
             {
-                smallestX = personL[i].troop.getCurrentGrid().x;
-                smallestIndex = i;
-                for (int j = i + 1; j < personL.Count; j++)
+                if (personL[i].troop != null)
                 {
-                    comparingX = personL[j].troop.getCurrentGrid().x;
-                    if (smallestX >= comparingX)
+                    smallestX = personL[i].troop.curGrid.x;
+                    smallestIndex = i;
+                    for (int j = i + 1; j < personL.Count; j++)
                     {
-                        smallestIndex = j;
-                        smallestX = comparingX;
+                        if (personL[j].troop != null)
+                        {
+                            comparingX = personL[j].troop.curGrid.x;
+                            if (smallestX >= comparingX)
+                            {
+                                smallestIndex = j;
+                                smallestX = comparingX;
+                            }
+                        }
                     }
+                    temp = personL[i];
+                    personL[i] = personL[smallestIndex];
+                    personL[smallestIndex] = temp;
                 }
-                temp = personL[i];
-                personL[i] = personL[smallestIndex];
-                personL[smallestIndex] = temp;
+                
             }
         }
         return personL;
@@ -400,7 +1131,8 @@ public class BattleAIControl : MonoBehaviour {
 }
 
 public class AIAction {
-    public Troop troop, target;
+    public Troop troop;
+    public GameObject target;
     public TroopSkill skillMode;
     public Grid destination;
     public bool finished;
@@ -409,7 +1141,7 @@ public class AIAction {
         troop = troopI;
         skillMode = skillModeI;
     }
-    public AIAction(Troop troopI, TroopSkill skillModeI, Troop targetI)
+    public AIAction(Troop troopI, TroopSkill skillModeI, GameObject targetI)
     {
         troop = troopI;
         skillMode = skillModeI;
@@ -431,24 +1163,75 @@ public class AIAction {
                 break;
             case TroopSkill.walk:
                 //Debug.Log(destination.x + " " + destination.z);
+                BattleAIControl.futureGrids.Remove(troop.curGrid);
                 troop.troopMoveToPlace(destination);
                 break;
             case TroopSkill.lunge:
+                if (troop.person.stamina >= troop.person.getLungeStaminaCost())
+                {
+                    lungeAttack(troop, target);
+                } else
+                {
+                    BattleAIControl.skippThisAction = true;
+                }
                 break;
             case TroopSkill.whirlwind:
+                if (troop.person.stamina >= troop.person.getWhirlwindStaminaCost())
+                {
+                    whirlwindAttack(troop);
+                } else
+                {
+                    BattleAIControl.skippThisAction = true;
+                }
                 break;
             case TroopSkill.execute:
+                if (troop.person.stamina >= troop.person.getExecuteStaminaCost())
+                {
+                    executeAttack(troop);
+                } else
+                {
+                    BattleAIControl.skippThisAction = true;
+                }
                 break;
             case TroopSkill.guard:
+                if (troop.person.stamina >= troop.person.getGuardStaminaCost())
+                {
+                    guardAttack(troop);
+                } else
+                {
+                    BattleAIControl.skippThisAction = true;
+                }
                 break;
             case TroopSkill.holdSteady:
                 break;
             case TroopSkill.fire:
-                fireAttack(troop, target);
+                if (troop.person.stamina >= troop.person.getFireStaminaCost())
+                {
+                    fireAttack(troop, target);
+                } else
+                {
+                    BattleAIControl.skippThisAction = true;
+                }
                 break;
             case TroopSkill.quickDraw:
+                if (troop.person.stamina >= troop.person.getQuickDrawStaminaCost())
+                {
+                    quickDrawAttack(troop, target);
+                } else
+                {
+                    BattleAIControl.skippThisAction = true;
+                }
                 break;
             case TroopSkill.rainOfArrows:
+                if (troop.person.stamina >= troop.person.getRainOfArrowsStaminaCost())
+                {
+                    rainOfArrowAttack(troop, target);
+                } else
+                {
+                    BattleAIControl.skippThisAction = true;
+                }
+                break;
+            case TroopSkill.charge:
                 break;
         }
     }
@@ -461,14 +1244,35 @@ public class AIAction {
             case TroopSkill.walk:
                 break;
             case TroopSkill.lunge:
+                troop.doSkill(troop.indicatedGrid(), TroopSkill.lunge);
+                troop.hideIndicators();
+                troop.aiControlled = false;
                 break;
             case TroopSkill.whirlwind:
+                troop.doSkill(troop.indicatedGrid(), TroopSkill.whirlwind);
+                troop.hideIndicators();
+                troop.aiControlled = false;
                 break;
             case TroopSkill.execute:
+                troop.doSkill(troop.indicatedGrid(), TroopSkill.execute);
+                troop.hideIndicators();
+                troop.aiControlled = false;
                 break;
             case TroopSkill.guard:
+                troop.doSkill(troop.indicatedGrid(), TroopSkill.guard);
+                troop.hideIndicators();
+                troop.aiControlled = false;
+                break;
+            case TroopSkill.charge:
+                charge(troop);
+                troop.aiControlled = false;
                 break;
             case TroopSkill.holdSteady:
+                if (troop.person.stamina >= troop.person.getFireStaminaCost() + troop.person.getHoldSteadyStaminaCost())
+                {
+                    holdSteadyAttack(troop);
+                }
+                troop.aiControlled = false;
                 break;
             case TroopSkill.fire:
                 troop.doSkill(troop.indicatedGrid(), TroopSkill.fire);
@@ -476,43 +1280,103 @@ public class AIAction {
                 troop.aiControlled = false;
                 break;
             case TroopSkill.quickDraw:
+                troop.doSkill(troop.indicatedGrid(), TroopSkill.quickDraw);
+                troop.hideIndicators();
+                troop.aiControlled = false;
                 break;
             case TroopSkill.rainOfArrows:
+                troop.doSkill(troop.indicatedGrid(), TroopSkill.rainOfArrows);
+                troop.hideIndicators();
+                troop.aiControlled = false;
                 break;
         }
         
     }
+    
 
-
-
-    void lungeAttack(Troop troop, Troop attacked)
+    void lungeAttack(Troop unit, GameObject attacked)
     {
-        if (!troop.lungeIndicator.activeSelf)
+        if (!unit.lungeIndicator.activeSelf)
         {
-            troop.lungeIndicator.SetActive(true);
+            unit.lungeIndicator.SetActive(true);
         }
-        Vector3 v = attacked.gameObject.transform.position - troop.gameObject.transform.position;
-        v.x = v.z = 0.0f;
-        troop.gameObject.transform.LookAt(attacked.gameObject.transform.position - v);
-        troop.gameObject.transform.Rotate(0, 180, 0);
+        unit.curIndicator = unit.lungeIndicator;
+        lookAtObject(unit.gameObject, attacked);
+        lookAtObject(unit.curIndicator, attacked);
     }
-
-    void fireAttack(Troop troop, Troop attacked)
+    void whirlwindAttack(Troop unit)
     {
-        if (!troop.fireIndicator.activeSelf)
+        if (!unit.whirlwindIndicator.activeSelf)
         {
-            troop.fireIndicator.SetActive(true);
+            unit.whirlwindIndicator.SetActive(true);
         }
-        troop.curIndicator = troop.fireIndicator;
-        lookAtObject(troop.gameObject, attacked.gameObject);
+        unit.curIndicator = unit.whirlwindIndicator;
     }
-
+    void executeAttack(Troop unit)
+    {
+        if (!unit.executeIndicator.activeSelf)
+        {
+            unit.executeIndicator.SetActive(true);
+        }
+        unit.curIndicator = unit.executeIndicator;
+    }
+    void guardAttack(Troop unit)
+    {
+        if (!unit.guardIndicator.activeSelf)
+        {
+            unit.guardIndicator.SetActive(true);
+        }
+        unit.curIndicator = unit.guardIndicator;
+    }
+    void holdSteadyAttack(Troop unit)
+    {
+        unit.holdSteady();
+    }
+    void charge(Troop unit)
+    {
+        unit.charge();
+    }
+    void fireAttack(Troop unit, GameObject attacked)
+    {
+        if (!unit.fireIndicator.activeSelf)
+        {
+            unit.fireIndicator.SetActive(true);
+        }
+        unit.curIndicator = unit.fireIndicator;
+        lookAtObject(unit.curIndicator, attacked);
+        lookAtObject(unit.gameObject, attacked);
+    }
+    void quickDrawAttack(Troop unit, GameObject attacked)
+    {
+        if (!unit.quickDrawIndicator.activeSelf)
+        {
+            unit.quickDrawIndicator.SetActive(true);
+        }
+        unit.curIndicator = unit.quickDrawIndicator;
+        lookAtObject(unit.curIndicator, attacked);
+        lookAtObject(unit.gameObject, attacked);
+    }
+    void rainOfArrowAttack(Troop unit, GameObject attacked)
+    {
+        if (!unit.rainOfArrowIndicator.activeSelf)
+        {
+            unit.rainOfArrowIndicator.SetActive(true);
+        }
+        unit.curIndicator = unit.rainOfArrowIndicator;
+        lookAtObject(unit.gameObject, attacked);
+        followObject(unit.rainOfArrowIndicator, attacked);
+    }
     void lookAtObject(GameObject looker, GameObject obj)
     {
-        Vector3 v = looker.transform.position - obj.transform.position;
+        Vector3 v = obj.transform.position - looker.transform.position;
         v.x = v.z = 0.0f;
         looker.gameObject.transform.LookAt(obj.transform.position - v);
         looker.gameObject.transform.Rotate(0, 180, 0);
+    }
+    void followObject(GameObject objToMove, GameObject obj)
+    {
+        Vector3 pos = new Vector3(obj.transform.position.x, 0, obj.transform.position.z);
+        objToMove.transform.position = Vector3.Slerp(obj.transform.position, pos, Time.deltaTime * 1000);
     }
 
 }
@@ -521,4 +1385,12 @@ public enum AIAttackMode
     aggressive,
     cautious,
     neutral
+}
+
+public enum Direction
+{
+    negX, //right
+    posX, //left
+    negZ, //front
+    posZ //back
 }

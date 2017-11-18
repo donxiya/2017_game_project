@@ -19,7 +19,7 @@ public class Grid {
     public float staminaCost { get; set; }
     public float playerTempStaminaCost { get; set; }
     public float enemyTempStaminaCost { get; set; }
-
+    public GameObject gridObject { get; set; }
     public Grid (int x, int z, GameObject model, GridType gridType)
     {
         this.x = x;

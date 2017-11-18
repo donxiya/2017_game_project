@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class GridObject : BattleInteractable {
     public bool seen = false;
-    public Color originalColor;
+    public Color originalColor, guardedByEnemyIndicatorOriginalColor;
+    public Material invisibleMaterial;
     public MeshRenderer meshRenderer;
     public GameObject infoPanel;
     public GameObject guardedByPlayerIndicator, guardedByEnemyIndicator;
-
+    public Grid grid;
     public void Awake()
     {
         //originalColor = meshRenderer.material.color;
@@ -48,7 +49,7 @@ public class GridObject : BattleInteractable {
         {
             GridInspectPanel.unknown = true;
         }
-        GridInspectPanel.grid = BattleCentralControl.objToGrid[gameObject];
+        GridInspectPanel.grid = grid;
     }
     public override void cameraFocusOnExit()
     {
@@ -62,8 +63,8 @@ public class GridObject : BattleInteractable {
     }
     public bool inGrid(float x, float z)
     {
-        float gridPosX = BattleCentralControl.objToGrid[gameObject].x;
-        float gridPosZ = BattleCentralControl.objToGrid[gameObject].x;
+        float gridPosX = grid.x;
+        float gridPosZ = grid.x;
         if (x > gridPosX- .5f && x < gridPosX + .5f &&
             z > gridPosZ - .5f && z < gridPosZ + .5f)
         {
@@ -75,14 +76,14 @@ public class GridObject : BattleInteractable {
     public void moveTroopToGrid(GameObject toMove)
     {
 
-        toMove.GetComponent<Troop>().troopMoveToPlace(BattleCentralControl.objToGrid[gameObject]);
+        toMove.GetComponent<Troop>().troopMoveToPlace(grid);
         
     }
     public void checkTroopOnGrid(Troop troop)
     {
-        if (BattleCentralControl.objToGrid[gameObject].personOnGrid != null)
+        if (grid.personOnGrid != null)
         {
-            BattleCentralControl.objToGrid[gameObject].checkPersonStealth(troop);
+            grid.checkPersonStealth(troop);
         }
     }
     public void guardedByPlayer(bool guarded)
@@ -96,12 +97,15 @@ public class GridObject : BattleInteractable {
     public void becomeUnseen()
     {
         originalColor = meshRenderer.material.color;
+        guardedByEnemyIndicatorOriginalColor = guardedByEnemyIndicator.GetComponent<MeshRenderer>().material.color;
         meshRenderer.material.color = new Color(0f, 0f, 0f);
+        guardedByEnemyIndicator.GetComponent<MeshRenderer>().material = invisibleMaterial;
         seen = false;
     }
     public void becomeSeen()
     {
         meshRenderer.material.color = originalColor;
+        guardedByEnemyIndicator.GetComponent<MeshRenderer>().material.color = guardedByEnemyIndicatorOriginalColor;
         seen = true;
     }
 }
