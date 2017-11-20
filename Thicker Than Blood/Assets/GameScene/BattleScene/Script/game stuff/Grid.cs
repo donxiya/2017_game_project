@@ -9,9 +9,6 @@ public class Grid {
     public int z { get; set; }
     public bool occupied;
     public Person personOnGrid { get; set; }
-    public float mark { get; set; }
-    public Queue<Grid> path { get; set; }
-    public List<Grid> neighbors { get; set; }
     public GameObject mapSettingModel { get; set; }
     public GridType gridType { get; set; }
     public float hideRate { get; set; }
@@ -20,6 +17,7 @@ public class Grid {
     public float playerTempStaminaCost { get; set; }
     public float enemyTempStaminaCost { get; set; }
     public GameObject gridObject { get; set; }
+    public List<Person> guardingPersons { get; set; }
     public Grid (int x, int z, GameObject model, GridType gridType)
     {
         this.x = x;
@@ -27,7 +25,6 @@ public class Grid {
         this.mapSettingModel = model;
         this.gridType = gridType;
         occupied = false;
-        mark = 0;
         playerTempStaminaCost = 0;
         enemyTempStaminaCost = 0;
         initialization();
@@ -57,8 +54,31 @@ public class Grid {
         }
         playerTempStaminaCost = 0;
         enemyTempStaminaCost = 0;
-        neighbors = new List<Grid>();
-        path = new Queue<Grid>();
+        guardingPersons = new List<Person>();
+    }
+
+    public void guarded(Person person)
+    {
+        if (person.faction == Faction.mercenary)
+        {
+            enemyTempStaminaCost += person.getGuardedIncrease();
+        } else
+        {
+            playerTempStaminaCost += person.getGuardedIncrease();
+        }
+        guardingPersons.Add(person);
+    }
+    public void unguarded(Person person)
+    {
+        if (person.faction == Faction.mercenary)
+        {
+            enemyTempStaminaCost -= person.getGuardedIncrease();
+        }
+        else
+        {
+            playerTempStaminaCost -= person.getGuardedIncrease();
+        }
+        guardingPersons.Remove(person);
     }
     public float getStaminaCost(Faction faction)
     {

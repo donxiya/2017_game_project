@@ -86,13 +86,28 @@ public class GridObject : BattleInteractable {
             grid.checkPersonStealth(troop);
         }
     }
-    public void guardedByPlayer(bool guarded)
+    public void guardedByPlayer(bool guarded, Person p)
     {
         guardedByPlayerIndicator.SetActive(guarded);
+        if (guarded)
+        {
+            grid.guarded(p);
+        } else
+        {
+            grid.unguarded(p);
+        }
     }
-    public void guardedByEnemy(bool guarded)
+    public void guardedByEnemy(bool guarded, Person p)
     {
         guardedByEnemyIndicator.SetActive(guarded);
+        if (guarded)
+        {
+            grid.guarded(p);
+        }
+        else
+        {
+            grid.unguarded(p);
+        }
     }
     public void becomeUnseen()
     {
@@ -105,7 +120,14 @@ public class GridObject : BattleInteractable {
     public void becomeSeen()
     {
         meshRenderer.material.color = originalColor;
-        guardedByEnemyIndicator.GetComponent<MeshRenderer>().material.color = guardedByEnemyIndicatorOriginalColor;
+        foreach (Person p in grid.guardingPersons)
+        {
+            if (p.troop != null && p.troop.seen)
+            {
+                guardedByEnemyIndicator.GetComponent<MeshRenderer>().material.color = guardedByEnemyIndicatorOriginalColor;
+                break;
+            }
+        }
         seen = true;
     }
 }

@@ -17,6 +17,7 @@ public class BattleAIControl : MonoBehaviour {
     bool tick = false;
     bool turnInitialized = false;
     bool scouted = false;
+    bool probed = false;
     bool madeAttack = false;
     Queue<AIAction> actionQueue = new Queue<AIAction>();
     List<Person> halberdiers, swordsmen, cavalries, crossbowmen, musketeer;
@@ -264,7 +265,7 @@ public class BattleAIControl : MonoBehaviour {
             }
             curAIAction.doAIAction(); //do the first half
             //Debug.Log(curAIAction.troop.person.name + "||" + curAIAction.skillMode + "||" + curAIAction.troop.charging);
-
+            curAIAction.troop.cameraFocusOn();
             if (!waited) //reset clock
             {
                 timer = 0;
@@ -278,12 +279,14 @@ public class BattleAIControl : MonoBehaviour {
                 curAIAction.finishAIAction();
                 waited = false;
                 curAIAction.finished = true;
+                curAIAction.troop.cameraFocusOnExit();
             }
             if (skippThisAction)
             {
                 waited = false;
                 curAIAction.finished = true;
                 skippThisAction = false;
+                curAIAction.troop.cameraFocusOnExit();
             }
 
         }
@@ -296,7 +299,10 @@ public class BattleAIControl : MonoBehaviour {
             if (!scouted)
             {
                 decideLinesBlind();
-                probeAttack();
+                if (!probed)
+                {
+                    probeAttack();
+                }
                 forwardToLines();
                 guard();
                 scouted = true;
@@ -598,7 +604,7 @@ public class BattleAIControl : MonoBehaviour {
                                 Debug.Log("not attacking" + distance);
                             }
                         }
-
+                        actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.guard));
                     }
                 } else
                 {
@@ -1071,14 +1077,6 @@ public class BattleAIControl : MonoBehaviour {
     }
     float getDistance(Grid gridOne, Grid gridTwo)
     {
-        if (gridOne == null)
-        {
-            Debug.Log(gridOne.x + " " + gridOne.z);
-        }
-        if (gridTwo == null)
-        {
-            Debug.Log(gridTwo.x + " " + gridTwo.z);
-        }
         return Vector2.Distance(new Vector2(gridOne.x, gridOne.z), new Vector2(gridTwo.x,  gridTwo.z));
     }
     void clockTick()

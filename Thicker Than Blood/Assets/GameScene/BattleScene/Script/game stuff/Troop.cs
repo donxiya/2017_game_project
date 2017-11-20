@@ -109,15 +109,24 @@ public class Troop : BattleInteractable {
             BattleInspectPanel.person = person;
             inspectPanel.SetActive(true);
         }
+        if (!BattleCentralControl.playerTurn)
+        {
+            base.cameraFocusOn();
+        }
     }
     public override void cameraFocusOnExit()
     {
+        if (BattleCentralControl.playerTurn)
+        {
+            controlPanel.SetActive(false);
+            controlled = false;
+            BattleInspectPanel.person = null;
+            inspectPanel.SetActive(false);
+            hideIndicators();
+        }
         base.cameraFocusOnExit();
-        controlPanel.SetActive(false);
-        controlled = false;
-        BattleInspectPanel.person = null;
-        inspectPanel.SetActive(false);
-        hideIndicators();
+        
+        
     }
     public void troopMoveToPlace(Grid grid) {
         reachedDestination = false;
@@ -453,11 +462,11 @@ public class Troop : BattleInteractable {
                 if (person.faction == Faction.mercenary)
                 {
                     g.enemyTempStaminaCost -= person.getGuardStaminaCost();
-                    g.gridObject.GetComponent<GridObject>().guardedByPlayer(false);
+                    g.gridObject.GetComponent<GridObject>().guardedByPlayer(false, person);
                 } else
                 {
                     g.playerTempStaminaCost -= person.getGuardStaminaCost();
-                    g.gridObject.GetComponent<GridObject>().guardedByEnemy(false);
+                    g.gridObject.GetComponent<GridObject>().guardedByEnemy(false, person);
                 }
             }
             guardedGrids.Clear();
@@ -652,13 +661,11 @@ public class Troop : BattleInteractable {
                     {
                         if (person.faction == Faction.mercenary)
                         {
-                            g.enemyTempStaminaCost += person.getGuardedIncrease();
-                            g.gridObject.GetComponent<GridObject>().guardedByPlayer(true);
+                            g.gridObject.GetComponent<GridObject>().guardedByPlayer(true, person);
                         }
                         else
                         {
-                            g.playerTempStaminaCost += person.getGuardedIncrease();
-                            g.gridObject.GetComponent<GridObject>().guardedByEnemy(true);
+                            g.gridObject.GetComponent<GridObject>().guardedByEnemy(true, person);
                         }
                         guardedGrids.Add(g);
                     }

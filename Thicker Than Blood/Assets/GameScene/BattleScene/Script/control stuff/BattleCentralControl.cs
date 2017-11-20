@@ -142,29 +142,6 @@ public class BattleCentralControl : MonoBehaviour {
                 mapGridDecider(ix, iz);
             }
         }
-        foreach (Grid g in map)
-        {
-            for (int dx = 0; dx < 3; dx++)
-            {
-                for (int dz = 0; dz < 3; dz++)
-                {
-
-                    int tx = g.x - 1 + dx;
-                    int tz = g.z - 1 + dz;
-                    if (tx >= 0 && tx < gridXMax && tz >= 0 && tz < gridZMax)
-                    {
-                        Grid curG = BattleCentralControl.map[tx, tz];
-                        if ((tx != g.x || tz != g.z) && !g.neighbors.Contains(curG))
-                        {
-                            g.neighbors.Add(curG);
-                            
-                        }
-                        
-                    }
-                }
-            }
-            
-        }
     }
     void placeOnMap(int x, int z)
     {
@@ -175,13 +152,14 @@ public class BattleCentralControl : MonoBehaviour {
                 var pos = new Vector3(ix, 0, iz);
                 var rot = new Quaternion(0, 0, 0, 0);
                 var obj = Instantiate(map[ix, iz].mapSettingModel, pos, rot);
+                map[ix, iz].gridObject = obj;
+                obj.GetComponent<GridObject>().grid = map[ix, iz];
                 obj.GetComponent<GridObject>().becomeUnseen();
                 if (iz <= BattleCentralControl.playerParty.leader.getTroopPlacingRange(BattleCentralControl.gridZMax))
                 {
                     obj.GetComponent<GridObject>().becomeSeen();
                 }
-                map[ix, iz].gridObject = obj;
-                obj.GetComponent<GridObject>().grid = map[ix, iz];
+                
                 //gridToObj.Add(map[ix, iz], obj);
                 //objToGrid.Add(obj, map[ix, iz]);
             }
