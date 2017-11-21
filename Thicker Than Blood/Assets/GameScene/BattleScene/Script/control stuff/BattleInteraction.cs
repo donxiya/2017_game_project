@@ -76,6 +76,26 @@ public class BattleInteraction : MonoBehaviour {
             }
             
         }
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (BattleCentralControl.playerTurn)
+            {
+                if (curControlled != null)
+                {
+                    curControlled.GetComponent<Troop>().cameraFocusOnExit();
+                    curControlled = getNextPersonOnField(curControlled.GetComponent<Troop>().person).troop.gameObject;
+                    curControlled.GetComponent<Troop>().cameraFocusOn();
+                } else
+                {
+                    foreach (KeyValuePair<Person, GameObject> pair in BattleCentralControl.playerTroopOnField)
+                    {
+                        BattleInteraction.curControlled = pair.Value;
+                        BattleInteraction.curControlled.GetComponent<Troop>().cameraFocusOn();
+                        break;
+                    }
+                }
+            }
+        }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (skillMode == TroopSkill.walk)
@@ -194,5 +214,32 @@ public class BattleInteraction : MonoBehaviour {
                 break;
         }
 
+    }
+
+    Person getNextPersonOnField(Person curPerson)
+    {
+        int index = BattleCentralControl.playerParty.partyMember.IndexOf(curPerson);
+        if (index == BattleCentralControl.playerParty.partyMember.Count - 1)
+        {
+            index = 0;
+        }
+        else
+        {
+            index++;
+        }
+        Person result = BattleCentralControl.playerParty.partyMember[index];
+        while (result.troop == null)
+        {
+            if (index == BattleCentralControl.playerParty.partyMember.Count - 1)
+            {
+                index = 0;
+            }
+            else
+            {
+                index++;
+            }
+            result = BattleCentralControl.playerParty.partyMember[index];
+        }
+        return result;
     }
 }

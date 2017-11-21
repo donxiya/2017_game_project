@@ -95,12 +95,12 @@ public class FollowCamera : MonoBehaviour {
                 counter = 0;
             }
         }
-        if(Input.mousePosition.x > Screen.width - 2) //right
+        if(Input.mousePosition.x < 2) //left
         {
             positionOffsetBase = Quaternion.Euler(0, 1, 0) * positionOffsetBase;
             
         }
-        if (Input.mousePosition.x < 2) //left
+        if (Input.mousePosition.x > Screen.width - 2) //right
         {
             positionOffsetBase = Quaternion.Euler(0, -1, 0) * positionOffsetBase;
         }

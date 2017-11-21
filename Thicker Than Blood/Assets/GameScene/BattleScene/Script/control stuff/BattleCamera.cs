@@ -19,21 +19,26 @@ public class BattleCamera : MonoBehaviour {
     private Vector3 frontPositionOffsetBase = new Vector3(0, 1, 2).normalized;
     private Vector3 curFreeMovePositionOffsetBase, forward, right, left, backward;
     private Vector3 positionOffsetBase = Vector3.zero;
-    private int multiplier, freeMoveMultiplier;
+    private int multiplier;
+    private float freeMoveYOffset;
     private int counter;
     private bool switchedMode = false;
     private bool freeMoveOnDesignedAngle = true;
+
+    //free move paras
+    public float clampAngle = 80.0f;
+    private float rotY = 0.0f; // rotation around the up/y axis
+    private float rotX = 0.0f; // rotation around the right/x axis
     private void Start()
     {
         multiplier = 10;
-        freeMoveMultiplier = 8;
+        freeMoveYOffset = 8;
         positionOffsetBase = (new Vector3(0, 1, 2)).normalized;
         positionOffset = multiplier * positionOffsetBase;
-        //freeMoveTarget = mapCenter;
-        //freeMoveTarget.transform.position = mapCenter.transform.position;
-        target = mapCenter;
         curFreeMovePositionOffsetBase = behindPositionOffsetBase;
-        freeMoveOffset = curFreeMovePositionOffsetBase * freeMoveMultiplier;
+        
+        rotY = transform.localRotation.eulerAngles.y;
+        rotX = transform.localRotation.eulerAngles.x;
     }
 
     // Update is called once per frame
@@ -67,30 +72,6 @@ public class BattleCamera : MonoBehaviour {
                         rotate();
                         break;
                     case CameraMode.freeMove:
-                        //var rotationFreeMove = Quaternion.LookRotation(freeMoveTarget.transform.position - transform.position);
-                        //freeMoveOffset = freeMoveMultiplier * curFreeMovePositionOffsetBase;
-                        //if (switchedMode)
-                        //{
-                        //    transform.rotation = Quaternion.Slerp(transform.rotation, rotationFreeMove, Time.deltaTime * 10f);
-                        //    transform.position = Vector3.Slerp(transform.position, freeMoveTarget.transform.position + freeMoveOffset, Time.deltaTime * 5f);
-                        //    if (Vector3.Distance(transform.position, freeMoveTarget.transform.position + freeMoveOffset) < 1f)
-                        //    {
-                        //        freeMoveOnDesignedAngle = true;
-                        //    } else
-                        //    {
-                        //        freeMoveOnDesignedAngle = false;
-                        //    }
-                        //} else
-                        //{
-                        //    transform.rotation = Quaternion.Slerp(transform.rotation, rotationFreeMove, Time.deltaTime * 7f);
-                        //    transform.position = Vector3.Slerp(transform.position, freeMoveTarget.transform.position + freeMoveOffset, Time.deltaTime * 3f);
-                        //    if (Vector3.Distance(transform.position, freeMoveTarget.transform.position + freeMoveOffset) < .1f)
-                        //    {
-                        //        switchedMode = true;
-                        //    }
-                        //}
-                        //
-                        //freeMove();
                         if (Camera.current != null)
                         {
                             Vector3 dir = transform.forward;
@@ -110,9 +91,10 @@ public class BattleCamera : MonoBehaviour {
                             {
                                 transform.position = Vector3.Slerp(transform.position, transform.position + new Vector3(dir.z, 0, -dir.x), Time.deltaTime * 10f);
                             }
-                            
+
                         }
-                           
+                        //freeMove();
+                        freeMoveRotate();
                         if (!TroopPlacing.pointerInPlacingPanel)
                         {
                             freeMoveZoom();
@@ -170,6 +152,9 @@ public class BattleCamera : MonoBehaviour {
                     switchedMode = false;
                     //getToNearestAngle(positionOffset);
                     cameraMode = CameraMode.freeMove;
+                    rotY = transform.localRotation.eulerAngles.y;
+                    rotX = transform.localRotation.eulerAngles.x;
+                    freeMoveYOffset = transform.position.y;
                 }
                 if (Input.GetMouseButton(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() && cameraMode != CameraMode.mapObject)
                 {
@@ -226,20 +211,7 @@ public class BattleCamera : MonoBehaviour {
         }
         
     }
-    private void freeMoveZoom()
-    {
-        var d = Input.GetAxis("Mouse ScrollWheel");
-        if (d > 0f) //scroll up
-        {
-            freeMoveMultiplier -= 3;
-        }
-        if (d < 0f)
-        {
-            freeMoveMultiplier += 3;
-        }
-        freeMoveMultiplier = Mathf.Clamp(freeMoveMultiplier, 5, 35);
-        freeMoveOffset = freeMoveMultiplier * curFreeMovePositionOffsetBase;
-    }
+    
     private void rotate()
     {
         if (!lockCamera)
@@ -261,38 +233,55 @@ public class BattleCamera : MonoBehaviour {
     
     private void freeMove()
     {
-        switchAngle();
-        //Debug.Log(freeMoveMode);
-        //WASD
-        if (Input.GetKey(KeyCode.W))
-        {
-            if (Camera.current != null)
-            {
-                freeMoveTarget = getClosestGridObj(freeMoveTarget.transform.position + forward);
-            }
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            if (Camera.current != null)
-            {
-                freeMoveTarget = getClosestGridObj(freeMoveTarget.transform.position + left);
-            }
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            if (Camera.current != null)
-            {
-                freeMoveTarget = getClosestGridObj(freeMoveTarget.transform.position + backward);
-            }
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            if (Camera.current != null)
-            {
-                freeMoveTarget = getClosestGridObj(freeMoveTarget.transform.position + right);
-            }
-        }
+        
     }
+    private void freeMoveZoom()
+    {
+        var d = Input.GetAxis("Mouse ScrollWheel");
+        if (d > 0f) //scroll up
+        {
+            freeMoveYOffset -= 3;
+            freeMoveYOffset = Mathf.Clamp(freeMoveYOffset, 5, 40);
+            transform.position = Vector3.Slerp(transform.position, new Vector3(transform.position.x, freeMoveYOffset, transform.position.z), Time.deltaTime * 10f);
+        }
+        if (d < 0f)
+        {
+            freeMoveYOffset += 3;
+            freeMoveYOffset = Mathf.Clamp(freeMoveYOffset, 5, 40);
+            transform.position = Vector3.Slerp(transform.position, new Vector3(transform.position.x, freeMoveYOffset, transform.position.z), Time.deltaTime * 10f);
+        }
+        
+    }
+    private void freeMoveRotate()
+    {
+        if ((Input.mousePosition.x > Screen.width - 2) || (Input.GetKey(KeyCode.E))) //right
+        {
+            rotY += 100f * Time.deltaTime;
+            //rotX += 10f * mouseSensitivity * Time.deltaTime;
+        }
+        if (Input.mousePosition.x < 2 || (Input.GetKey(KeyCode.Q))) //left
+        {
+            rotY -= 100f * Time.deltaTime;
+            //positionOffsetBase = Quaternion.Euler(0, 1, 0) * positionOffsetBase;
+        }
+        if (Input.mousePosition.y > Screen.height - 2) //up, camera zoom in
+        {
+            rotX -= 20f * Time.deltaTime;
+        }
+        if (Input.mousePosition.y < 2) //down, camera zoom out
+        {
+            rotX += 20f * Time.deltaTime;
+        }
+
+        rotX = Mathf.Clamp(rotX, -clampAngle, clampAngle);
+
+        Quaternion localRotation = Quaternion.Euler(rotX, rotY, 0.0f);
+        transform.rotation = localRotation;
+    }
+
+
+
+
     private void getToNearestAngle(Vector3 offset)
     {
         float tangent = offset.z / offset.x;

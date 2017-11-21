@@ -59,11 +59,11 @@ public class Interactable : MonoBehaviour {
     }
     public virtual void OnTriggerEnter(Collider col)
     {
-
+        hasInteracted = true;
     }
     public virtual void OnTriggerExit(Collider col)
     {
-
+        hasInteracted = false;
     }
 }
 

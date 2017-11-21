@@ -115,14 +115,14 @@ public class TimeSystem : MonoBehaviour {
         {
             minuteString = minute.ToString();
         }
-        if (!pause)
-        {
-            currentTime.text = season + "\t" + monthString + "\t" + dayString
-            + "\t" + hourString + ":" + minuteString;
-        } else
-        {
-            currentTime.text = "Pause";
-        }
+        //if (!pause)
+        //{
+        //    currentTime.text = season + "\t" + monthString + "\t" + dayString
+        //    + "\t" + hourString + ":" + minuteString;
+        //} else
+        //{
+        //    currentTime.text = "Pause";
+        //}
         
     }
     

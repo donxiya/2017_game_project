@@ -10,8 +10,10 @@ public class DialogueSystem : MonoBehaviour {
     string npcName, snpcName, townName, cityName;
     public GameObject NPCInteractionPanel, SNPCInteractionPanel, townInteractionPanel,
         cityInteractionPanel, makeSurePanel, statusPanel;
+
     public GameObject cityFirstLayerPanel1, cityFirstLayerPanel2, townFirstLayerPanel1,
-        townFirstLayerPanel2, cityNamePanel;
+        townFirstLayerPanel2, cityNamePanel, townNamePanel;
+
     public GameObject townRestockPanel, cityRestockPanel, townRestockBuy, townRestockCancel,
         townRestockSlideBar, cityRestockBuy, cityRestockCancel, cityRestockSlideBar;
     public GameObject cityBackground, townBackground, npcBckground, snpcBackground;
@@ -22,8 +24,8 @@ public class DialogueSystem : MonoBehaviour {
         cityTrade, cityBillboard, cityTroop, cityChar, cityRest, cityBartender,
         cityGossip, cityBrothelRest, cityOrgy, cityIndulgence, cityUpgradeencampment, cityTroopManage,
         cityLeave, cityReturn;
-    public GameObject townTalk, townRestock, townThreaten, townRecruit, townInvest,
-        townLeave, townPillage, townRansom, townRetreat;
+    public GameObject townGarrison, townRestock, townThreaten, townRecruit, townInvest,
+        townLeave, townPillage, townRansom, townRetreat, townReturn;
     public GameObject yesButton, noButton;
     public Text makeSureMsg, townRestockAmount, cityRestockAmount;
     
@@ -40,7 +42,7 @@ public class DialogueSystem : MonoBehaviour {
 
     int npcDialogueIndex, snpcDialogueIndex, cityDialogueIndex, townDialogueIndex;
     bool showCityFirstLayer = true;
-
+    bool showTownFirstLayer = true;
     void Start () {
         NPCPanelInitialization();
         SNPCPanelInitialization();
@@ -117,7 +119,7 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void townPanelInitialization()
     {
-        townTalk.GetComponent<Button>().onClick.AddListener(delegate { continueDialogue(PanelType.town); });
+        townGarrison.GetComponent<Button>().onClick.AddListener(delegate { garrisonTown(); });
         townThreaten.GetComponent<Button>().onClick.AddListener(delegate () { townConfirm("threatenTown"); });
         townRestock.GetComponent<Button>().onClick.AddListener(delegate () { restockTown(); });
         townRecruit.GetComponent<Button>().onClick.AddListener(delegate () { recruitTown(); });
@@ -130,6 +132,8 @@ public class DialogueSystem : MonoBehaviour {
         townRetreat.GetComponent<Button>().onClick.AddListener(delegate () { retreatTown(); });
         townRetreat.SetActive(false);
         townRestockPanel.SetActive(false);
+        townReturn.GetComponent<Button>().onClick.AddListener(delegate () { returnTown(); });
+        returnTown();
         townRestockAmount.text = ((int)townRestockSlideBar.GetComponent<Slider>().value).ToString();
         townRestockSlideBar.GetComponent<Slider>().onValueChanged.AddListener(delegate {
             townRestockAmount.text = ((int)townRestockSlideBar.GetComponent<Slider>().value).ToString();
@@ -245,7 +249,6 @@ public class DialogueSystem : MonoBehaviour {
         if (showCityFirstLayer)
         {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityGarrisonImg);
-            cityReturn.SetActive(true);
             cityMenuButtons(false);
         }
     }
@@ -267,7 +270,6 @@ public class DialogueSystem : MonoBehaviour {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityMarketImg);
             cityTrade.SetActive(true);
             cityRestock.SetActive(true);
-            cityReturn.SetActive(true);
             cityMenuButtons(false);
         }
     }
@@ -277,7 +279,6 @@ public class DialogueSystem : MonoBehaviour {
         {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityHallImg);
             cityBillboard.SetActive(true);
-            cityReturn.SetActive(true);
             cityMenuButtons(false);
         }
     }
@@ -288,7 +289,6 @@ public class DialogueSystem : MonoBehaviour {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityArmoryImg);
             cityTroop.SetActive(true);
             cityChar.SetActive(true);
-            cityReturn.SetActive(true);
             cityMenuButtons(false);
         }
     }
@@ -300,7 +300,6 @@ public class DialogueSystem : MonoBehaviour {
             cityRest.SetActive(true);
             cityBartender.SetActive(true);
             cityGossip.SetActive(true);
-            cityReturn.SetActive(true);
             cityMenuButtons(false);
         }
     }
@@ -311,7 +310,6 @@ public class DialogueSystem : MonoBehaviour {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityBrothelImg);
             cityBrothelRest.SetActive(true);
             cityOrgy.SetActive(true);
-            cityReturn.SetActive(true);
             cityMenuButtons(false);
         }
     }
@@ -321,7 +319,6 @@ public class DialogueSystem : MonoBehaviour {
         {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityChurchImg);
             cityIndulgence.SetActive(true);
-            cityReturn.SetActive(true);
             cityMenuButtons(false);
         }
     }
@@ -332,7 +329,6 @@ public class DialogueSystem : MonoBehaviour {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityEncampmentImg);
             cityTroopManage.SetActive(true);
             cityUpgradeencampment.SetActive(true);
-            cityReturn.SetActive(true);
             cityMenuButtons(false);
         }
     }
@@ -482,6 +478,7 @@ public class DialogueSystem : MonoBehaviour {
             showCityFirstLayer = true;
         } else
         {
+            cityReturn.SetActive(true);
             showCityFirstLayer = false;
         }
     }
@@ -519,20 +516,59 @@ public class DialogueSystem : MonoBehaviour {
 
 
     }
+    public void garrisonTown()
+    {
+        if (showTownFirstLayer)
+        {
+            swapTownBackground(MapSceneUIImageDataBase.dataBase.cityDefaultImg);
+            //swapTownBackground(MapSceneUIImageDataBase.dataBase.townGarrisonImg);
+            townMenuButtons(false);
+        }
+    }
     public void threatenTown()
     {
-        
-        townMenuButton(false);
-        townPillage.SetActive(true);
-        townRansom.SetActive(true);
-        townRetreat.SetActive(true);
+        if (showTownFirstLayer)
+        {
+            swapTownBackground(MapSceneUIImageDataBase.dataBase.cityDefaultImg);
+            //swapTownBackground(MapSceneUIImageDataBase.dataBase.townThreatenImg);
+            townMenuButtons(false);
+            townPillage.SetActive(true);
+            townRansom.SetActive(true);
+            townRetreat.SetActive(true);
+        }
     }
     public void restockTown()
     {
-        townRestock.SetActive(true);
-        cityRestockSlideBar.GetComponent<Slider>().maxValue = Player.mainParty.cash;
-        cityRestockSlideBar.GetComponent<Slider>().minValue = 0;
+        if (showTownFirstLayer)
+        {
+            swapTownBackground(MapSceneUIImageDataBase.dataBase.cityDefaultImg);
+            //swapTownBackground(MapSceneUIImageDataBase.dataBase.townRestockImg);
+            townRestock.SetActive(true);
+            cityRestockSlideBar.GetComponent<Slider>().maxValue = Player.mainParty.cash;
+            cityRestockSlideBar.GetComponent<Slider>().minValue = 0;
+        }
     }
+    public void recruitTown()
+    {
+        if (showTownFirstLayer)
+        {
+            swapTownBackground(MapSceneUIImageDataBase.dataBase.cityDefaultImg);
+            //swapTownBackground(MapSceneUIImageDataBase.dataBase.townRecruitImg);
+            townMenuButtons(false);
+        }
+    }
+    public void investTown()
+    {
+        if (showTownFirstLayer)
+        {
+            swapTownBackground(MapSceneUIImageDataBase.dataBase.cityDefaultImg);
+            //swapTownBackground(MapSceneUIImageDataBase.dataBase.townInvestImg);
+            townMenuButtons(false);
+        }
+    }
+
+
+
     public void restockBuyTown()
     {
 
@@ -543,21 +579,10 @@ public class DialogueSystem : MonoBehaviour {
         townRestockSlideBar.GetComponent<Slider>().value = 0;
         townRestock.SetActive(false);
     }
-    public void restockTownCancel()
-    {
-        townRestock.SetActive(false);
-    }
-    public void recruitTown()
-    {
-
-    }
-    public void investTown()
-    {
-
-    }
+    
     public void pillageTown()
     {
-        townMenuButton(true);
+        townMenuButtons(true);
         townPillage.SetActive(false);
         townRansom.SetActive(false);
         townRetreat.SetActive(false);
@@ -566,7 +591,7 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void ransomTown()
     {
-        townMenuButton(true);
+        townMenuButtons(true);
         townPillage.SetActive(false);
         townRansom.SetActive(false);
         townRetreat.SetActive(false);
@@ -574,20 +599,47 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void retreatTown()
     {
-        townMenuButton(true);
+        townMenuButtons(true);
         townPillage.SetActive(false);
         townRansom.SetActive(false);
         townRetreat.SetActive(false);
         closeDialogue(PanelType.town);
     }
-    public void townMenuButton(bool hide)
+    public void returnTown()
     {
-        townTalk.SetActive(hide);
-        townRestock.SetActive(hide);
-        townThreaten.SetActive(hide);
-        townRecruit.SetActive(hide);
-        townInvest.SetActive(hide);
-        townLeave.SetActive(hide);
+        townRestockPanel.SetActive(false);
+        townPillage.SetActive(false);
+        townRansom.SetActive(false);
+        townRetreat.SetActive(false);
+        townReturn.SetActive(false);
+        townMenuButtons(true);
+        townBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.getCityDefaultImg();
+        townNamePanel.GetComponent<Animator>().SetBool("show", true);
+    }
+    public void townDefaultBackground()
+    {
+        if (showTownFirstLayer)
+        {
+            townBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.getCityDefaultImg();
+            //townBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.getTownDefaultImg();
+            townNamePanel.GetComponent<Animator>().SetBool("show", true);
+        }
+    }
+    public void townMenuButtons(bool show)
+    {
+        townFirstLayerPanel1.GetComponent<Animator>().SetBool("show", show);
+        townFirstLayerPanel2.GetComponent<Animator>().SetBool("show", show);
+        townNamePanel.GetComponent<Animator>().SetBool("show", show);
+        if (show)
+        {
+            swapCityBackground(MapSceneUIImageDataBase.dataBase.getCityDefaultImg());
+            showTownFirstLayer = true;
+        }
+        else
+        {
+            townReturn.SetActive(true);
+            showTownFirstLayer = false;
+        }
     }
     public void swapTownBackground(Texture2D img)
     {
@@ -665,6 +717,9 @@ public class DialogueSystem : MonoBehaviour {
             townDialogueText.text = townDialogueLines[townDialogueIndex];
             townNameText.text = townName;
             townInteractionPanel.SetActive(true);
+            townFirstLayerPanel1.GetComponent<Animator>().SetBool("show", true);
+            townFirstLayerPanel2.GetComponent<Animator>().SetBool("show", true);
+            townNamePanel.GetComponent<Animator>().SetBool("show", true);
 
         }
         

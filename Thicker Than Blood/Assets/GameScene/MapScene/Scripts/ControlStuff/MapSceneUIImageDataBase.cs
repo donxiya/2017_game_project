@@ -6,6 +6,7 @@ public class MapSceneUIImageDataBase : MonoBehaviour {
 
     public Texture2D cityDefaultImg, cityGarrisonImg, cityThreatenImg, cityMarketImg, cityHallImg, cityArmoryImg,
         cityTavernImg, cityBrothelImg, cityChurchImg, cityEncampmentImg;
+    public Texture2D townDefaultImg, townGarrisonImg, townThreatenImg, townRestockImg, townRecruitImg, townInvestImg;
     public static MapSceneUIImageDataBase dataBase;
 
     // Use this for initialization
@@ -21,6 +22,12 @@ public class MapSceneUIImageDataBase : MonoBehaviour {
         dataBase.cityBrothelImg = cityBrothelImg;
         dataBase.cityChurchImg = cityChurchImg;
         dataBase.cityEncampmentImg = cityEncampmentImg;
+        dataBase.townDefaultImg = townDefaultImg;
+        dataBase.townGarrisonImg = townGarrisonImg;
+        dataBase.townThreatenImg = townThreatenImg;
+        dataBase.townRestockImg = townRestockImg;
+        dataBase.townRecruitImg = townRecruitImg;
+        dataBase.townInvestImg = townInvestImg;
 	}
 	
 	// Update is called once per frame
@@ -31,5 +38,9 @@ public class MapSceneUIImageDataBase : MonoBehaviour {
     public Texture2D getCityDefaultImg()
     {
         return cityDefaultImg;
+    }
+    public Texture2D getTownDefaultImg()
+    {
+        return townDefaultImg;
     }
 }

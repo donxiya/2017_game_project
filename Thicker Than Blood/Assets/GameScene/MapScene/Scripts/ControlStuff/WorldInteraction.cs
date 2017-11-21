@@ -85,15 +85,14 @@ public class WorldInteraction : MonoBehaviour
 
     public virtual void moveToInteraction(GameObject interactedObj)
     {
-
-        interactedObj.GetComponent<Interactable>().hasInteracted = false;
-        playerAgent.destination = this.transform.position;
+        //interactedObj.GetComponent<Interactable>().hasInteracted = false;
+        playerAgent.destination = new Vector3(interactedObj.transform.position.x, player.transform.position.y, interactedObj.transform.position.z);
         if (Vector3.Distance(playerAgent.transform.position, interactedObj.transform.position) >= INTERACT_DIST)
         {
             chasing = true;
             curChasedObj = interactedObj;
         }
-
+        
     }
 
     void inspect()

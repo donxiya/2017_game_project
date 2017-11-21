@@ -123,6 +123,7 @@ public class Troop : BattleInteractable {
             BattleInspectPanel.person = null;
             inspectPanel.SetActive(false);
             hideIndicators();
+            BattleInteraction.skillMode = TroopSkill.walk;
         }
         base.cameraFocusOnExit();
         

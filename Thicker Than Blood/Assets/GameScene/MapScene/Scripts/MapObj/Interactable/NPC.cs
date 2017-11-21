@@ -36,7 +36,6 @@ public class NPC : Interactable {
 
         }
     }
-
     public override void inspect(bool inspecting)
     {
         if (inspecting)

@@ -384,10 +384,6 @@ public class BattleAIControl : MonoBehaviour {
         {
             if (unit.troop != null)
             {
-                int assumedZ = (int)Random.Range(2, BattleCentralControl.playerParty.leader.getTroopPlacingRange((int)mapSize.y));
-                int assumedX = (int)Random.Range(unit.troop.curGrid.x - 5, unit.troop.curGrid.x + 5);
-                assumedX = Mathf.Clamp(assumedX, 0, (int)mapSize.x - 1);
-                assumedZ = Mathf.Clamp(assumedZ, 0, (int)mapSize.y - 1);
                 actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, findEmptyGrid(BattleCentralControl.map[unit.troop.curGrid.x, backLine], Direction.negZ)));
             }
         }
@@ -395,10 +391,6 @@ public class BattleAIControl : MonoBehaviour {
         {
             if (unit.troop != null)
             {
-                int assumedZ = (int)Random.Range(2, BattleCentralControl.playerParty.leader.getTroopPlacingRange((int)mapSize.y));
-                int assumedX = (int)Random.Range(unit.troop.curGrid.x - 2, unit.troop.curGrid.x + 2);
-                assumedX = Mathf.Clamp(assumedX, 0, (int)mapSize.x - 1);
-                assumedZ = Mathf.Clamp(assumedZ, 0, (int)mapSize.y - 1);
                 actionQueue.Enqueue(new AIAction(unit.troop, TroopSkill.walk, findEmptyGrid(BattleCentralControl.map[unit.troop.curGrid.x, backLine], Direction.negZ)));
             }
         }
