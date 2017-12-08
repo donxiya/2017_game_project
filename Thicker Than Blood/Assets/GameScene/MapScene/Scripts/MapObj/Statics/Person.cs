@@ -103,6 +103,8 @@ public class Person {
         stats.agility = 1;
         stats.perception = 1;
         stats.endurance = 1;
+        stats.charisma = 1;
+        stats.intelligence = 1;
         exp.sparedPoint = exp.level;
     }
 
@@ -131,9 +133,9 @@ public class Person {
         stats.charisma += 1;
         exp.sparedPoint -= 1;
     }
-    public virtual void incrementi()
+    public virtual void incrementI()
     {
-        stats.charisma += 1;
+        stats.intelligence += 1;
         exp.sparedPoint -= 1;
     }
 

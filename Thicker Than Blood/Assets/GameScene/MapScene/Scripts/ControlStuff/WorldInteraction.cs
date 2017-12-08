@@ -16,6 +16,7 @@ public class WorldInteraction : MonoBehaviour
     void Start()
     {
         playerAgent = player.GetComponent<NavMeshAgent>();
+        playerAgent.speed = Player.mainParty.getTravelSpeed();
         chasing = false;
     }
 
@@ -24,7 +25,7 @@ public class WorldInteraction : MonoBehaviour
     void Update()
     {
         inputKeysActions();
-        playerAgent.speed = Player.mainParty.getTravelSpeed();
+        
         if (chasing)
         {
             playerAgent.destination = curChasedObj.transform.position;
@@ -51,8 +52,13 @@ public class WorldInteraction : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            disInspect();
-            SceneManager.LoadScene("MenuScene");
+            if (tabCanvas.activeSelf)
+            {
+                disInspect();
+            } else
+            {
+                SceneManager.LoadScene("MenuScene");
+            }
         }
         if (Input.GetKey(KeyCode.Space))
         {

@@ -25,7 +25,6 @@ public class Player : MonoBehaviour {
         Experience mExp = new Experience(0, 1, 5);
         mainCharacter = new MainCharacter("Nicola Da Roma", mStats, Ranking.mainChar,
             TroopType.mainCharType, Faction.mercenary, mExp);
-        mainCharacter.skillTree.skillTreeInitialization();
         Experience sExp = new Experience(0, 1, 5);
         secCharacter = new MainCharacter("Rachele Sforza", mStats, Ranking.mainChar,
             TroopType.crossbowman, Faction.mercenary, sExp);
@@ -41,6 +40,25 @@ public class Player : MonoBehaviour {
         mainParty.addToParty(mainParty.makeGenericPerson(TroopType.crossbowman, Ranking.elite));
         mainParty.addToParty(mainParty.makeGenericPerson(TroopType.musketeer, Ranking.elite));
         mainParty.cash = 200;
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Salt"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Salt"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Salt"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Salt"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Fur"));
+        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Textile"));
     }
     void initializeDummy()
     {

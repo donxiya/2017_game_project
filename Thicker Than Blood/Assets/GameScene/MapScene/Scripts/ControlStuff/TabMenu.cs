@@ -4,15 +4,17 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class TabMenu : MonoBehaviour {
-    public GameObject defaultPanel;
+    public static TabMenu tabMenu;
+    public GameObject defaultPanel, topPanel;
     public Button objectiveButton, factionButton, sapeButton, ciButton,
         mainGearButton, secGearButton, inventoryButton, troopButton;
     public Button objectiveButtonQuick, factionButtonQuick, sapeButtonQuick, ciButtonQuick,
-        mainGearButtonQuick, secGearButtonQuick, inventoryButtonQuick, troopButtonQuick;
-    public TroopManageInterface troopManageInterface;
+        mainGearButtonQuick, secGearButtonQuick, inventoryButtonQuick, troopButtonQuick, closeTabButton;
     public Animator animator;
-	// Use this for initialization
-	void Start () {
+    bool closing = true;
+    // Use this for initialization
+    void Start() {
+        tabMenu = gameObject.GetComponent<TabMenu>();
         gameObject.SetActive(false);
         animator = gameObject.GetComponent<Animator>();
         objectiveButton.onClick.AddListener(delegate () { showPanel(TabPanelType.ObjectivePanel, true); });
@@ -31,13 +33,20 @@ public class TabMenu : MonoBehaviour {
         secGearButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.SecGearPanel, true); });
         inventoryButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.InventoryPanel, true); });
         troopButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.TroopPanel, true); });
+        closeTabButton.onClick.AddListener(delegate () { closeTabMenu(); });
     }
-
+    private void OnEnable()
+    {
+        closing = false;
+        defaultPanel.SetActive(true);
+        topPanel.SetActive(true);
+    }
     // Update is called once per frame
     void Update()
     {
         if (gameObject.activeSelf)
         {
+            resetLayout();
             if (Time.timeScale != 0.0f)
             {
                 Time.timeScale = 0.0f;
@@ -50,15 +59,20 @@ public class TabMenu : MonoBehaviour {
                 } else
                 {
                     gameObject.SetActive(false);
-                    troopManageInterface.leaveManagement();
+                    Time.timeScale = 1.0f;
+                    //TroopManagement.troopManagement.leaveManagement();
+                    //InventoryManagement.inventoryManagement.leaveManagement();
+                }
+            }
+            if (closing)
+            {
+                if (animator.GetCurrentAnimatorStateInfo(0).IsName("Default"))
+                {
+                    gameObject.SetActive(false);
                     Time.timeScale = 1.0f;
                 }
             }
         }
-
-            
-        
-
     }
 
     public void showPanel(TabPanelType tabPanelType, bool show)
@@ -67,9 +81,13 @@ public class TabMenu : MonoBehaviour {
         if (tabPanelType == TabPanelType.DefaultPanel)
         {
             defaultPanel.SetActive(show);
+            if (!show) {
+                closing = true;
+            }
         } else
         {
             defaultPanel.SetActive(!show);
+
         }
         if (tabPanelType == TabPanelType.ObjectivePanel)
         {
@@ -95,9 +113,21 @@ public class TabMenu : MonoBehaviour {
         if (tabPanelType == TabPanelType.InventoryPanel)
         {
             animator.SetBool("inventoryShow", show);
+            if (!show)
+            {
+                InventoryManagement.inventoryManagement.leaveManagement();
+            } else
+            {
+                InventoryManagement.inventoryManagement.initialization();
+            }
         } else
         {
+            if (show && animator.GetBool("inventoryShow"))
+            {
+                InventoryManagement.inventoryManagement.leaveManagement();
+            }
             animator.SetBool("inventoryShow", !show);
+
         }
         if (tabPanelType == TabPanelType.FactionPanel)
         {
@@ -123,22 +153,31 @@ public class TabMenu : MonoBehaviour {
         if (tabPanelType == TabPanelType.TroopPanel)
         {
             animator.SetBool("troopShow", show);
-            if (!show) //if show is false
+            if (!show && TroopManagement.troopManagement != null) //if show is false
             {
-                troopManageInterface.leaveManagement();
+                TroopManagement.troopManagement.leaveManagement();
             }
         } else
         {
             animator.SetBool("troopShow", !show);
-            if (show) //if !show is false
+            if (show && TroopManagement.troopManagement != null) //if show is true
             {
-                troopManageInterface.leaveManagement();
+                TroopManagement.troopManagement.leaveManagement();
             }
         }
-        
-    }
-    
 
+    }
+    public void closeTabMenu()
+    {
+        showPanel(TabPanelType.DefaultPanel, true);
+        defaultPanel.SetActive(false);
+        topPanel.SetActive(false);
+        closing = true;
+    }
+    public void resetLayout ()
+    {
+        topPanel.GetComponent<HorizontalLayoutGroup>().SetLayoutHorizontal();
+    }
 }
 
 public enum TabPanelType

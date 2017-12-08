@@ -198,3 +198,10 @@ public class BattleCentralControl : MonoBehaviour {
         //ground.GetComponent<MeshRenderer>().enabled = false;
     }
 }
+
+public enum GridType
+{
+    rockAndTree,
+    flatGrass,
+    tree
+}

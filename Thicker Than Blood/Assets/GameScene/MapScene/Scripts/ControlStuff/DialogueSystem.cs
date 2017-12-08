@@ -608,7 +608,7 @@ public class DialogueSystem : MonoBehaviour {
         townRetreat.SetActive(false);
         townReturn.SetActive(false);
         townMenuButtons(true);
-        townBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.getCityDefaultImg();
+        townBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.getTownDefaultImg();
         townNamePanel.GetComponent<Animator>().SetBool("show", true);
     }
     public void townDefaultBackground()
@@ -626,7 +626,7 @@ public class DialogueSystem : MonoBehaviour {
         townNamePanel.GetComponent<Animator>().SetBool("show", show);
         if (show)
         {
-            swapCityBackground(MapSceneUIImageDataBase.dataBase.getCityDefaultImg());
+            swapTownBackground(MapSceneUIImageDataBase.dataBase.getTownDefaultImg());
             showTownFirstLayer = true;
         }
         else

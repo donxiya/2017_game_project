@@ -4,12 +4,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MapManagement : MonoBehaviour {
+    
+    public GameObject[] banditSpawnPointList;
+    public GameObject banditTroop, frenchTroop, papalTroop, italianTroop, imperialTroop;
+
     const int spawnRange = 20;
     int monthSCounter = TimeSystem.month;
     int monthECounter = TimeSystem.month;
-    public GameObject[] banditSpawnPointList;
-    public GameObject banditTroop, frenchTroop, papalTroop, italianTroop, imperialTroop;
-	// Use this for initialization
+    public List<City> cityList;
+    
 	void Awake () {
         banditInitialization();
     }
@@ -25,7 +28,11 @@ public class MapManagement : MonoBehaviour {
         monthECounter = TimeSystem.month;
 	}
 
-    
+    void cityInitializtion()
+    {
+        cityList = new List<City>();
+        //cityList.Add()
+    }
     void banditInitialization()
     {
         banditSpawnPointList = GameObject.FindGameObjectsWithTag("BanditSpawnPoint");

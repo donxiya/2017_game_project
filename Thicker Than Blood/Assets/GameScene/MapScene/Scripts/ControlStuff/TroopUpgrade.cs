@@ -17,7 +17,6 @@ public class TroopUpgrade : MonoBehaviour {
     public RawImage curArmorBar, curEvasionBar, curBlockBar, curVisionBar, curStealthBar, curAccuracyBar, curMeleeBar, curRangedBar, curMobilityBar;
     public RawImage newArmorBar, newEvasionBar, newBlockBar, newVisionBar, newStealthBar, newAccuracyBar, newMeleeBar, newRangedBar, newMobilityBar;
     public Person curPerson, newPerson;
-    public TroopManageInterface troopManageInterface;
     float STATS_BAR_WIDTH, STATS_BAR_HEIGHT;
 	// Use this for initialization
 	void Start () {
@@ -141,7 +140,7 @@ public class TroopUpgrade : MonoBehaviour {
         {
             curPerson.setDefaultName();
         }
-        troopManageInterface.upgradeCurPerson(curPerson);
+        TroopManagement.troopManagement.upgradeCurPerson(curPerson);
         //curPerson = newPerson;
         //newPerson = new Person(newPerson.name, newPerson.stats, newPerson.ranking, newPerson.troopType, newPerson.faction, newPerson.exp);
     }

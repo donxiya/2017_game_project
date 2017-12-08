@@ -13,6 +13,8 @@ public class Party {
     public int morale { get; set;}
     public int cash { get; set; }
 
+    public Dictionary<Faction, int> factionFavors;
+    public Dictionary<CityNames, int> cityFavors;
     public int prestige, notoriety;
     public int partySize, partySizeLimit;
     public float travelSpeed, visionRange;
@@ -32,6 +34,7 @@ public class Party {
         faction = factionI;
         partyMember = new List<Person>();
         inventory = new List<Item>();
+        
         partySize = 0;
         addToParty(leader);
         battleValue = battleValueI;
@@ -58,11 +61,36 @@ public class Party {
     {
         prestige = 0;
         notoriety = 0;
+        factionFavors = new Dictionary<Faction, int>();
+        factionFavors.Add(Faction.empire, 0);
+        factionFavors.Add(Faction.france, 0);
+        factionFavors.Add(Faction.papacy, 0);
+        cityFavors = new Dictionary<CityNames, int>();
+        cityFavors.Add(CityNames.Milano, 0);
+        cityFavors.Add(CityNames.Torino, 0);
+        cityFavors.Add(CityNames.Asti, 0);
+        cityFavors.Add(CityNames.Parma, 0);
+        cityFavors.Add(CityNames.Genova, 0);
+        cityFavors.Add(CityNames.Modena, 0);
+        cityFavors.Add(CityNames.Verona, 0);
+        cityFavors.Add(CityNames.Padova, 0);
+        cityFavors.Add(CityNames.Treviso, 0);
+        cityFavors.Add(CityNames.Venezia, 0);
+        cityFavors.Add(CityNames.Ferrara, 0);
+        cityFavors.Add(CityNames.Bologna, 0);
+        cityFavors.Add(CityNames.Firenze, 0);
+        cityFavors.Add(CityNames.Ravenna, 0);
+        cityFavors.Add(CityNames.Urbino, 0);
+        cityFavors.Add(CityNames.Lucca, 0);
+        cityFavors.Add(CityNames.Pisa, 0);
+        cityFavors.Add(CityNames.Siena, 0);
+        cityFavors.Add(CityNames.Grosseto, 0);
+        cityFavors.Add(CityNames.Perugia, 0);
+        cityFavors.Add(CityNames.Roma, 0);
         partySizeLimit = getPartySizeLimit();
-        addToInventory(new Item("Supply", 5, "Pisa", "this is supply"));
     }
 
-    public bool addToParty(Person member)
+    public virtual bool addToParty(Person member)
     {
         if (partySize < getPartySizeLimit())
         {
@@ -72,7 +100,7 @@ public class Party {
         }
         return false;
     }
-    public bool removeFromParty(Person member)
+    public virtual bool removeFromParty(Person member)
     {
         if (partyMember.Remove(member))
         {
@@ -81,21 +109,21 @@ public class Party {
         }
         return false;
     }
-    public bool addToInventory(Item item)
+    public virtual bool addToInventory(Item item)
     {
-        if (inventoryWeight < inventoryWeightLimit)
+        if (getInventoryWeight() < getInventoryWeightLimit())
         {
             inventory.Add(item);
-            inventoryWeight += item.weight;
+            inventoryWeight += item.getWeight();
             return true;
         }
         return false;
     }
-    public bool removeFromInventory(Item item)
+    public virtual bool removeFromInventory(Item item)
     {
         if (inventory.Remove(item))
         {
-            inventoryWeight -= item.weight;
+            inventoryWeight += item.getWeight();
             return true;
         }
         return false;
@@ -115,6 +143,21 @@ public class Party {
     public virtual void plusNotoriety(int toAdd)
     {
         notoriety += toAdd;
+    }
+    public virtual int getFactionFavor(Faction f)
+    {
+        if (factionFavors.ContainsKey(f))
+        {
+            return factionFavors[f];
+        } else
+        {
+            return 0;
+        }
+        
+    }
+    public virtual void plusFactionFavor(Faction f, int amount)
+    {
+        factionFavors[f] += amount;
     }
     public virtual int getPartySizeLimit()
     {
@@ -163,16 +206,16 @@ public class Party {
     public virtual float getInventoryWeight()
     {
         float result = 5;
-        /**if (inventory.Count > 0)
+        if (inventory.Count > 0)
         {
             foreach (Item item in inventory)
             {
-                result += item.weight;
+                result += item.getWeight();
             }
-        }**/
+        }
         return result;
     }
-    public int getAverageLevel()
+    public virtual int getAverageLevel()
     {
         int result = 0;
         foreach (Person p in partyMember)

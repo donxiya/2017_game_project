@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TroopManageInterface : MonoBehaviour {
+public class TroopManagement : MonoBehaviour {
+    public static TroopManagement troopManagement;
     public GameObject selectingTroopUnitButton;
     public Text selectingTroopName, selectingTroopLevel, selectingTitle;
     public RawImage selectingMaxHealthBar, selectingHealthBar, selectingStaminaBar;
@@ -31,7 +32,9 @@ public class TroopManageInterface : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        troopManagement = gameObject.GetComponent<TroopManagement>();
         STATS_BAR_WIDTH = inspectSBar.rectTransform.sizeDelta.y;
+        troopDict = new Dictionary<Person, GameObject>();
 
     }
     private void OnEnable()
@@ -118,11 +121,10 @@ public class TroopManageInterface : MonoBehaviour {
         selectingMembers = new List<Person>();
         curCurrentPerson = Player.mainParty.leader;
         currentMembers = Player.mainParty.partyMember;
-        troopDict = new Dictionary<Person, GameObject>();
-
+        
+        clearButtonListener();
         addButton.GetComponent<Button>().onClick.AddListener(delegate { addToCurrent(); });
         removeButton.GetComponent<Button>().onClick.AddListener(delegate { removeFromCurrent(); });
-        leaveButton.GetComponent<Button>().onClick.AddListener(delegate { leaveManagement(); });
         nameButton.GetComponent<Button>().onClick.AddListener(delegate { renaming = true; });
         resetSAPE.GetComponent<Button>().onClick.AddListener(delegate { curCurrentPerson.resetPerk(); resetLayoutGroup(); });
         sPlus.GetComponent<Button>().onClick.AddListener(delegate { curCurrentPerson.incrementS(); resetLayoutGroup(); });
@@ -133,6 +135,17 @@ public class TroopManageInterface : MonoBehaviour {
         aPlus.SetActive(false);
         pPlus.SetActive(false);
         ePlus.SetActive(false);
+    }
+    void clearButtonListener()
+    {
+        addButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        removeButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        nameButton.GetComponent<Button>().onClick.RemoveAllListeners();
+        resetSAPE.GetComponent<Button>().onClick.RemoveAllListeners();
+        sPlus.GetComponent<Button>().onClick.RemoveAllListeners();
+        aPlus.GetComponent<Button>().onClick.RemoveAllListeners();
+        pPlus.GetComponent<Button>().onClick.RemoveAllListeners();
+        ePlus.GetComponent<Button>().onClick.RemoveAllListeners();
     }
     void rename()
     {
@@ -365,8 +378,11 @@ public class TroopManageInterface : MonoBehaviour {
             selectingMembers = sortList(temp);
             foreach (Person p in selectingMembers)
             {
-
-                troopDict.Add(p, makeTroopSelectingButton(p));
+                if (!troopDict.ContainsKey(p))
+                {
+                    troopDict.Add(p, makeTroopSelectingButton(p));
+                }
+                
             }
         }
         
@@ -376,8 +392,11 @@ public class TroopManageInterface : MonoBehaviour {
             currentMembers = sortList(temp);
             foreach (Person p in currentMembers)
             {
-
-                troopDict.Add(p, makeTroopCurrentButton(p));
+                if (!troopDict.ContainsKey(p))
+                {
+                    troopDict.Add(p, makeTroopCurrentButton(p));
+                }
+                
             }
         }
         
@@ -407,26 +426,36 @@ public class TroopManageInterface : MonoBehaviour {
         troopDict.Clear();
         foreach (Person p in selectingMembers)
         {
-
-            troopDict.Add(p, makeTroopSelectingButton(p));
+            if (!troopDict.ContainsKey(p))
+            {
+                troopDict.Add(p, makeTroopSelectingButton(p));
+            }
+            
         }
         foreach (Person p in currentMembers)
         {
-            troopDict.Add(p, makeTroopCurrentButton(p));
+            if (!troopDict.ContainsKey(p))
+            {
+                troopDict.Add(p, makeTroopCurrentButton(p));
+            }
+            
         }
     }
     
 
     public void leaveManagement()
     {
-        foreach (Person p in selectingMembers)
+        if (selectingMembers != null)
         {
-            Object.Destroy(troopDict[p]);
-            troopDict.Remove(p);
+            foreach (Person p in selectingMembers)
+            {
+                Object.Destroy(troopDict[p]);
+                troopDict.Remove(p);
+            }
+            selectingMembers.Clear();
+            reArrangeButtons();
+            Player.mainParty.partyMember = currentMembers;
         }
-        selectingMembers.Clear();
-        reArrangeButtons();
-        Player.mainParty.partyMember = currentMembers;
     }
     List<Person> sortList(List<Person> listToSort)
     {
@@ -465,3 +494,4 @@ public class TroopManageInterface : MonoBehaviour {
 
 
 }
+

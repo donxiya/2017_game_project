@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class TroopDataBase : MonoBehaviour {
     public static TroopDataBase troopDataBase;
-    public static List<Item> itemList = new List<Item>();
     public GameObject mainCharacter, secCharacter;
     public GameObject mercenaryRecruit, mercenaryMilitiaCrossbowman, mercenaryMilitiaMusketeer,
         mercenaryMilitiaSwordsman, mercenaryMilitiaHalberdier, mercenaryMilitiaCavalry;
@@ -48,6 +47,7 @@ public class TroopDataBase : MonoBehaviour {
     public GameObject imperialEliteCrossbowman, imperialEliteMusketeer,
         imperialEliteSwordsman, imperialEliteHalberdier, imperialEliteCavalry;
 
+    
     // Use this for initialization
     void Awake () {
         troopDataBase = gameObject.GetComponent<TroopDataBase>();
@@ -66,7 +66,7 @@ public class TroopDataBase : MonoBehaviour {
                 return imperialGetTroopInfoHelper(tt, rk);
             case Faction.france:
                 return frenchGetTroopInfoHelper(tt, rk);
-            case Faction.pope:
+            case Faction.papacy:
                 return papalGetTroopInfoHelper(tt, rk);
             case Faction.italy:
                 return italianGetTroopInfoHelper(tt, rk);
@@ -82,12 +82,13 @@ public class TroopDataBase : MonoBehaviour {
             {
                 result.battleValue = 0;
                 result.model = mainCharacter;
+                result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
             } else
             {
                 result.battleValue = 0;
                 result.model = secCharacter;
+                result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
             }
-            result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f); //TODO
             return result;
         }
         switch (tt)
@@ -96,6 +97,7 @@ public class TroopDataBase : MonoBehaviour {
                 result.battleValue = 10;
                 result.model = mercenaryRecruit;
                 result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+
                 break;
             case TroopType.crossbowman:
                 switch (rk)
@@ -753,7 +755,7 @@ public class TroopDataBase : MonoBehaviour {
                 return "Bandit";
             case Faction.italy:
                 return "Italian";
-            case Faction.pope:
+            case Faction.papacy:
                 return "Papal";
             case Faction.france:
                 return "French";
@@ -761,18 +763,6 @@ public class TroopDataBase : MonoBehaviour {
                 return "Imperial";
         }
         return "";
-    }
-
-
-
-
-
-
-
-    
-    void itemInitialization()
-    {
-
     }
 }
 
@@ -839,14 +829,9 @@ public enum Faction
     italy,
     bandits,
     empire,
-    pope
+    papacy
 }
-public enum GridType
-{
-    rockAndTree,
-    flatGrass,
-    tree
-}
+
 
 public enum TroopSkill {
     none,
@@ -861,25 +846,37 @@ public enum TroopSkill {
     quickDraw,
     rainOfArrows
 }
-public class Item
+
+public enum CityNames
 {
-    public string name;
-    public int value;
-    public float weight;
-    public string description;
-    public string city;
-    public Item(string nameI, int valueI, string cityI, string descriptionI)
-    {
-        name = nameI;
-        value = valueI;
-        city = cityI;
-        description = descriptionI;
-    }
+    Milano,
+    Torino,
+    Asti,
+    Parma,
+    Genova,
+    Modena,
+    Verona,
+    Padova,
+    Treviso,
+    Venezia,
+    Ferrara,
+    Bologna,
+    Firenze,
+    Ravenna,
+    Urbino,
+    Lucca,
+    Pisa,
+    Siena,
+    Grosseto,
+    Perugia,
+    Roma
 }
 
 public class TroopInfo{
     public int battleValue;
     public GameObject model;
+    public Texture2D icon;
+    public Texture2D profile;
     public GearInfo gear;
  }
 

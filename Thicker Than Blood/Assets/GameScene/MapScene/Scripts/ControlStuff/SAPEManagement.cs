@@ -15,12 +15,18 @@ public class SAPEManagement : MonoBehaviour {
     public RawImage strengthBar, agilityBar, perceptionBar, enduranceBar, barMax;
     public GameObject inspectPanel;
     public Text perkName, perkDescription, perkQuote;
-
+    public CanvasScaler scaler;
     float MAX_BAR_HEIGHT, MAX_BAR_WIDTH;
+    float INSPECT_OFFSET_X, INSPECT_OFFSET_Y;
+    float SCALE_X, SCALE_Y;
     // Use this for initialization
     void Start () {
 		MAX_BAR_HEIGHT = barMax.rectTransform.sizeDelta.y;
         MAX_BAR_WIDTH = barMax.rectTransform.sizeDelta.x;
+        SCALE_X = scaler.referenceResolution.x / Screen.width;
+        SCALE_Y = scaler.referenceResolution.y / Screen.height;
+        INSPECT_OFFSET_X = (s6a.gameObject.GetComponent<RectTransform>().sizeDelta.y + inspectPanel.transform.GetComponent<RectTransform>().sizeDelta.y)/ 2;
+        INSPECT_OFFSET_Y = (s6a.gameObject.GetComponent<RectTransform>().sizeDelta.x + inspectPanel.transform.GetComponent<RectTransform>().sizeDelta.x)/ 2;
         initialization();
         inspectPanel.SetActive(false);
     }
@@ -55,10 +61,32 @@ public class SAPEManagement : MonoBehaviour {
 
     public void inspectPerk(string ID)
     {
-        Debug.Log("called");
         Perk perk = Player.mainCharacter.skillTree.getPerk(ID);
-        inspectPanel.SetActive(true);
-        inspectPanel.GetComponent<RectTransform>().anchoredPosition = s6a.gameObject.GetComponent<RectTransform>().anchoredPosition;
+        if (!inspectPanel.activeSelf)
+        {
+            inspectPanel.SetActive(true);
+        }
+        
+        Vector3 pos = Input.mousePosition;
+        SCALE_X = scaler.referenceResolution.x / Screen.width;
+        SCALE_Y = scaler.referenceResolution.y / Screen.height;
+        if (pos.x <= Screen.width / 2)
+        {
+            pos.x += INSPECT_OFFSET_X / SCALE_X;
+        } else
+        {
+            pos.x -= INSPECT_OFFSET_X / SCALE_X;
+        }
+        if (pos.y >= Screen.height / 2)
+        {
+            pos.y -= INSPECT_OFFSET_Y / SCALE_Y;
+        }
+        else
+        {
+            pos.y += INSPECT_OFFSET_Y / SCALE_Y;
+        }
+        inspectPanel.transform.GetComponent<RectTransform>().position = pos;
+            //s6a.gameObject.GetComponent<RectTransform>().anchoredPosition;
         perkName.text = perk.skillName;
         perkDescription.text = perk.description;
         perkQuote.text = perk.quote;
@@ -115,6 +143,7 @@ public class SAPEManagement : MonoBehaviour {
         e9a.onClick.AddListener(delegate () { Player.mainCharacter.skillTree.getPerk("E9A").own = true; });
         e9b.onClick.AddListener(delegate () { Player.mainCharacter.skillTree.getPerk("E9B").own = true; });
         e10a.onClick.AddListener(delegate () { Player.mainCharacter.skillTree.getPerk("E10A").own = true; });
+        
     }
     
 
@@ -367,6 +396,5 @@ public class SAPEManagement : MonoBehaviour {
             e10a.interactable = false;
         }
     }
-
-
+    
 }
