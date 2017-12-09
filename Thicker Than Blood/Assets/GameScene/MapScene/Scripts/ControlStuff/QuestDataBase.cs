@@ -21,7 +21,7 @@ public class QuestDataBase : MonoBehaviour {
     void initialization()
     {
         initializeMAIN1();
-
+        initializeMAIN2();
     }
 
     void initializeMAIN1()
@@ -43,6 +43,22 @@ public class QuestDataBase : MonoBehaviour {
         quests.Add(quest);
     }
 
+    void initializeMAIN2()
+    {
+        quests = new List<Quest>();
+        Quest quest = new Quest("Chapter 2", "MAIN2", true);
+        GameObject newObjective = GameObject.Instantiate(objective);
+        newObjective.transform.position = new Vector3(250, 3, 250);
+        quest.objective = newObjective;
+        quest.totalProgress = 3;
+        quest.currentProgress = 2;
+        quest.progressToDescription.Add(1, "Have 1000f");
+        quest.progressToDescription.Add(2, "Pay 800f");
+        quest.progressToDescription.Add(3, "Quest Complete");
+
+        quest.introduction = "Venezia";
+        quests.Add(quest);
+    }
 
     public Quest getQuest(string id)
     {
