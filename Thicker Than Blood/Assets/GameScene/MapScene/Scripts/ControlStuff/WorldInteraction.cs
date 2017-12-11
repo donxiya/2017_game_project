@@ -5,6 +5,7 @@ using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 public class WorldInteraction : MonoBehaviour
 {
+    public static WorldInteraction worldInteraction;
     public GameObject player;
     public GameObject tabCanvas;
     const float INTERACT_DIST = 1;
@@ -15,6 +16,7 @@ public class WorldInteraction : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        worldInteraction = gameObject.GetComponent<WorldInteraction>();
         playerAgent = player.GetComponent<NavMeshAgent>();
         playerAgent.speed = Player.mainParty.getTravelSpeed();
         chasing = false;
@@ -62,10 +64,16 @@ public class WorldInteraction : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.Space))
         {
-            disInspect();
-            playerAgent.isStopped = true;
+            stopPlayer();
         }
     }
+
+    public void stopPlayer()
+    {
+        disInspect();
+        playerAgent.isStopped = true;
+    }
+
     void getInteraction()
     {
         Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class InventoryManagement : MonoBehaviour {
     public static InventoryManagement inventoryManagement;
     public GameObject currentItemButton, selectingItemButton;
-    public Image currentItemIcon, selectingItemIcon;
+    public RawImage currentItemIcon, selectingItemIcon;
     public Text currentName, currentWeight, currentValue, currentAmount;
     public Text selectingName, selectingWeight, selectingValue, selectingAmount;
     public Texture2D selectedImg, unselectedImg;
@@ -21,7 +21,7 @@ public class InventoryManagement : MonoBehaviour {
     public Text price, weight, amount;
     public Slider amountSlider;
     public Button buyButton, sellButton;
-
+    public Text buyText, sellText;
     public static List<Item> originalCurrentInventory, originalSelectingInventory;
     public static float shopCash;
     public static InventoryManagementMode managementMode = InventoryManagementMode.dropping;
@@ -35,7 +35,6 @@ public class InventoryManagement : MonoBehaviour {
     private void Start()
     {
         inventoryManagement = gameObject.GetComponent<InventoryManagement>();
-
         currentAll.onClick.AddListener(delegate { currentCategory = ItemCategory.all; showCurrent(); });
         currentUpgrade.onClick.AddListener(delegate { currentCategory = ItemCategory.upgrade; showCurrent(); });
         currentLuxury.onClick.AddListener(delegate { currentCategory = ItemCategory.luxury; showCurrent(); });
@@ -68,6 +67,10 @@ public class InventoryManagement : MonoBehaviour {
     }
     private void OnEnable()
     {
+        if (inventoryManagement == null)
+        {
+            inventoryManagement = gameObject.GetComponent<InventoryManagement>();
+        }
     }
     public void initialization ()
     {
@@ -92,15 +95,18 @@ public class InventoryManagement : MonoBehaviour {
             currentInventory = collapseList(originalCurrentInventory);
             playerWeight.text = ((int)Player.mainParty.getInventoryWeight()).ToString();
         }
-        managementMode = InventoryManagementMode.shopping;
-        originalSelectingInventory = new List<Item>();
+        
         if (managementMode != InventoryManagementMode.shopping)
         {
             shopCash = 0;
+            originalSelectingInventory = new List<Item>();
+            buyText.text = "Take";
+            sellText.text = "Drop";
         }
         else
         {
-            shopCash = 20000;
+            buyText.text = "Buy";
+            sellText.text = "Sell";
         }
         selectingInventory = collapseList(originalSelectingInventory);
 
@@ -138,6 +144,7 @@ public class InventoryManagement : MonoBehaviour {
         {
 
         }
+        managementMode = InventoryManagementMode.dropping;
         clearCurrent();
         clearSelecting();
         //originalSelectingInventory.Clear();
@@ -303,6 +310,7 @@ public class InventoryManagement : MonoBehaviour {
             int weight = (int) sameItems[0].getWeight();
             currentWeight.text = weight + " / " + ((int) weight * sameItems.Count).ToString();
             currentAmount.text = sameItems.Count.ToString();
+            currentItemIcon.texture = sameItems[0].icon;
         }
         GameObject newItemButton = Object.Instantiate(currentItemButton);
         newItemButton.transform.SetParent(currentItemButton.transform.parent, false);
@@ -325,6 +333,7 @@ public class InventoryManagement : MonoBehaviour {
             int weight = (int)sameItems[0].getWeight();
             selectingWeight.text = weight + " / " + ((int)weight * sameItems.Count).ToString();
             selectingAmount.text = sameItems.Count.ToString();
+            selectingItemIcon.texture = sameItems[0].icon;
         }
         GameObject newItemButton = Object.Instantiate(selectingItemButton);
         newItemButton.transform.SetParent(selectingItemButton.transform.parent, false);

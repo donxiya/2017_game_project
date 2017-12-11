@@ -20,13 +20,13 @@ public class QuestDataBase : MonoBehaviour {
 	}
     void initialization()
     {
+        quests = new List<Quest>();
         initializeMAIN1();
         initializeMAIN2();
     }
 
     void initializeMAIN1()
     {
-        quests = new List<Quest>();
         Quest quest = new Quest("Chapter I", "MAIN1", true);
         GameObject newObjective = GameObject.Instantiate(objective);
         newObjective.transform.position = new Vector3(250, 3, 250);
@@ -45,8 +45,7 @@ public class QuestDataBase : MonoBehaviour {
 
     void initializeMAIN2()
     {
-        quests = new List<Quest>();
-        Quest quest = new Quest("Chapter 2", "MAIN2", true);
+        Quest quest = new Quest("Chapter II", "MAIN2", true);
         GameObject newObjective = GameObject.Instantiate(objective);
         newObjective.transform.position = new Vector3(250, 3, 250);
         quest.objective = newObjective;

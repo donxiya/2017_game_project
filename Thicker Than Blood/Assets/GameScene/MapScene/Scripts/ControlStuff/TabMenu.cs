@@ -50,6 +50,7 @@ public class TabMenu : MonoBehaviour {
             if (Time.timeScale != 0.0f)
             {
                 Time.timeScale = 0.0f;
+                WorldInteraction.worldInteraction.stopPlayer();
             }
             if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Escape))
             {
@@ -74,6 +75,32 @@ public class TabMenu : MonoBehaviour {
             }
         }
     }
+
+    public void showMarket(bool show)
+    {
+        
+        objectiveButtonQuick.gameObject.SetActive(!show);
+        factionButtonQuick.gameObject.SetActive(!show);
+        sapeButtonQuick.gameObject.SetActive(!show);
+        ciButtonQuick.gameObject.SetActive(!show);
+        mainGearButtonQuick.gameObject.SetActive(!show);
+        secGearButtonQuick.gameObject.SetActive(!show);
+        inventoryButtonQuick.gameObject.SetActive(show);
+        troopButtonQuick.gameObject.SetActive(!show);
+        resetLayout();
+        closeTabButton.gameObject.SetActive(true);
+        if (show)
+        {
+            gameObject.SetActive(show);
+            showPanel(TabPanelType.InventoryPanel, show);
+        } else
+        {
+
+        }
+        
+
+    }
+
 
     public void showPanel(TabPanelType tabPanelType, bool show)
     {

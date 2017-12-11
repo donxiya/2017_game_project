@@ -21,7 +21,8 @@ public class Party {
     public float taticRating, convinceRating;
     public float inventoryWeightLimit, inventoryWeight;
     public bool unique;
-
+    public City belongedCity;
+    public Town belongedTown;
     protected Party()
     {
 

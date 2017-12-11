@@ -3,16 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace Enums
-{
-    public enum InteractableType
-    {
-        NPC,
-        town,
-        castle,
-        city
-    };
-}
 
 public class Interactable : MonoBehaviour {
 
@@ -20,7 +10,7 @@ public class Interactable : MonoBehaviour {
     public NavMeshAgent playerAgent;
     //public GameObject interactedObject;
     public new string name;
-    public Enums.InteractableType interactableType;
+    public InteractableType interactableType;
     public int hostility;
     public string[] dialogue;
     public bool hasInteracted;
@@ -67,3 +57,10 @@ public class Interactable : MonoBehaviour {
     }
 }
 
+public enum InteractableType
+{
+    NPC,
+    town,
+    castle,
+    city
+};

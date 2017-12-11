@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Enums;
 
 
 public class Town : Interactable
@@ -14,15 +13,15 @@ public class Town : Interactable
     {
         base.Start();
         dialogue = new string[] { "hello", "hi" };
-        interactableType = Enums.InteractableType.town;
+        interactableType = InteractableType.town;
         objMaterial = gameObject.GetComponent<MeshRenderer>().material;
         objColor = objMaterial.color;
         townGuard = new Party("townGuard", Faction.italy, 100);
+        townGuard.belongedTown = this;
     }
     public override void interact()
     {
         //start dialogue
-        DialogueSystem.Instance.addNewDialogue(townGuard, dialogue, PanelType.town);
         DialogueSystem.Instance.createDialogue(PanelType.town, townGuard);
     }
 
@@ -47,5 +46,18 @@ public class Town : Interactable
             gameObject.GetComponent<MeshRenderer>().material = objMaterial;
             DialogueSystem.Instance.closeDialogue(PanelType.town);
         }**/
+    }
+
+    public List<Item> getTradeInventory()
+    {
+        List<Item> result = new List<Item>();
+        return result;
+    }
+
+    public string[] getGarrisonInfo()
+    {
+        string[] result = new string[] { "hello", "welcome" };
+
+        return result;
     }
 }

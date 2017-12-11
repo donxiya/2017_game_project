@@ -43,8 +43,8 @@ public class SNPCImgDataBase : MonoBehaviour {
         //SEC STEP
         getSNPCTroopInfo("Ludvico Sforza").description.Add(0, "A fucktard.");
         getSNPCTroopInfo("Bianca Sforza").description.Add(0, "A basic bitch.");
-        getSNPCTroopInfo("Red Hand Leader").description.Add(0, "A leader.");
-        getSNPCTroopInfo("Army Leader").description.Add(0, "Another leader.");
+        //getSNPCTroopInfo("Red Hand Leader").description.Add(0, "A leader.");
+        //getSNPCTroopInfo("Army Leader").description.Add(0, "Another leader.");
         getSNPCTroopInfo("Girolamo Savonarola").description.Add(0, "A lunatic.");
         getSNPCTroopInfo("Piero Soderini").description.Add(0, "An old man.");
         getSNPCTroopInfo("Giovanni de’ Medic").description.Add(0, "He's gonna be pope");

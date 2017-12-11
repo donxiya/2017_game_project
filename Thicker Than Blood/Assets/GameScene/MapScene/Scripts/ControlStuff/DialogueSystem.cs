@@ -10,24 +10,23 @@ public class DialogueSystem : MonoBehaviour {
     string npcName, snpcName, townName, cityName;
     public GameObject NPCInteractionPanel, SNPCInteractionPanel, townInteractionPanel,
         cityInteractionPanel, makeSurePanel, statusPanel;
+    public GameObject cityDialoguePanel, townDialoguePanel;
 
     public GameObject cityFirstLayerPanel1, cityFirstLayerPanel2, townFirstLayerPanel1,
         townFirstLayerPanel2, cityNamePanel, townNamePanel;
-
-    public GameObject townRestockPanel, cityRestockPanel, townRestockBuy, townRestockCancel,
-        townRestockSlideBar, cityRestockBuy, cityRestockCancel, cityRestockSlideBar;
+    
     public GameObject cityBackground, townBackground, npcBckground, snpcBackground;
     public GameObject npcTalk, npcAttack, npcAmbush, npcRetreat, npcBribe, npcLeave;
     public GameObject snpcTalk, snpcOptOne, snpcOptTwo, snpcLeave;
     public GameObject cityGarrison, cityThreaten, cityMarket, cityHall, cityArmory, cityTavern,
-        cityBrothel, cityChurch, cityencampment, cityPillage, cityRansom, cityRetreat, cityRestock,
+        cityBrothel, cityChurch, cityencampment, cityPillage, cityRansom, cityRetreat, cityTradeInfo,
         cityTrade, cityBillboard, cityTroop, cityChar, cityRest, cityBartender,
         cityGossip, cityBrothelRest, cityOrgy, cityIndulgence, cityUpgradeencampment, cityTroopManage,
         cityLeave, cityReturn;
-    public GameObject townGarrison, townRestock, townThreaten, townRecruit, townInvest,
+    public GameObject townGarrison, townTrade, townThreaten, townRecruit, townInvest,
         townLeave, townPillage, townRansom, townRetreat, townReturn;
     public GameObject yesButton, noButton;
-    public Text makeSureMsg, townRestockAmount, cityRestockAmount;
+    public Text makeSureMsg;
     
     
 
@@ -95,7 +94,7 @@ public class DialogueSystem : MonoBehaviour {
         cityPillage.GetComponent<Button>().onClick.AddListener(delegate { pillageCity(); });
         cityRansom.GetComponent<Button>().onClick.AddListener(delegate { cityConfirm("ransomCity"); });
         cityRetreat.GetComponent<Button>().onClick.AddListener(delegate { cityConfirm("retreatCity"); });
-        cityRestock.GetComponent<Button>().onClick.AddListener(delegate { restockCity(); });
+        cityTradeInfo.GetComponent<Button>().onClick.AddListener(delegate { tradeInfoCity(); });
         cityTrade.GetComponent<Button>().onClick.AddListener(delegate { tradeCity(); });
         cityBillboard.GetComponent<Button>().onClick.AddListener(delegate { billboardCity(); });
         cityTroop.GetComponent<Button>().onClick.AddListener(delegate { troopCity(); });
@@ -110,18 +109,13 @@ public class DialogueSystem : MonoBehaviour {
         cityTroopManage.GetComponent<Button>().onClick.AddListener(delegate { manageTroopCity(); });
         cityLeave.GetComponent<Button>().onClick.AddListener(delegate { leaveCity(); });
         cityReturn.GetComponent<Button>().onClick.AddListener(delegate { returnCity(); });
-        cityRestockCancel.GetComponent<Button>().onClick.AddListener(delegate { restockCancelCity(); });
-        cityRestockBuy.GetComponent<Button>().onClick.AddListener(delegate { restockBuyCity(); });
-        cityRestockAmount.text = ((int)cityRestockSlideBar.GetComponent<Slider>().value).ToString();
-        cityRestockSlideBar.GetComponent<Slider>().onValueChanged.AddListener(delegate {
-        cityRestockAmount.text = ((int)cityRestockSlideBar.GetComponent<Slider>().value).ToString(); });
         returnCity();
     }
     public void townPanelInitialization()
     {
         townGarrison.GetComponent<Button>().onClick.AddListener(delegate { garrisonTown(); });
         townThreaten.GetComponent<Button>().onClick.AddListener(delegate () { townConfirm("threatenTown"); });
-        townRestock.GetComponent<Button>().onClick.AddListener(delegate () { restockTown(); });
+        townTrade.GetComponent<Button>().onClick.AddListener(delegate () { tradeTown(); });
         townRecruit.GetComponent<Button>().onClick.AddListener(delegate () { recruitTown(); });
         townInvest.GetComponent<Button>().onClick.AddListener(delegate () { investTown(); });
         townLeave.GetComponent<Button>().onClick.AddListener(delegate () { closeDialogue(PanelType.town); });
@@ -131,14 +125,9 @@ public class DialogueSystem : MonoBehaviour {
         townRansom.SetActive(false);
         townRetreat.GetComponent<Button>().onClick.AddListener(delegate () { retreatTown(); });
         townRetreat.SetActive(false);
-        townRestockPanel.SetActive(false);
         townReturn.GetComponent<Button>().onClick.AddListener(delegate () { returnTown(); });
         returnTown();
-        townRestockAmount.text = ((int)townRestockSlideBar.GetComponent<Slider>().value).ToString();
-        townRestockSlideBar.GetComponent<Slider>().onValueChanged.AddListener(delegate {
-            townRestockAmount.text = ((int)townRestockSlideBar.GetComponent<Slider>().value).ToString();
-        });
-
+        
     }
     
     //NPC
@@ -250,6 +239,8 @@ public class DialogueSystem : MonoBehaviour {
         {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityGarrisonImg);
             cityMenuButtons(false);
+            addNewDialogue(curInteractedParty, curInteractedParty.belongedCity.getGarrisonInfo(), PanelType.city);
+            displayCityInfo();
         }
     }
     public void threatenCity()
@@ -269,7 +260,7 @@ public class DialogueSystem : MonoBehaviour {
         {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityMarketImg);
             cityTrade.SetActive(true);
-            cityRestock.SetActive(true);
+            cityTradeInfo.SetActive(true);
             cityMenuButtons(false);
         }
     }
@@ -358,25 +349,14 @@ public class DialogueSystem : MonoBehaviour {
         cityMenuButtons(true);
         closeDialogue(PanelType.city);
     }
-    public void restockCity()
-    {
-        cityRestockPanel.SetActive(true);
-        cityRestockSlideBar.GetComponent<Slider>().maxValue = Player.mainParty.cash;
-        cityRestockSlideBar.GetComponent<Slider>().minValue = 0;
-    }
-    public void restockCancelCity()
-    {
-        townRestockSlideBar.GetComponent<Slider>().value = 0;
-        cityRestockPanel.SetActive(false);
-    }
-    public void restockBuyCity()
+    public void tradeInfoCity()
     {
 
-        townRestockSlideBar.GetComponent<Slider>().value = 0;
     }
     public void tradeCity()
     {
-
+        TabMenu.tabMenu.showMarket(true);
+        InventoryManagement.managementMode = InventoryManagementMode.shopping;
     }
     public void billboardCity()
     {
@@ -424,11 +404,10 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void returnCity()
     {
-        cityRestockPanel.SetActive(false);
         cityPillage.SetActive(false);
         cityRansom.SetActive(false);
         cityRetreat.SetActive(false);
-        cityRestock.SetActive(false);
+        cityTradeInfo.SetActive(false);
         cityTrade.SetActive(false);
         cityBillboard.SetActive(false);
         cityTroop.SetActive(false);
@@ -535,16 +514,6 @@ public class DialogueSystem : MonoBehaviour {
             townRetreat.SetActive(true);
         }
     }
-    public void restockTown()
-    {
-        if (showTownFirstLayer)
-        {
-            swapTownBackground(MapSceneUIImageDataBase.dataBase.townRestockImg);
-            townRestock.SetActive(true);
-            cityRestockSlideBar.GetComponent<Slider>().maxValue = Player.mainParty.cash;
-            cityRestockSlideBar.GetComponent<Slider>().minValue = 0;
-        }
-    }
     public void recruitTown()
     {
         if (showTownFirstLayer)
@@ -562,18 +531,12 @@ public class DialogueSystem : MonoBehaviour {
         }
     }
 
-
-
-    public void restockBuyTown()
+    public void tradeTown()
     {
-
-        townRestockSlideBar.GetComponent<Slider>().value = 0;
+        TabMenu.tabMenu.showMarket(true);
+        InventoryManagement.managementMode = InventoryManagementMode.shopping;
     }
-    public void restockCancelTown()
-    {
-        townRestockSlideBar.GetComponent<Slider>().value = 0;
-        townRestock.SetActive(false);
-    }
+    
     
     public void pillageTown()
     {
@@ -602,7 +565,6 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void returnTown()
     {
-        townRestockPanel.SetActive(false);
         townPillage.SetActive(false);
         townRansom.SetActive(false);
         townRetreat.SetActive(false);
@@ -640,7 +602,11 @@ public class DialogueSystem : MonoBehaviour {
         townBackground.GetComponent<RawImage>().texture = img;
     }
 
-
+    public void displayCityInfo()
+    {
+        cityDialoguePanel.SetActive(true);
+        cityDialogueText.text = cityDialogueLines[0];
+    }
     //Common
     public void addNewDialogue(Party party, string[] lines, PanelType panelType) //panelType = "town", "city", "SNPC" or "NPC"
     {
@@ -683,23 +649,22 @@ public class DialogueSystem : MonoBehaviour {
     {
         statusPanel.SetActive(false);
         Time.timeScale = 0.0f;
+        WorldInteraction.worldInteraction.stopPlayer();
+        curInteractedParty = party;
         if (panelType == PanelType.NPC)
         {
-            npcDialogueText.text = npcDialogueLines[npcDialogueIndex];
             npcNameText.text = npcName;
-            curInteractedParty = party;
+            
             NPCInteractionPanel.SetActive(true);
         }
         else if (panelType == PanelType.SNPC)
         {
-            snpcDialogueText.text = snpcDialogueLines[snpcDialogueIndex];
             snpcNameText.text = npcName;
             SNPCInteractionPanel.SetActive(true);
         }
         else if (panelType == PanelType.city)
         {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityDefaultImg);
-            cityDialogueText.text = cityDialogueLines[cityDialogueIndex];
             cityNameText.text = cityName;
             cityInteractionPanel.SetActive(true);
             cityFirstLayerPanel1.GetComponent<Animator>().SetBool("show", true);
@@ -708,7 +673,6 @@ public class DialogueSystem : MonoBehaviour {
         }
         else if (panelType == PanelType.town)
         {
-            townDialogueText.text = townDialogueLines[townDialogueIndex];
             townNameText.text = townName;
             townInteractionPanel.SetActive(true);
             townFirstLayerPanel1.GetComponent<Animator>().SetBool("show", true);

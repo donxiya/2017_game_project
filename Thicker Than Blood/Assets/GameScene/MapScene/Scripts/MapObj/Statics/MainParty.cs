@@ -27,6 +27,9 @@ public class MainParty : Party {
         var q = QuestDataBase.dataBase.getQuest("MAIN1");
         
         unfinishedQuests.Add(q);
+        var q2 = QuestDataBase.dataBase.getQuest("MAIN2");
+
+        unfinishedQuests.Add(q2);
     }
     public override void plusPrestige(int toAdd)
     {
