@@ -16,18 +16,18 @@ public class DialogueSystem : MonoBehaviour {
         townFirstLayerPanel2, cityNamePanel, townNamePanel;
     
     public GameObject cityBackground, townBackground, npcBckground, snpcBackground;
-    public GameObject npcTalk, npcAttack, npcAmbush, npcRetreat, npcBribe, npcLeave;
+    public GameObject npcTalk, npcAttack, npcThreaten, npcAmbush, npcRetreat, npcBribe, npcLeave;
     public GameObject snpcTalk, snpcOptOne, snpcOptTwo, snpcLeave;
     public GameObject cityGarrison, cityThreaten, cityMarket, cityHall, cityArmory, cityTavern,
         cityBrothel, cityChurch, cityencampment, cityPillage, cityRansom, cityRetreat, cityTradeInfo,
-        cityTrade, cityBillboard, cityTroop, cityChar, cityRest, cityBartender,
-        cityGossip, cityBrothelRest, cityOrgy, cityIndulgence, cityUpgradeencampment, cityTroopManage,
+        cityTrade, cityBillboard, cityResetPerk, cityTroop, cityChar, cityRest, cityBartender,
+        cityGossip, cityBrothelRest, cityOrgy, cityIndulgence, cityUpgradeEncampment, cityTroopManage, cityWarehouse,
         cityLeave, cityReturn;
     public GameObject townGarrison, townTrade, townThreaten, townRecruit, townInvest,
         townLeave, townPillage, townRansom, townRetreat, townReturn;
     public GameObject yesButton, noButton;
     public Text makeSureMsg;
-    
+    public static float bonusConvince, bonusTatic;
     
 
     public List<string> npcDialogueLines = new List<string>();
@@ -38,8 +38,10 @@ public class DialogueSystem : MonoBehaviour {
 
     public Text npcDialogueText, snpcDialogueText, cityDialogueText, townDialogueText;
     public Text npcNameText, snpcNameText, cityNameText, townNameText;
-
+    public Text npcAmbushText, npcRetreatText, npcBribeText, npcThreatenText;
     int npcDialogueIndex, snpcDialogueIndex, cityDialogueIndex, townDialogueIndex;
+    float ambushR, bribeR, retreatR, threatenR;
+    int bribeAmount;
     bool showCityFirstLayer = true;
     bool showTownFirstLayer = true;
     void Start () {
@@ -72,6 +74,7 @@ public class DialogueSystem : MonoBehaviour {
         npcTalk.GetComponent<Button>().onClick.AddListener(delegate { continueDialogue(PanelType.NPC); });
         npcAttack.GetComponent<Button>().onClick.AddListener(delegate () { npcConfirm("attackNPC"); });
         npcAmbush.GetComponent<Button>().onClick.AddListener(delegate () { npcConfirm("ambushNPC"); });
+        npcThreaten.GetComponent<Button>().onClick.AddListener(delegate () { npcConfirm("threatenNPC"); });
         npcRetreat.GetComponent<Button>().onClick.AddListener(delegate () { npcConfirm("retreatNPC"); });
         npcBribe.GetComponent<Button>().onClick.AddListener(delegate () { npcConfirm("bribeNPC"); ; });
         npcLeave.GetComponent<Button>().onClick.AddListener(delegate () { npcConfirm("leaveNPC"); });
@@ -97,6 +100,7 @@ public class DialogueSystem : MonoBehaviour {
         cityTradeInfo.GetComponent<Button>().onClick.AddListener(delegate { tradeInfoCity(); });
         cityTrade.GetComponent<Button>().onClick.AddListener(delegate { tradeCity(); });
         cityBillboard.GetComponent<Button>().onClick.AddListener(delegate { billboardCity(); });
+        cityResetPerk.GetComponent<Button>().onClick.AddListener(delegate { resetPerkCity(); });
         cityTroop.GetComponent<Button>().onClick.AddListener(delegate { troopCity(); });
         cityChar.GetComponent<Button>().onClick.AddListener(delegate { charCity(); });
         cityRest.GetComponent<Button>().onClick.AddListener(delegate { restCity(); });
@@ -105,8 +109,9 @@ public class DialogueSystem : MonoBehaviour {
         cityBrothelRest.GetComponent<Button>().onClick.AddListener(delegate { brothelRestCity(); });
         cityOrgy.GetComponent<Button>().onClick.AddListener(delegate { orgyCity(); });
         cityChurch.GetComponent<Button>().onClick.AddListener(delegate { churchCity(); });
-        cityUpgradeencampment.GetComponent<Button>().onClick.AddListener(delegate { upgradeencampmentCity(); });
+        cityUpgradeEncampment.GetComponent<Button>().onClick.AddListener(delegate { upgradeEncampmentCity(); });
         cityTroopManage.GetComponent<Button>().onClick.AddListener(delegate { manageTroopCity(); });
+        cityWarehouse.GetComponent<Button>().onClick.AddListener(delegate { warehouseCity(); });
         cityLeave.GetComponent<Button>().onClick.AddListener(delegate { leaveCity(); });
         cityReturn.GetComponent<Button>().onClick.AddListener(delegate { returnCity(); });
         returnCity();
@@ -133,33 +138,42 @@ public class DialogueSystem : MonoBehaviour {
     //NPC
     public void npcConfirm(string funcName)
     {
-        string msg = "Are you sure?";
-        makeSurePanel.SetActive(true);
-        switch (funcName)
+        if (Player.mainParty.factionFavors[curInteractedParty.faction] >= 0)
         {
-            case "attackNPC":
-                msg = "Violence is not the answer.";
-                makeSureMsg.text = msg;
-                yesButton.GetComponent<Button>().onClick.AddListener(delegate () { attackNPC(); });
-                break;
-            case "ambushNPC":
-                msg = "Sneaky bastard.";
-                yesButton.GetComponent<Button>().onClick.AddListener(delegate () { ambushNPC(); });
-                break;
-            case "retreatNPC":
-                msg = "Coward!";
-                yesButton.GetComponent<Button>().onClick.AddListener(delegate () { retreatNPC(); });
-                break;
-            case "bribeNPC":
-                msg = "Rich!";
-                yesButton.GetComponent<Button>().onClick.AddListener(delegate () { bribeNPC(); });
-                break;
-            case "leaveNPC":
-                msg = "Bye?";
-                yesButton.GetComponent<Button>().onClick.AddListener(delegate () { leaveNPC(); });
-                break;
+            string msg = "Are you sure?";
+            makeSurePanel.SetActive(true);
+            switch (funcName)
+            {
+                case "attackNPC":
+                    msg = "Violence is not the answer.";
+                    makeSureMsg.text = msg;
+                    yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
+                    yesButton.GetComponent<Button>().onClick.AddListener(delegate () { attackNPC(); });
+                    break;
+                case "ambushNPC":
+                    msg = "Sneaky bastard.";
+                    yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
+                    yesButton.GetComponent<Button>().onClick.AddListener(delegate () { ambushNPC(); });
+                    break;
+                case "retreatNPC":
+                    msg = "Coward!";
+                    yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
+                    yesButton.GetComponent<Button>().onClick.AddListener(delegate () { retreatNPC(); });
+                    break;
+                case "bribeNPC":
+                    msg = "Rich!";
+                    yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
+                    yesButton.GetComponent<Button>().onClick.AddListener(delegate () { bribeNPC(); });
+                    break;
+                case "threatenNPC":
+                    msg = "I am afraid!";
+                    yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
+                    yesButton.GetComponent<Button>().onClick.AddListener(delegate () { threatenNPC(); });
+                    break;
+            }
+            noButton.GetComponent<Button>().onClick.AddListener(delegate () { makeSurePanel.SetActive(false); });
         }
-        noButton.GetComponent<Button>().onClick.AddListener(delegate () { makeSurePanel.SetActive(false); });
+        
 
 
     }
@@ -172,24 +186,102 @@ public class DialogueSystem : MonoBehaviour {
     public void ambushNPC()
     {
         makeSurePanel.SetActive(false);
-        closeDialogue(PanelType.NPC);
-        MapManagement.createBattleScene(curInteractedParty);
+        int rand = (int)UnityEngine.Random.Range(1, 100);
+        Debug.Log(rand);
+        if (ambushR >= rand)
+        {
+            closeDialogue(PanelType.NPC);
+            MapManagement.createBattleScene(curInteractedParty);
+        } else
+        {
+            npcAmbush.GetComponent<Button>().interactable = false;
+        }
+        
     } //TODO: based on INT
     public void retreatNPC() //TODO: based on INT
     {
-        makeSurePanel.SetActive(false);
-        closeDialogue(PanelType.NPC);
+        int rand = (int)UnityEngine.Random.Range(1, 100);
+        Debug.Log(rand);
+        if (retreatR >= rand)
+        {
+            makeSurePanel.SetActive(false);
+            closeDialogue(PanelType.NPC);
+        } else
+        {
+            npcRetreat.GetComponent<Button>().interactable = false;
+        }
+        
     }
+    public void threatenNPC()
+    {
+        int rand = (int)UnityEngine.Random.Range(1, 100);
+        Debug.Log(rand);
+        if (threatenR >= rand)
+        {
+            makeSurePanel.SetActive(false);
+            closeDialogue(PanelType.NPC); //TODO: AI will leave
+        } else
+        {
+            npcThreaten.GetComponent<Button>().interactable = false;
+        }
+        
+    } //TODO: demand gold based on CHR
     public void bribeNPC()
     {
-        makeSurePanel.SetActive(false);
-        closeDialogue(PanelType.NPC); //TODO: AI will leave
+        int rand = (int)UnityEngine.Random.Range(1, 100);
+        Debug.Log(rand);
+        if (bribeR >= rand)
+        {
+            makeSurePanel.SetActive(false);
+            closeDialogue(PanelType.NPC); //TODO: AI will leave
+        } else
+        {
+            npcBribe.GetComponent<Button>().interactable = false;
+        }
+        
     } //TODO: demand gold based on CHR
     public void leaveNPC()
     {
-        makeSurePanel.SetActive(false);
         closeDialogue(PanelType.NPC);
     } //TODO:based on CHR if hostility > 0;
+
+    public void updateNPCOption()
+    {
+        if (curInteractedParty != null && curInteractedParty.factionFavors[Faction.mercenary] < 0)
+        {
+            ambushR = Player.mainParty.getTaticRating() / (Player.mainParty.getTaticRating() + curInteractedParty.getTaticRating()) * 100;
+            bribeR = Player.mainParty.getConvinceRating() / (Player.mainParty.getConvinceRating() + curInteractedParty.getConvinceRating()) * 100;
+            retreatR = Player.mainParty.getTaticRating() / (Player.mainParty.getTaticRating() + curInteractedParty.getTaticRating()) * 100;
+            threatenR = Player.mainParty.getConvinceRating() / (Player.mainParty.getConvinceRating() + curInteractedParty.getConvinceRating()) * 100;
+            npcAmbushText.text = "Ambush (" + ((int)ambushR).ToString() + "%)";
+            npcBribeText.text = "Bribe (" + ((int)bribeR).ToString() + "%)(-" + curInteractedParty.getRequiredBribe(Player.mainParty.faction) + " florin)";
+            npcRetreatText.text = "Retreat (" + ((int)retreatR).ToString() + "%)";
+            npcThreatenText.text = "Threaten (" + ((int)threatenR).ToString() + "%)";
+            npcAmbush.GetComponent<Button>().interactable = true;
+            npcBribe.GetComponent<Button>().interactable = true;
+            npcThreaten.GetComponent<Button>().interactable = true;
+            npcRetreat.GetComponent<Button>().interactable = true;
+            npcLeave.GetComponent<Button>().interactable = false;
+        } else
+        {
+            ambushR = 100;
+            bribeR = 0;
+            retreatR = 0;
+            threatenR = Player.mainParty.getConvinceRating() / (Player.mainParty.getConvinceRating() + curInteractedParty.getConvinceRating()) * 100;
+            npcAmbushText.text = "Ambush (" + ((int)ambushR).ToString() + "%)";
+            npcBribeText.text = "Bribe";
+            npcRetreatText.text = "Retreat";
+            npcThreatenText.text = "Threaten (" + ((int)threatenR).ToString() + "%)";
+            npcAmbush.GetComponent<Button>().interactable = true;
+            npcBribe.GetComponent<Button>().interactable = false;
+            npcThreaten.GetComponent<Button>().interactable = true;
+            npcRetreat.GetComponent<Button>().interactable = false;
+            npcLeave.GetComponent<Button>().interactable = true;
+        }
+    }
+
+
+
     //SNPC
     public void talkSNPC()
     {
@@ -213,18 +305,22 @@ public class DialogueSystem : MonoBehaviour {
             case "threatenCity":
                 msg = "There is no going back.";
                 makeSureMsg.text = msg;
+                yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 yesButton.GetComponent<Button>().onClick.AddListener(delegate () { threatenCity(); });
                 break;
             case "retreatCity":
                 msg = "Coward!";
+                yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 yesButton.GetComponent<Button>().onClick.AddListener(delegate () { retreatCity(); });
                 break;
             case "ransomCity":
                 msg = "Rich!";
+                yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 yesButton.GetComponent<Button>().onClick.AddListener(delegate () { ransomCity(); });
                 break;
             case "leaveCity":
                 msg = "Bye?";
+                yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 yesButton.GetComponent<Button>().onClick.AddListener(delegate () { leaveCity(); });
                 break;
         }
@@ -241,6 +337,7 @@ public class DialogueSystem : MonoBehaviour {
             cityMenuButtons(false);
             addNewDialogue(curInteractedParty, curInteractedParty.belongedCity.getGarrisonInfo(), PanelType.city);
             displayCityInfo();
+
         }
     }
     public void threatenCity()
@@ -262,6 +359,7 @@ public class DialogueSystem : MonoBehaviour {
             cityTrade.SetActive(true);
             cityTradeInfo.SetActive(true);
             cityMenuButtons(false);
+            
         }
     }
     public void hallCity()
@@ -270,6 +368,7 @@ public class DialogueSystem : MonoBehaviour {
         {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityHallImg);
             cityBillboard.SetActive(true);
+            cityResetPerk.SetActive(true);
             cityMenuButtons(false);
         }
     }
@@ -319,8 +418,12 @@ public class DialogueSystem : MonoBehaviour {
         {
             swapCityBackground(MapSceneUIImageDataBase.dataBase.cityEncampmentImg);
             cityTroopManage.SetActive(true);
-            cityUpgradeencampment.SetActive(true);
+            cityUpgradeEncampment.SetActive(true);
+            cityWarehouse.SetActive(true);
             cityMenuButtons(false);
+            cityUpgradeEncampment.GetComponent<Button>().interactable = !curInteractedParty.belongedCity.encampmentAvailable;
+            cityTroopManage.GetComponent<Button>().interactable = curInteractedParty.belongedCity.encampmentAvailable;
+            cityWarehouse.GetComponent<Button>().interactable = curInteractedParty.belongedCity.encampmentAvailable;
         }
     }
     public void pillageCity()
@@ -355,20 +458,28 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void tradeCity()
     {
-        TabMenu.tabMenu.showMarket(true);
+        Party trader = curInteractedParty.belongedCity.cityTrader;
+        InventoryManagement.inventoryManagement.inputShopSetting(trader, trader.cash);
         InventoryManagement.managementMode = InventoryManagementMode.shopping;
+        TabMenu.tabMenu.showMarket(true);
     }
     public void billboardCity()
     {
 
     }
+    public void resetPerkCity()
+    {
+        SAPEManagement.resetable = true;
+        TabMenu.tabMenu.showPerk(true);
+    }
     public void troopCity()
     {
-
+        //open troop management
+        TabMenu.tabMenu.showTroopManagement(true, true);
     }
     public void charCity()
     {
-
+        TabMenu.tabMenu.showGear(true);
     }
     public void restCity()
     {
@@ -394,13 +505,28 @@ public class DialogueSystem : MonoBehaviour {
     {
 
     }
-    public void upgradeencampmentCity()
+    public void upgradeEncampmentCity()
     {
-
+        if (Player.mainParty.cash >= curInteractedParty.belongedCity.getEncampmentPrice())
+        {
+            Player.mainParty.cash -= curInteractedParty.belongedCity.getEncampmentPrice();
+            curInteractedParty.belongedCity.encampmentAvailable = true;
+            cityUpgradeEncampment.GetComponent<Button>().interactable = !curInteractedParty.belongedCity.encampmentAvailable;
+            cityTroopManage.GetComponent<Button>().interactable = curInteractedParty.belongedCity.encampmentAvailable;
+            cityWarehouse.GetComponent<Button>().interactable = curInteractedParty.belongedCity.encampmentAvailable;
+        }
+    }
+    public void warehouseCity()
+    {
+        
+        City city = curInteractedParty.belongedCity;
+        InventoryManagement.inventoryManagement.inputShopSetting(city, 0);
+        InventoryManagement.managementMode = InventoryManagementMode.looting;
+        TabMenu.tabMenu.showMarket(true);
     }
     public void manageTroopCity()
     {
-
+        TabMenu.tabMenu.showTroopManagement(true, false);
     }
     public void returnCity()
     {
@@ -410,6 +536,7 @@ public class DialogueSystem : MonoBehaviour {
         cityTradeInfo.SetActive(false);
         cityTrade.SetActive(false);
         cityBillboard.SetActive(false);
+        cityResetPerk.SetActive(false);
         cityTroop.SetActive(false);
         cityChar.SetActive(false);
         cityRest.SetActive(false);
@@ -418,9 +545,11 @@ public class DialogueSystem : MonoBehaviour {
         cityBrothelRest.SetActive(false);
         cityOrgy.SetActive(false);
         cityIndulgence.SetActive(false);
-        cityUpgradeencampment.SetActive(false);
+        cityUpgradeEncampment.SetActive(false);
         cityTroopManage.SetActive(false);
+        cityWarehouse.SetActive(false);
         cityReturn.SetActive(false);
+        cityDialoguePanel.SetActive(false);
         cityMenuButtons(true);
         cityBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.getCityDefaultImg();
         cityNamePanel.GetComponent<Animator>().SetBool("show", true);
@@ -475,18 +604,22 @@ public class DialogueSystem : MonoBehaviour {
                 //addNewDialogue("town", )
                 //createDialogue()
                 makeSureMsg.text = msg;
+                yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 yesButton.GetComponent<Button>().onClick.AddListener(delegate () { threatenTown(); });
                 break;
             case "recruitTown":
                 msg = "Hire!";
+                yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 yesButton.GetComponent<Button>().onClick.AddListener(delegate () { recruitTown(); });
                 break;
             case "investTown":
                 msg = "Rich!";
+                yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 yesButton.GetComponent<Button>().onClick.AddListener(delegate () { investTown(); });
                 break;
             case "retreatTown":
                 msg = "Coward!";
+                yesButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 yesButton.GetComponent<Button>().onClick.AddListener(delegate () { retreatTown(); });
                 break;
         }
@@ -569,6 +702,7 @@ public class DialogueSystem : MonoBehaviour {
         townRansom.SetActive(false);
         townRetreat.SetActive(false);
         townReturn.SetActive(false);
+        townDialoguePanel.SetActive(false);
         townMenuButtons(true);
         townBackground.GetComponent<RawImage>().texture = MapSceneUIImageDataBase.dataBase.getTownDefaultImg();
         townNamePanel.GetComponent<Animator>().SetBool("show", true);
@@ -616,7 +750,6 @@ public class DialogueSystem : MonoBehaviour {
             npcDialogueLines = new List<string>(lines.Length);
             npcDialogueLines.AddRange(lines);
             npcName = party.name;
-            createDialogue(PanelType.NPC, party);
         }
         else if (panelType == PanelType.SNPC)
         {
@@ -624,7 +757,6 @@ public class DialogueSystem : MonoBehaviour {
             snpcDialogueLines = new List<string>(lines.Length);
             snpcDialogueLines.AddRange(lines);
             snpcName = party.name;
-            createDialogue(PanelType.SNPC, party);
         }
         else if (panelType == PanelType.city)
         {
@@ -632,7 +764,6 @@ public class DialogueSystem : MonoBehaviour {
             cityDialogueLines = new List<string>(lines.Length);
             cityDialogueLines.AddRange(lines);
             cityName = party.name;
-            createDialogue(PanelType.city, party);
         }
         else if (panelType == PanelType.town)
         {
@@ -640,22 +771,30 @@ public class DialogueSystem : MonoBehaviour {
             townDialogueLines = new List<string>(lines.Length);
             townDialogueLines.AddRange(lines);
             townName = party.name;
-            createDialogue(PanelType.town, party);
         }
         
         
     }
     public void createDialogue(PanelType panelType, Party party)
     {
+        if (MapManagement.mapManagement.finishedLoading == false)
+        {
+            return;
+        }
         statusPanel.SetActive(false);
         Time.timeScale = 0.0f;
-        WorldInteraction.worldInteraction.stopPlayer();
+        WorldInteraction.worldInteraction.stopEveryone(true);
+        if (party == null)
+        {
+            Debug.Log("p is null");
+        }
         curInteractedParty = party;
         if (panelType == PanelType.NPC)
         {
             npcNameText.text = npcName;
             
             NPCInteractionPanel.SetActive(true);
+            updateNPCOption();
         }
         else if (panelType == PanelType.SNPC)
         {
@@ -742,7 +881,6 @@ public class DialogueSystem : MonoBehaviour {
         statusPanel.SetActive(true);
         Time.timeScale = 1.0f;
     }
-    
     
 }
 

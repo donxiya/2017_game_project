@@ -25,6 +25,7 @@ public class BattleAIControl : MonoBehaviour {
     int halberdierIndex, swordsmenIndex, cavalriesIndex, crossbowmenIndex, musketeerIndex;
     public static AIAction curAIAction;
     public static bool skippThisAction;
+    public static bool shouldRethink;
     // Use this for initialization
     void Start() {
         enemyPlaced = false;
@@ -41,6 +42,7 @@ public class BattleAIControl : MonoBehaviour {
         musketeer = new List<Person>();
         futureGrids = new List<Grid>();
         skippThisAction = false;
+        shouldRethink = false;
     }
 
     // Update is called once per frame
@@ -236,7 +238,7 @@ public class BattleAIControl : MonoBehaviour {
             index++;
         }
 
-
+        BattleCentralControl.enemyTotal = BattleCentralControl.enemyParty.partyMember.Count;
 
     }
 
@@ -265,7 +267,10 @@ public class BattleAIControl : MonoBehaviour {
             }
             curAIAction.doAIAction(); //do the first half
             //Debug.Log(curAIAction.troop.person.name + "||" + curAIAction.skillMode + "||" + curAIAction.troop.charging);
-            curAIAction.troop.cameraFocusOn();
+            if (curAIAction.troop.activated)
+            {
+                curAIAction.troop.cameraFocusOn();
+            }
             if (!waited) //reset clock
             {
                 timer = 0;
@@ -289,6 +294,10 @@ public class BattleAIControl : MonoBehaviour {
                 curAIAction.troop.cameraFocusOnExit();
             }
 
+        } else if (shouldRethink)
+        {
+            actionQueue.Clear();
+            aiControl();
         }
     }
     void aiControl()
@@ -324,6 +333,7 @@ public class BattleAIControl : MonoBehaviour {
             //Debug.Log(getSeen().Count);
         }
         actionQueue.Enqueue(new AIAction(BattleCentralControl.enemyParty.leader.troop, TroopSkill.none));
+        shouldRethink = false;
     }
     void frontLineAttack()
     {
@@ -1122,9 +1132,12 @@ public class BattleAIControl : MonoBehaviour {
 
 public class AIAction {
     public Troop troop;
+    public Troop targetTroop;
     public GameObject target;
     public TroopSkill skillMode;
     public Grid destination;
+    public bool aimingAtTroop = false;
+    public bool aimingAtGrid = false;
     public bool finished;
     public AIAction(Troop troopI, TroopSkill skillModeI)
     {
@@ -1136,6 +1149,16 @@ public class AIAction {
         troop = troopI;
         skillMode = skillModeI;
         target = targetI;
+        if (target.GetComponent<Troop>() != null)
+        {
+            aimingAtTroop = true;
+            aimingAtGrid = false;
+            targetTroop = target.GetComponent<Troop>();
+        } else if (target.GetComponent<GridObject>() != null)
+        {
+            aimingAtTroop = false;
+            aimingAtGrid = true;
+        }
     }
     public AIAction(Troop troopI, TroopSkill skillModeI, Grid destinationI)
     {
@@ -1145,85 +1168,148 @@ public class AIAction {
     }
     public void doAIAction()
     {
-        troop.aiControlled = true;
-        switch(skillMode)
+        if (troop.activated)
         {
-            case TroopSkill.none:
-                BattleAIControl.enemyFinished = true;
-                break;
-            case TroopSkill.walk:
-                //Debug.Log(destination.x + " " + destination.z);
-                BattleAIControl.futureGrids.Remove(troop.curGrid);
-                troop.troopMoveToPlace(destination);
-                break;
-            case TroopSkill.lunge:
-                if (troop.person.stamina >= troop.person.getLungeStaminaCost())
-                {
-                    lungeAttack(troop, target);
-                } else
-                {
-                    BattleAIControl.skippThisAction = true;
-                }
-                break;
-            case TroopSkill.whirlwind:
-                if (troop.person.stamina >= troop.person.getWhirlwindStaminaCost())
-                {
-                    whirlwindAttack(troop);
-                } else
-                {
-                    BattleAIControl.skippThisAction = true;
-                }
-                break;
-            case TroopSkill.execute:
-                if (troop.person.stamina >= troop.person.getExecuteStaminaCost())
-                {
-                    executeAttack(troop);
-                } else
-                {
-                    BattleAIControl.skippThisAction = true;
-                }
-                break;
-            case TroopSkill.guard:
-                if (troop.person.stamina >= troop.person.getGuardStaminaCost())
-                {
-                    guardAttack(troop);
-                } else
-                {
-                    BattleAIControl.skippThisAction = true;
-                }
-                break;
-            case TroopSkill.holdSteady:
-                break;
-            case TroopSkill.fire:
-                if (troop.person.stamina >= troop.person.getFireStaminaCost())
-                {
-                    fireAttack(troop, target);
-                } else
-                {
-                    BattleAIControl.skippThisAction = true;
-                }
-                break;
-            case TroopSkill.quickDraw:
-                if (troop.person.stamina >= troop.person.getQuickDrawStaminaCost())
-                {
-                    quickDrawAttack(troop, target);
-                } else
-                {
-                    BattleAIControl.skippThisAction = true;
-                }
-                break;
-            case TroopSkill.rainOfArrows:
-                if (troop.person.stamina >= troop.person.getRainOfArrowsStaminaCost())
-                {
-                    rainOfArrowAttack(troop, target);
-                } else
-                {
-                    BattleAIControl.skippThisAction = true;
-                }
-                break;
-            case TroopSkill.charge:
-                break;
+            troop.aiControlled = true;
+            switch (skillMode)
+            {
+                case TroopSkill.none:
+                    BattleAIControl.enemyFinished = true;
+                    break;
+                case TroopSkill.walk:
+                    //Debug.Log(destination.x + " " + destination.z);
+                    BattleAIControl.futureGrids.Remove(troop.curGrid);
+                    troop.troopMoveToPlace(destination);
+                    break;
+                case TroopSkill.lunge:
+                    if (aimingAtTroop)
+                    {
+                        if (targetTroop == null || !targetTroop.activated)
+                        {
+                            BattleAIControl.skippThisAction = true;
+                            BattleAIControl.shouldRethink = true;
+                            return;
+                        }
+                    }
+                    if (troop.person.stamina >= troop.person.getLungeStaminaCost())
+                    {
+                        lungeAttack(troop, target);
+                    }
+                    else
+                    {
+                        BattleAIControl.skippThisAction = true;
+                        BattleAIControl.shouldRethink = true;
+                    }
+                    break;
+                case TroopSkill.whirlwind:
+                    if (aimingAtTroop)
+                    {
+                        if (targetTroop == null || !targetTroop.activated)
+                        {
+                            BattleAIControl.skippThisAction = true;
+                            BattleAIControl.shouldRethink = true;
+                            return;
+                        }
+                    }
+                    if (troop.person.stamina >= troop.person.getWhirlwindStaminaCost())
+                    {
+                        whirlwindAttack(troop);
+                    }
+                    else
+                    {
+                        BattleAIControl.skippThisAction = true;
+                        BattleAIControl.shouldRethink = true;
+                    }
+                    break;
+                case TroopSkill.execute:
+                    if (troop.person.stamina >= troop.person.getExecuteStaminaCost())
+                    {
+                        executeAttack(troop);
+                    }
+                    else
+                    {
+                        BattleAIControl.skippThisAction = true;
+                        BattleAIControl.shouldRethink = true;
+                    }
+                    break;
+                case TroopSkill.guard:
+                    if (troop.person.stamina >= troop.person.getGuardStaminaCost())
+                    {
+                        guardAttack(troop);
+                    }
+                    else
+                    {
+                        BattleAIControl.skippThisAction = true;
+                        BattleAIControl.shouldRethink = true;
+                    }
+                    break;
+                case TroopSkill.holdSteady:
+                    break;
+                case TroopSkill.fire:
+                    if (aimingAtTroop)
+                    {
+                        if (targetTroop == null || !targetTroop.activated)
+                        {
+                            BattleAIControl.skippThisAction = true;
+                            BattleAIControl.shouldRethink = true;
+                            return;
+                        }
+                    }
+                    if (troop.person.stamina >= troop.person.getFireStaminaCost())
+                    {
+                        fireAttack(troop, target);
+                    }
+                    else
+                    {
+                        BattleAIControl.skippThisAction = true;
+                        BattleAIControl.shouldRethink = true;
+                    }
+                    break;
+                case TroopSkill.quickDraw:
+                    if (aimingAtTroop)
+                    {
+                        if (targetTroop == null || !targetTroop.activated)
+                        {
+                            BattleAIControl.skippThisAction = true;
+                            BattleAIControl.shouldRethink = true;
+                            return;
+                        }
+                    }
+                    if (troop.person.stamina >= troop.person.getQuickDrawStaminaCost())
+                    {
+                        quickDrawAttack(troop, target);
+                    }
+                    else
+                    {
+                        BattleAIControl.skippThisAction = true;
+                        BattleAIControl.shouldRethink = true;
+                    }
+                    break;
+                case TroopSkill.rainOfArrows:
+                    if (aimingAtTroop)
+                    {
+                        if (targetTroop == null || !targetTroop.activated)
+                        {
+                            BattleAIControl.skippThisAction = true;
+                            BattleAIControl.shouldRethink = true;
+                            return;
+                        }
+                    }
+                    if (troop.person.stamina >= troop.person.getRainOfArrowsStaminaCost())
+                    {
+                        rainOfArrowAttack(troop, target);
+                    }
+                    else
+                    {
+                        BattleAIControl.skippThisAction = true;
+                        BattleAIControl.shouldRethink = true;
+                    }
+                    break;
+                case TroopSkill.charge:
+                    break;
+            }
         }
+        
     }
     public void finishAIAction()
     {

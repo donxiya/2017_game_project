@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CIManagement : MonoBehaviour {
+    public static CIManagement ciManagement;
     public Text charismaTxt, intelligenceTxt, sparedPoints;
     public Button charismaPlus, intelligencePlus;
     public Button c6a, c6b, c6c, c6d, c7a, c7b, c7c, c7d, c8a, c8b, c8c, c8d,
@@ -18,21 +19,34 @@ public class CIManagement : MonoBehaviour {
     float MAX_BAR_HEIGHT, MAX_BAR_WIDTH;
     float INSPECT_OFFSET_X, INSPECT_OFFSET_Y;
     float SCALE_X, SCALE_Y;
+    bool initialized = false;
     // Use this for initialization
     void Start () {
+        ciManagement = this;
         MAX_BAR_HEIGHT = barMax.rectTransform.sizeDelta.y;
         MAX_BAR_WIDTH = barMax.rectTransform.sizeDelta.x;
         SCALE_X = scaler.referenceResolution.x / Screen.width;
         SCALE_Y = scaler.referenceResolution.y / Screen.height;
         INSPECT_OFFSET_X = (c6a.gameObject.GetComponent<RectTransform>().sizeDelta.y + inspectPanel.transform.GetComponent<RectTransform>().sizeDelta.y) / 2;
         INSPECT_OFFSET_Y = (c6a.gameObject.GetComponent<RectTransform>().sizeDelta.x + inspectPanel.transform.GetComponent<RectTransform>().sizeDelta.x) / 2;
-        initialization();
+        
     }
-	
-	// Update is called once per frame
-	void Update () {
-        showStats();
-        buttonUpdate();
+
+    private void OnEnable()
+    {
+        initialized = false;
+    }
+    // Update is called once per frame
+    void Update () {
+        if (!SaveLoadSystem.loading)
+        {
+            if (!initialized)
+            {
+                initialization();
+            }
+            showStats();
+            buttonUpdate();
+        }
 	}
     
     public void inspectPerk(string ID)
@@ -136,6 +150,7 @@ public class CIManagement : MonoBehaviour {
     }
     void buttonUpdate()
     {
+        reset.interactable = SAPEManagement.resetable;
         if (Player.mainCharacter.exp.sparedPoint > 0)
         {
             charismaPlus.gameObject.SetActive(true);

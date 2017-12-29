@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class TroopManagement : MonoBehaviour {
     public static TroopManagement troopManagement;
+    public static bool upgradable = false;
     public GameObject selectingTroopUnitButton;
     public Text selectingTroopName, selectingTroopLevel, selectingTitle;
     public RawImage selectingMaxHealthBar, selectingHealthBar, selectingStaminaBar;
@@ -21,7 +22,7 @@ public class TroopManagement : MonoBehaviour {
     public RawImage currentMaxHealthBar, currentHealthBar, currentStaminaBar;
     public Texture2D regularTroopBackground, curSelectingBackgroundImage, curCurrentBackgroundImage;
     public GameObject resetSAPE, sPlus, aPlus, pPlus, ePlus, bars, sBar, aBar, pBar, eBar;
-
+    
     bool inSelecting, renaming;
     GameObject curSelectingButton, curCurrentButton;
     Person curSelectingPerson, curCurrentPerson;
@@ -32,10 +33,10 @@ public class TroopManagement : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        troopManagement = gameObject.GetComponent<TroopManagement>();
+        troopManagement = this;
         STATS_BAR_WIDTH = inspectSBar.rectTransform.sizeDelta.y;
-        troopDict = new Dictionary<Person, GameObject>();
-
+        
+        upgradable = false;
     }
     private void OnEnable()
     {
@@ -76,7 +77,14 @@ public class TroopManagement : MonoBehaviour {
                 }
                 else
                 {
-                    upgradeButton.interactable = true;
+                    if (upgradable && !upgradeButton.interactable)
+                    {
+                        upgradeButton.interactable = true;
+                    } else if (upgradable && upgradeButton.interactable)
+                    {
+                        upgradeButton.interactable = true;
+                    }
+                    
                     nameButton.GetComponent<Button>().interactable = true;
                     resetSAPE.GetComponent<Button>().interactable = true;
                 }
@@ -121,7 +129,7 @@ public class TroopManagement : MonoBehaviour {
         selectingMembers = new List<Person>();
         curCurrentPerson = Player.mainParty.leader;
         currentMembers = Player.mainParty.partyMember;
-        
+        troopDict = new Dictionary<Person, GameObject>();
         clearButtonListener();
         addButton.GetComponent<Button>().onClick.AddListener(delegate { addToCurrent(); });
         removeButton.GetComponent<Button>().onClick.AddListener(delegate { removeFromCurrent(); });
@@ -417,11 +425,15 @@ public class TroopManagement : MonoBehaviour {
         }
         foreach (Person p in selectingMembers)
         {
-            Object.Destroy(troopDict[p]);
+            if (troopDict.ContainsKey(p)) {
+                Object.Destroy(troopDict[p]);
+            }
         }
         foreach (Person p in currentMembers)
         {
-            Object.Destroy(troopDict[p]);
+            if (troopDict.ContainsKey(p)) {
+                Object.Destroy(troopDict[p]);
+            }
         }
         troopDict.Clear();
         foreach (Person p in selectingMembers)
@@ -456,6 +468,7 @@ public class TroopManagement : MonoBehaviour {
             reArrangeButtons();
             Player.mainParty.partyMember = currentMembers;
         }
+        upgradable = false;
     }
     List<Person> sortList(List<Person> listToSort)
     {

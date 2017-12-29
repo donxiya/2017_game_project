@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FollowCamera : MonoBehaviour {
     public GameObject target = null;
-    public GameObject player_party = null;
+    public GameObject playerParty = null;
     public bool orbity = false;
     private Vector3 positionOffset = Vector3.zero;
     private Vector3 positionOffsetBase = Vector3.zero;
@@ -18,8 +18,7 @@ public class FollowCamera : MonoBehaviour {
         
         positionOffsetBase = (new Vector3(0, 2, -2));
         positionOffset = multiplier * positionOffsetBase;
-        player_party = GameObject.Find("player_party");
-        target = player_party;
+        target = playerParty;
     }
 	
 	// Update is called once per frame
@@ -50,7 +49,7 @@ public class FollowCamera : MonoBehaviour {
             {
                 current_mode = "TOGGLE_TO_PLAYER";
                 positionOffsetBase = (new Vector3(2, 2, 1));
-                target = player_party;
+                target = playerParty;
                 positionOffset = 4 * positionOffsetBase;
             }
             if ((Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D)) && current_mode != "FREE_MOVE")

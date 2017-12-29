@@ -25,16 +25,20 @@ public class InventoryManagement : MonoBehaviour {
     public static List<Item> originalCurrentInventory, originalSelectingInventory;
     public static float shopCash;
     public static InventoryManagementMode managementMode = InventoryManagementMode.dropping;
+    public bool initialized;
     List<List<Item>> currentInventory, selectingInventory;
     bool inCurrent;
+    Party tradingParty;
+    City storingCity;
     List<Item> curSameItems;
     GameObject curButton;
     List<GameObject> createdCurrentButtons, createdSelectingButtons;
     ItemCategory currentCategory, selectingCategory;
     SortingMode currentSortingMode, selectingSortingMode;
+    
     private void Start()
     {
-        inventoryManagement = gameObject.GetComponent<InventoryManagement>();
+        inventoryManagement = this;
         currentAll.onClick.AddListener(delegate { currentCategory = ItemCategory.all; showCurrent(); });
         currentUpgrade.onClick.AddListener(delegate { currentCategory = ItemCategory.upgrade; showCurrent(); });
         currentLuxury.onClick.AddListener(delegate { currentCategory = ItemCategory.luxury; showCurrent(); });
@@ -71,7 +75,9 @@ public class InventoryManagement : MonoBehaviour {
         {
             inventoryManagement = gameObject.GetComponent<InventoryManagement>();
         }
+        initialized = false;
     }
+    
     public void initialization ()
     {
         amount.text = (0).ToString();
@@ -98,8 +104,10 @@ public class InventoryManagement : MonoBehaviour {
         
         if (managementMode != InventoryManagementMode.shopping)
         {
-            shopCash = 0;
-            originalSelectingInventory = new List<Item>();
+            if (originalSelectingInventory == null)
+            {
+                originalSelectingInventory = new List<Item>();
+            }
             buyText.text = "Take";
             sellText.text = "Drop";
         }
@@ -109,10 +117,10 @@ public class InventoryManagement : MonoBehaviour {
             sellText.text = "Sell";
         }
         selectingInventory = collapseList(originalSelectingInventory);
-
         currentItemButton.SetActive(false);
         selectingItemButton.SetActive(false);
         showCurrent();
+        showSelecting();
     }
     // Update is called once per frame
     void Update () {
@@ -124,15 +132,32 @@ public class InventoryManagement : MonoBehaviour {
             buyButton.interactable = false;
             sellButton.interactable = false;
         }
+        if (!initialized)
+        {
+            initialization();
+            initialized = true;
+        }
     }
 
 
-    public void inputShopSetting(List<Item> items, int shopCashI)
+    public void inputShopSetting(Party party, int shopCashI)
     {
-        originalSelectingInventory = items;
+        tradingParty = party;
+        originalSelectingInventory = new List<Item>(tradingParty.inventory);
         shopCash = shopCashI;
         managementMode = InventoryManagementMode.shopping;
+        initialization();
     }
+
+    public void inputShopSetting(City city, int shopCashI)
+    {
+        storingCity = city;
+        originalSelectingInventory = new List<Item>(city.warehouse);
+        shopCash = shopCashI;
+        managementMode = InventoryManagementMode.shopping;
+        initialization();
+    }
+
     public void leaveManagement()
     {
         if (originalCurrentInventory != null)
@@ -142,8 +167,22 @@ public class InventoryManagement : MonoBehaviour {
         }
         if (managementMode == InventoryManagementMode.shopping)
         {
-
+            if (tradingParty != null)
+            {
+                tradingParty.inventory = new List<Item>(originalSelectingInventory);
+            }
+            if (storingCity != null)
+            {
+                storingCity.warehouse = new List<Item>(originalSelectingInventory);
+            }
+        } else
+        {
+            if (storingCity != null)
+            {
+                storingCity.warehouse = new List<Item>(originalSelectingInventory);
+            }
         }
+        originalSelectingInventory.Clear();
         managementMode = InventoryManagementMode.dropping;
         clearCurrent();
         clearSelecting();
@@ -279,7 +318,13 @@ public class InventoryManagement : MonoBehaviour {
             {
                 singlePrice = - toInspect[0].getBuyingPrice();
                 singleWeight = (int)toInspect[0].getWeight();
-                maxAmount = Mathf.Min(toInspect.Count, (int) Mathf.Abs(Player.mainParty.cash / singlePrice));
+                if (managementMode == InventoryManagementMode.shopping)
+                {
+                    maxAmount = Mathf.Min(toInspect.Count, (int)Mathf.Abs(Player.mainParty.cash / singlePrice));
+                } else
+                {
+                    maxAmount = (int)toInspect.Count;
+                }
                 sellButton.interactable = false;
                 buyButton.interactable = true;
             }
@@ -294,6 +339,7 @@ public class InventoryManagement : MonoBehaviour {
             amount.text = tradingAmount.ToString();
             price.text = "Price: " + ((int)singlePrice * (int)amountSlider.value) + "(" + singlePrice + ")";
             weight.text = "Weight: " + ((int)singleWeight * (int)amountSlider.value) + "(" + singleWeight + ")";
+            updateWeightAndCash();
             buyButton.onClick.RemoveAllListeners();
             sellButton.onClick.RemoveAllListeners();
             buyButton.onClick.AddListener(delegate { selectingToCurrent(curSameItems, tradingAmount, managementMode); updateWeightAndCash(); });

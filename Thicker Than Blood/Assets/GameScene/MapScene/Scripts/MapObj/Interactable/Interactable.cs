@@ -49,6 +49,7 @@ public class Interactable : MonoBehaviour {
     }
     public virtual void OnTriggerEnter(Collider col)
     {
+        WorldInteraction.worldInteraction.stopEveryone(true);
         hasInteracted = true;
     }
     public virtual void OnTriggerExit(Collider col)

@@ -23,6 +23,10 @@ public class InterfaceControl : MonoBehaviour {
     //tutorial buttons
     private GameObject tutorialReturnButton;
 
+    private void Awake()
+    {
+        SceneManager.CreateScene("MapScene");
+    }
     // Use this for initialization
     void Start () {
         initializion();
@@ -33,18 +37,26 @@ public class InterfaceControl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if (SaveLoadSystem.saveType == SaveType.newGame)
+        {
+            continueButton.GetComponent<Button>().interactable = false;
+        } else
+        {
+            continueButton.GetComponent<Button>().interactable = true;
+        }
 	}
 
     void continueOnClicked()
     {
         Time.timeScale = 1.0f;
+        SaveLoadSystem.saveType = SaveType.tempSave;
         SceneManager.LoadScene("MapScene");
     }
 
     void newGameOnClicked()
     {
         Time.timeScale = 1.0f;
+        SaveLoadSystem.saveType = SaveType.newGame;
         SceneManager.LoadScene("MapScene");
     }
 
@@ -62,25 +74,26 @@ public class InterfaceControl : MonoBehaviour {
 
     void initializion ()
     {
-        mainMenuPanel = GameObject.Find("Main_Menu_Panel");
-        saveLoadPanel = GameObject.Find("Save_Load_Panel");
-        tutorialPanel = GameObject.Find("Tutorial_Panel");
+        mainMenuPanel = GameObject.Find("MainMenuPanel");
+        saveLoadPanel = GameObject.Find("SaveLoadPanel");
+        tutorialPanel = GameObject.Find("TutorialPanel");
 
         mainMenuPanel.SetActive(true);
         saveLoadPanel.SetActive(false);
         tutorialPanel.SetActive(false);
 
-        continueButton = GameObject.Find("continue_button");
+        continueButton = GameObject.Find("Continue");
         continueButton.GetComponent<Button>().onClick.AddListener(delegate () { this.continueOnClicked(); });
-        newGameButton = GameObject.Find("new_game_button");
+        continueButton.GetComponent<Button>().interactable = false;
+        newGameButton = GameObject.Find("NewGame");
         newGameButton.GetComponent<Button>().onClick.AddListener(delegate () { this.newGameOnClicked(); });
-        saveGameButton = GameObject.Find("save_game_button");
+        saveGameButton = GameObject.Find("SaveGame");
         saveGameButton.GetComponent<Button>().onClick.AddListener(delegate () { this.saveGameOnClicked(); });
-        loadGameButton = GameObject.Find("load_game_button");
+        loadGameButton = GameObject.Find("LoadGame");
         loadGameButton.GetComponent<Button>().onClick.AddListener(delegate () { this.loadGameOnClicked(); });
-        tutorialButton = GameObject.Find("tutorial_button");
+        tutorialButton = GameObject.Find("Tutorial");
         tutorialButton.GetComponent<Button>().onClick.AddListener(delegate () { this.tutorialInitializtion(); });
-        exitGameButton = GameObject.Find("tutorial_button");
+        exitGameButton = GameObject.Find("Exit");
         exitGameButton.GetComponent<Button>().onClick.AddListener(delegate () { this.exitGame(); });
     }
 

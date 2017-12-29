@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class TroopPlacing : MonoBehaviour {
+    public static TroopPlacing troopPlacing;
     public GameObject troopUnit;
     public Text troopUnitName, troopUnitLevel;
     public RawImage troopIcon, troopBackground, maxHealthBar, healthBar,
@@ -18,6 +19,7 @@ public class TroopPlacing : MonoBehaviour {
     public Animator animator;
     private void Awake()
     {
+        troopPlacing = this;
         gameObject.SetActive(false);
         
         initialized = false;
@@ -91,6 +93,12 @@ public class TroopPlacing : MonoBehaviour {
         }
     }
     
+    public void removePlacingButton(Person person)
+    {
+        GameObject.Destroy(troopDict[person]);
+        troopDict.Remove(person);
+    }
+
     bool placeTroop(Person unit)
     {
         //write wait for click

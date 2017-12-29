@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class FaceCoop : MonoBehaviour {
+    public FaceCoop faceCoop;
     public Button facecoop, emperor, france, papacy, italy;
     public GameObject milano, torino, asti, parma, genova,
         modena, verona, padova, treviso, venezia, ferrara, bologna, firenze, ravenne,
@@ -19,6 +20,7 @@ public class FaceCoop : MonoBehaviour {
     List<GameObject> createdButtons;
 	// Use this for initialization
 	void Start () {
+        faceCoop = this;
         facecoop.onClick.AddListener(delegate { showFrontPage(); });
         emperor.onClick.AddListener(delegate { displayFactionPerks(Faction.empire); });
         france.onClick.AddListener(delegate { displayFactionPerks(Faction.france); });

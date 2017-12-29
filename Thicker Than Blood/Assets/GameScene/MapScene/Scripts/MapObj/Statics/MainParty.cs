@@ -1,10 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+[System.Serializable]
 public class MainParty : Party {
     public FactionPerkTree factionPerkTree;
     public List<Quest> unfinishedQuests, finishedQuests;
+    public MainParty()
+    {
+
+    }
     public MainParty(Person leaderI, string nameI, Faction factionI, int battleValueI)
     {
         unique = true;
@@ -106,7 +110,7 @@ public class MainParty : Party {
 }
 
 public class FactionPerkTree {
-    Dictionary<string, Perk> perkTreeDict;
+    public Dictionary<string, Perk> perkTreeDict;
     public FactionPerkTree()
     {
         skillTreeInitialization();

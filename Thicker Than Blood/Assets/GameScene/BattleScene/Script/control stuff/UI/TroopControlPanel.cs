@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class TroopControlPanel : MonoBehaviour {
-    public GameObject panel, lunge, whirlwind, execute, guard, charge, fire, holdSteady, rainOfArrows, quickDraw;
+    public GameObject panel, lunge, whirlwind, execute, guard, charge, fire, holdSteady, rainOfArrows, quickDraw, chargingMark, holdSteadyingMark;
     public KeyCode lungeKey, whirlwindKey, executeKey, guardKey, chargeKey, fireKey, holdSteadyKey, rainOfArrowsKey, quickDrawkey;
     public GameObject curControlledTroop;
     public static bool initialized;
@@ -84,6 +84,14 @@ public class TroopControlPanel : MonoBehaviour {
             {
                 BattleInteraction.skillMode = TroopSkill.quickDraw; hideIndicatorsInPanel();
             }
+            if (chargingMark.activeSelf != BattleInteraction.curControlled.GetComponent<Troop>().charging)
+            {
+                chargingMark.SetActive(BattleInteraction.curControlled.GetComponent<Troop>().charging);
+            }
+            if (holdSteadyingMark.activeSelf != BattleInteraction.curControlled.GetComponent<Troop>().holdSteadying)
+            {
+                holdSteadyingMark.SetActive(BattleInteraction.curControlled.GetComponent<Troop>().holdSteadying);
+            }
         }
 	}
     void makeMainCharacterPanel()
@@ -154,6 +162,9 @@ public class TroopControlPanel : MonoBehaviour {
         whirlwindKey = KeyCode.Alpha2;
         chargeKey = KeyCode.Alpha3;
     }
+    
+
+
     void disableAllButton()
     {
         lunge.SetActive(false);

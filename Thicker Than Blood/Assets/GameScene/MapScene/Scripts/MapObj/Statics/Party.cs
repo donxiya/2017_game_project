@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Party {
+public class Party : System.Object {
     const float maxTravelSpeed = 8.0f;
     public string name { get; set; }
     public Faction faction { get; set; }
@@ -12,20 +12,25 @@ public class Party {
     public int battleValue { get; set; }
     public int morale { get; set;}
     public int cash { get; set; }
-
+    public int expToDistribute { get; set; }
     public Dictionary<Faction, int> factionFavors;
-    public Dictionary<CityNames, int> cityFavors;
+    public Dictionary<string, int> locationFavors;
     public int prestige, notoriety;
     public int partySize, partySizeLimit;
     public float travelSpeed, visionRange;
     public float taticRating, convinceRating;
     public float inventoryWeightLimit, inventoryWeight;
-    public bool unique;
+    public bool unique, hasShape;
+    public string locationName;
     public City belongedCity;
     public Town belongedTown;
-    protected Party()
-    {
+    //public 
+    public Vector3 position;
 
+    public Party()
+    {
+        partyMember = new List<Person>();
+        inventory = new List<Item>();
     }
     public Party(Person leaderI, string nameI, Faction factionI, int battleValueI)
     {
@@ -40,6 +45,7 @@ public class Party {
         addToParty(leader);
         battleValue = battleValueI;
         PartyInitialization();
+        hasShape = true;
     }
     public Party(string nameI, Faction factionI, int battleValueI) //generic parties
     {
@@ -56,38 +62,46 @@ public class Party {
         addToParty(leader);
         battleValue = battleValueI;
         PartyInitialization();
+        hasShape = true;
+        MapManagement.parties.Add(this);
     }
 
     public virtual void PartyInitialization()
     {
+        morale = 50;
         prestige = 0;
         notoriety = 0;
+        expToDistribute = 0;
+        locationName = "";
         factionFavors = new Dictionary<Faction, int>();
         factionFavors.Add(Faction.empire, 0);
         factionFavors.Add(Faction.france, 0);
         factionFavors.Add(Faction.papacy, 0);
-        cityFavors = new Dictionary<CityNames, int>();
-        cityFavors.Add(CityNames.Milano, 0);
-        cityFavors.Add(CityNames.Torino, 0);
-        cityFavors.Add(CityNames.Asti, 0);
-        cityFavors.Add(CityNames.Parma, 0);
-        cityFavors.Add(CityNames.Genova, 0);
-        cityFavors.Add(CityNames.Modena, 0);
-        cityFavors.Add(CityNames.Verona, 0);
-        cityFavors.Add(CityNames.Padova, 0);
-        cityFavors.Add(CityNames.Treviso, 0);
-        cityFavors.Add(CityNames.Venezia, 0);
-        cityFavors.Add(CityNames.Ferrara, 0);
-        cityFavors.Add(CityNames.Bologna, 0);
-        cityFavors.Add(CityNames.Firenze, 0);
-        cityFavors.Add(CityNames.Ravenna, 0);
-        cityFavors.Add(CityNames.Urbino, 0);
-        cityFavors.Add(CityNames.Lucca, 0);
-        cityFavors.Add(CityNames.Pisa, 0);
-        cityFavors.Add(CityNames.Siena, 0);
-        cityFavors.Add(CityNames.Grosseto, 0);
-        cityFavors.Add(CityNames.Perugia, 0);
-        cityFavors.Add(CityNames.Roma, 0);
+        factionFavors.Add(Faction.mercenary, 0);
+        factionFavors.Add(Faction.bandits, 0);
+        locationFavors = new Dictionary<string, int>();
+        locationFavors.Add("Milano", 0);
+        locationFavors.Add("Torino", 0);
+        locationFavors.Add("Asti", 0);
+        locationFavors.Add("Parma", 0);
+        locationFavors.Add("Genova", 0);
+        locationFavors.Add("Modena", 0);
+        locationFavors.Add("Verona", 0);
+        locationFavors.Add("Padova", 0);
+        locationFavors.Add("Treviso", 0);
+        locationFavors.Add("Venezia", 0);
+        locationFavors.Add("Ferrara", 0);
+        locationFavors.Add("Bologna", 0);
+        locationFavors.Add("Firenze", 0);
+        locationFavors.Add("Ravenna", 0);
+        locationFavors.Add("Urbino", 0);
+        locationFavors.Add("Lucca", 0);
+        locationFavors.Add("Pisa", 0);
+        locationFavors.Add("Siena", 0);
+        locationFavors.Add("Grosseto", 0);
+        locationFavors.Add("Perugia", 0);
+        locationFavors.Add("Roma", 0);
+        initializeFavors();
         partySizeLimit = getPartySizeLimit();
     }
 
@@ -156,6 +170,11 @@ public class Party {
         }
         
     }
+    public virtual int getDefeatAmount(int troopOnField)
+    {
+        return (int) (leader.stats.charisma * troopOnField / 100);
+    }
+
     public virtual void plusFactionFavor(Faction f, int amount)
     {
         factionFavors[f] += amount;
@@ -166,7 +185,7 @@ public class Party {
     }
     public virtual float getTravelSpeed()
     {
-        float travelSpeed = maxTravelSpeed * (getAverage().agility / 10.0f) - 0.1f * (partySize + .1f * getInventoryWeight());
+        float travelSpeed = 3 + maxTravelSpeed * (getAverage().agility / 10.0f) - 0.1f * (partySize + .1f * getInventoryWeight());
         Mathf.Clamp(travelSpeed, 1, 10);
         return travelSpeed;
     }
@@ -184,7 +203,14 @@ public class Party {
     }
     public virtual float getInventoryWeightLimit()
     {
-        return (getAverage().strength + getAverage().endurance) * 10.0f;
+        if (hasShape)
+        {
+            return (getAverage().strength + getAverage().endurance) * 10.0f;
+        } else
+        {
+            return Mathf.Infinity;
+        }
+        
     }
     public virtual int getBattleValue()
     {
@@ -216,6 +242,10 @@ public class Party {
         }
         return result;
     }
+    public virtual int getRequiredBribe(Faction f)
+    {
+        return (int)((getBattleValue() / 100) + factionFavors[f]);
+    }
     public virtual int getAverageLevel()
     {
         int result = 0;
@@ -229,21 +259,26 @@ public class Party {
     public Stats getAverage()
     {
         Stats result = new Stats(0, 0, 0, 0, 0, 0);
-        foreach( Person p in partyMember)
+        if (partyMember.Count > 0)
         {
-            result.strength += p.stats.strength;
-            result.agility += p.stats.agility;
-            result.perception += p.stats.perception;
-            result.endurance += p.stats.endurance;
-            result.charisma += p.stats.charisma;
-            result.intelligence += p.stats.intelligence;
+            foreach (Person p in partyMember)
+            {
+                result.strength += p.stats.strength;
+                result.agility += p.stats.agility;
+                result.perception += p.stats.perception;
+                result.endurance += p.stats.endurance;
+                result.charisma += p.stats.charisma;
+                result.intelligence += p.stats.intelligence;
+            }
+            partySize = partyMember.Count;
+            result.strength = result.strength / partySize;
+            result.agility = result.agility / partySize;
+            result.perception = result.perception / partySize;
+            result.endurance = result.endurance / partySize;
+            result.charisma = result.charisma / partySize;
+            result.intelligence = result.intelligence / partySize;
         }
-        result.strength = result.strength / partySize;
-        result.agility = result.agility / partySize;
-        result.perception = result.perception / partySize;
-        result.endurance = result.endurance / partySize;
-        result.charisma = result.charisma / partySize;
-        result.intelligence = result.intelligence / partySize;
+        
         return result;
     }
     public Stats getHighest()
@@ -383,7 +418,58 @@ public class Party {
         }
         return Ranking.recruit;
     }
-    
+    public void initializeFavors()
+    {
+        factionFavors[faction] = 100;
+        switch (faction)
+        {
+            case Faction.bandits:
+                prestige = 0;
+                notoriety = Random.Range(getBattleValue() / 20, getBattleValue() / 20);
+                factionFavors[Faction.empire] = -50;
+                factionFavors[Faction.france] = -50;
+                factionFavors[Faction.papacy] = -50;
+                factionFavors[Faction.italy] = -50;
+                factionFavors[Faction.mercenary] = -50;
+                break;
+            case Faction.empire:
+                prestige = Random.Range(getBattleValue() / 40, getBattleValue() / 20);
+                notoriety = Random.Range(getBattleValue() / 40, getBattleValue() / 20);
+                factionFavors[Faction.bandits] = -50;
+                factionFavors[Faction.france] = -20;
+                factionFavors[Faction.papacy] = -50;
+                factionFavors[Faction.italy] = 0;
+                factionFavors[Faction.mercenary] = 0;
+                break;
+            case Faction.france:
+                prestige = Random.Range(getBattleValue() / 40, getBattleValue() / 20);
+                notoriety = Random.Range(getBattleValue() / 40, getBattleValue() / 20);
+                factionFavors[Faction.bandits] = -50;
+                factionFavors[Faction.empire] = -20;
+                factionFavors[Faction.papacy] = -50;
+                factionFavors[Faction.italy] = 0;
+                factionFavors[Faction.mercenary] = -50;
+                break;
+            case Faction.papacy:
+                prestige = Random.Range(getBattleValue() / 40, getBattleValue() / 20);
+                notoriety = Random.Range(getBattleValue() / 40, getBattleValue() / 20);
+                factionFavors[Faction.bandits] = -50;
+                factionFavors[Faction.france] = -20;
+                factionFavors[Faction.empire] = -50;
+                factionFavors[Faction.italy] = 0;
+                factionFavors[Faction.mercenary] = 0;
+                break;
+            case Faction.italy:
+                prestige = Random.Range(getBattleValue() / 40, getBattleValue() / 20);
+                notoriety = Random.Range(getBattleValue() / 40, getBattleValue() / 20);
+                factionFavors[Faction.bandits] = -50;
+                factionFavors[Faction.france] = 0;
+                factionFavors[Faction.papacy] = 0;
+                factionFavors[Faction.italy] = 0;
+                factionFavors[Faction.mercenary] = 0;
+                break;
+        }
+    }
 }
 
 

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class QuestManagement : MonoBehaviour {
+    public static QuestManagement questManagement;
     public GameObject questButton, finishedQuestButton;
     public Text questName;
     public Text finishedQuestName, finishedQuestAmount;
@@ -19,6 +20,7 @@ public class QuestManagement : MonoBehaviour {
     // Use this for initialization
     private void Start()
     {
+        questManagement = this;
         questButton.SetActive(false);
         finishedQuestButton.SetActive(false);
         singleObjective.SetActive(false);
@@ -33,14 +35,14 @@ public class QuestManagement : MonoBehaviour {
     void Update () {
 		if (Player.mainParty != null && !initialized)
         {
-            
+            //Debug.Log()
             displayQuests();
             initialized = true;
         }
 	}
     void displayQuests()
     {
-        foreach(Quest q in Player.mainParty.unfinishedQuests)
+        foreach (Quest q in Player.mainParty.unfinishedQuests)
         {
             if (q.currentProgress > 0)
             {

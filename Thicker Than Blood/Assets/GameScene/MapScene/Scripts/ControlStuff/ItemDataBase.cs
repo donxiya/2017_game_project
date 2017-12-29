@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemDataBase : MonoBehaviour {
+public class ItemDataBase : MonoBehaviour
+{
     public static ItemDataBase dataBase;
     //TODO
     public Texture2D parchmentImg, woolImg, potteryImg, hempImg, medicinalliqueurImq,
@@ -17,34 +18,40 @@ public class ItemDataBase : MonoBehaviour {
         twineImg, ironmailImg, beewaxImg, toolsImg, suppliesImg;
 
     public List<Item> itemList;
-    
 
 
 
-	// Use this for initialization
-	void Awake () {
+
+    // Use this for initialization
+    void Awake()
+    {
         dataBase = gameObject.GetComponent<ItemDataBase>();
         itemList = new List<Item>();
         itemInitialization();
 
 
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     public Item getItem(string itemName)
     {
         Item result = null;
-        foreach(Item item in itemList)
+        foreach (Item item in itemList)
         {
             if (item.name == itemName)
             {
                 result = new Item(item);
                 break;
             }
+        }
+        if (result == null)
+        {
+            Debug.Log(itemName);
         }
         return result;
     }
@@ -54,27 +61,27 @@ public class ItemDataBase : MonoBehaviour {
         //TODO
         itemList.Add(new Item("Parchment", ItemCategory.common, 20, ItemWeightClass.light, parchmentImg, "This is parchment"));
         itemList.Add(new Item("Wool", ItemCategory.common, 10, ItemWeightClass.medium, woolImg, "This is wool"));
-        itemList.Add(new Item("Pottery", ItemCategory.common, 10, ItemWeightClass.heavy, potteryImg, "This is pottery"));
-        itemList.Add(new Item("Hemp", ItemCategory.common, 10, ItemWeightClass.medium, hempImg, "This is hemp"));
-        itemList.Add(new Item("Medicinal Liqueur", ItemCategory.common, 40, ItemWeightClass.light, medicinalliqueurImq, "This is medicinal Liqueur"));
-        itemList.Add(new Item("Rose", ItemCategory.common, 40, ItemWeightClass.light, roseImg, "This is rose"));
-        itemList.Add(new Item("Majolica", ItemCategory.common, 40, ItemWeightClass.medium, majolicaImg, "This is majolica"));
+        itemList.Add(new Item("Pottery", ItemCategory.common, 10, ItemWeightClass.heavy, potteryImg, "Made of dirt and cheap as dirt."));
+        itemList.Add(new Item("Hemp", ItemCategory.common, 10, ItemWeightClass.medium, hempImg, "This is for rope. Really!"));
+        itemList.Add(new Item("Medicinal Liqueur", ItemCategory.common, 40, ItemWeightClass.light, medicinalliqueurImq, "Approved by Florentine Dominican Abbey"));
+        itemList.Add(new Item("Rose", ItemCategory.common, 40, ItemWeightClass.light, roseImg, "Makes you smell better......than others."));
+        itemList.Add(new Item("Majolica", ItemCategory.common, 40, ItemWeightClass.medium, majolicaImg, "Bright blue, bring yellow, and bright green."));
         itemList.Add(new Item("Lace", ItemCategory.common, 30, ItemWeightClass.light, laceImg, "This is lace"));
         itemList.Add(new Item("Embroidery", ItemCategory.common, 30, ItemWeightClass.light, embroideryImg, "This is embroidery"));
         itemList.Add(new Item("Livestock", ItemCategory.common, 20, ItemWeightClass.heavy, livestockImg, "This is livestock"));
         itemList.Add(new Item("Bronzeware", ItemCategory.common, 30, ItemWeightClass.medium, bronzewareImg, "This is bronzeware"));
-        itemList.Add(new Item("Leatherware", ItemCategory.common, 20, ItemWeightClass.medium, leatherwareImg, "This is leatherware"));
-        itemList.Add(new Item("Ale", ItemCategory.food, 20, ItemWeightClass.medium, aleImg, "This is ale"));
-        itemList.Add(new Item("Wine", ItemCategory.food, 20, ItemWeightClass.medium, wineImg, "This is wine"));
+        itemList.Add(new Item("Leatherware", ItemCategory.common, 20, ItemWeightClass.medium, leatherwareImg, "Belt, purses, and all kinds of stuff."));
+        itemList.Add(new Item("Ale", ItemCategory.food, 20, ItemWeightClass.medium, aleImg, "This get you drunk."));
+        itemList.Add(new Item("Wine", ItemCategory.food, 20, ItemWeightClass.medium, wineImg, "This get you drunk with style."));
         itemList.Add(new Item("Cheese", ItemCategory.food, 20, ItemWeightClass.light, cheeseImg, "This is cheese"));
         itemList.Add(new Item("Wheat", ItemCategory.food, 10, ItemWeightClass.light, wheatImg, "This is wheat"));
         itemList.Add(new Item("Fruit", ItemCategory.food, 40, ItemWeightClass.medium, fruitImg, "This is fruit"));
-        itemList.Add(new Item("Prosciutto ", ItemCategory.food, 30, ItemWeightClass.light, prosciuttoImg, "This is prosciutto"));
+        itemList.Add(new Item("Prosciutto", ItemCategory.food, 30, ItemWeightClass.light, prosciuttoImg, "This is prosciutto"));
         itemList.Add(new Item("Olive Oil", ItemCategory.food, 10, ItemWeightClass.medium, oliveoilImg, "This is olive oil"));
         itemList.Add(new Item("Fish", ItemCategory.food, 10, ItemWeightClass.medium, fishImg, "This is fish"));
         itemList.Add(new Item("Salt", ItemCategory.food, 20, ItemWeightClass.light, saltImg, "This is salt"));
-        itemList.Add(new Item("Vegetable ", ItemCategory.food, 10, ItemWeightClass.medium, vegetableImg, "This is vegetable"));
-        itemList.Add(new Item("Honey ", ItemCategory.food, 50, ItemWeightClass.light, honeyImg, "This is honey"));
+        itemList.Add(new Item("Vegetable", ItemCategory.food, 10, ItemWeightClass.medium, vegetableImg, "This is vegetable"));
+        itemList.Add(new Item("Honey", ItemCategory.food, 50, ItemWeightClass.light, honeyImg, "This is honey"));
         itemList.Add(new Item("Gold Ore", ItemCategory.industry, 60, ItemWeightClass.medium, goldoreImg, "This is gold ore"));
         itemList.Add(new Item("Marble", ItemCategory.industry, 60, ItemWeightClass.heavy, marbleImg, "This is marble"));
         itemList.Add(new Item("Bronze", ItemCategory.industry, 40, ItemWeightClass.heavy, bronzeImg, "This is bronze"));
@@ -99,7 +106,7 @@ public class ItemDataBase : MonoBehaviour {
         itemList.Add(new Item("Glassware", ItemCategory.luxury, 50, ItemWeightClass.medium, glasswareImg, "This is glassware"));
         itemList.Add(new Item("Pepper", ItemCategory.luxury, 100, ItemWeightClass.light, pepperImg, "This is pepper"));
         itemList.Add(new Item("Clove", ItemCategory.luxury, 100, ItemWeightClass.light, cloveImg, "This is clove"));
-        itemList.Add(new Item("Ottoman Tapestry ", ItemCategory.luxury, 80, ItemWeightClass.medium, ottomantapestryImg, "This is Ottoman tapestry"));
+        itemList.Add(new Item("Ottoman Tapestry", ItemCategory.luxury, 80, ItemWeightClass.medium, ottomantapestryImg, "This is Ottoman tapestry"));
         itemList.Add(new Item("China", ItemCategory.luxury, 80, ItemWeightClass.medium, chinaImg, "This is china"));
         itemList.Add(new Item("Silverware", ItemCategory.luxury, 70, ItemWeightClass.light, silverwareImg, "This is silverware"));
         itemList.Add(new Item("Tanned Leather", ItemCategory.upgrade, 60, ItemWeightClass.heavy, tannedleatherImg, "This is tanned leather"));

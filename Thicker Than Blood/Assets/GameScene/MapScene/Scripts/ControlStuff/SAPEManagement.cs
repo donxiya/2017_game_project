@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SAPEManagement : MonoBehaviour {
-
+    public static SAPEManagement sapeManagement;
+    public static bool resetable;
     public Text strengthTxt, agilityTxt, perceptionTxt, enduranceTxt, sparedPoints;
     public Button strengthPlus, agilityPlus, perceptionPlus, endurancePlus;
     public Button s6a, s6b, s7a, s7b, s8a, s8b, s9a, s9b, s10a;
@@ -19,22 +20,36 @@ public class SAPEManagement : MonoBehaviour {
     float MAX_BAR_HEIGHT, MAX_BAR_WIDTH;
     float INSPECT_OFFSET_X, INSPECT_OFFSET_Y;
     float SCALE_X, SCALE_Y;
+    bool initialized = false;
     // Use this for initialization
     void Start () {
+        sapeManagement = this;
+        resetable = false;
 		MAX_BAR_HEIGHT = barMax.rectTransform.sizeDelta.y;
         MAX_BAR_WIDTH = barMax.rectTransform.sizeDelta.x;
         SCALE_X = scaler.referenceResolution.x / Screen.width;
         SCALE_Y = scaler.referenceResolution.y / Screen.height;
         INSPECT_OFFSET_X = (s6a.gameObject.GetComponent<RectTransform>().sizeDelta.y + inspectPanel.transform.GetComponent<RectTransform>().sizeDelta.y)/ 2;
         INSPECT_OFFSET_Y = (s6a.gameObject.GetComponent<RectTransform>().sizeDelta.x + inspectPanel.transform.GetComponent<RectTransform>().sizeDelta.x)/ 2;
-        initialization();
+        
         inspectPanel.SetActive(false);
     }
-	
-	// Update is called once per frame
-	void Update () {
-        showStats();
-        buttonUpdate();
+    private void OnEnable()
+    {
+        initialized = false;
+    }
+    // Update is called once per frame
+    void Update () {
+        if (Player.mainCharacter != null)
+        {
+            if (!initialized)
+            {
+                initialization();
+            }
+            showStats();
+            buttonUpdate();
+        }
+        
 	}
 
     
@@ -57,6 +72,11 @@ public class SAPEManagement : MonoBehaviour {
             sparedPoints.text = "Reset";
         }
         
+    }
+
+    public void leaveManagement()
+    {
+        resetable = false;
     }
 
     public void inspectPerk(string ID)
@@ -149,6 +169,7 @@ public class SAPEManagement : MonoBehaviour {
 
     void buttonUpdate()
     {
+        reset.interactable = resetable;
         if (Player.mainCharacter.exp.sparedPoint > 0)
         {
             strengthPlus.gameObject.SetActive(true);

@@ -25,8 +25,8 @@ public class TroopSelection : MonoBehaviour {
     bool initialized = false;
     // Use this for initialization
     void Start () {
-        
-        
+
+        initialized = false;
     }
 	
 	// Update is called once per frame
@@ -87,6 +87,7 @@ public class TroopSelection : MonoBehaviour {
     void initialization()
     {
         inSelecting = true;
+        selectingMembers = new List<Person>();
         selectingMembers = new List<Person>(BattleCentralControl.playerParty.partyMember);
         curSelectingPerson = BattleCentralControl.playerParty.leader;
         selectedMembers = new List<Person>();
@@ -236,28 +237,24 @@ public class TroopSelection : MonoBehaviour {
     }
     void arrangeButtons()
     {
-        List<Person> temp = selectingMembers;
         if (selectingMembers.Count > 0)
         {
-            selectingMembers = sortList(temp);
+            selectingMembers = sortList(selectingMembers);
         }
         foreach (Person p in selectingMembers)
         {
-
             troopDict.Add(p, makeTroopSelectingButton(p));
         }
     }
     void reArrangeButtons()
     {
-        List<Person> temp = selectingMembers;
         if (selectingMembers.Count > 0)
         {
-            selectingMembers = sortList(temp);
+            selectingMembers = sortList(selectingMembers);
         }
-        temp = selectedMembers;
         if (selectedMembers.Count > 0)
         {
-            selectedMembers = sortList(temp);
+            selectedMembers = sortList(selectedMembers);
         }
         foreach (Person p in selectingMembers)
         {
@@ -283,6 +280,7 @@ public class TroopSelection : MonoBehaviour {
         battleInitializationPanel.SetActive(false);
         BattleCamera.startBattle = true;
         BattleCentralControl.battleStart = true;
+        BattleCentralControl.playerTotal = selectedMembers.Count;
         TroopPlacing.battleTroop = selectedMembers;
         troopPlacingPanel.SetActive(true);
         endTurnPanel.SetActive(true);

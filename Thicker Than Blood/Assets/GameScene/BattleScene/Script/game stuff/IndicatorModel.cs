@@ -3,9 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class IndicatorModel : MonoBehaviour {
+    Vector3 position;
+    Quaternion rotation;
+    private void Start()
+    {
+    }
 
-    
-    public void OnCollisionStay(Collision col)
+    private void Update()
+    {
+    }
+    public void OnTriggerStay(Collider col)
     {
         
         if (col.gameObject.transform.parent.gameObject.tag == "Grid")
@@ -18,7 +25,7 @@ public class IndicatorModel : MonoBehaviour {
         }
     }
 
-    public void OnCollisionExit(Collision col)
+    public void OnTriggerExit(Collider col)
     {
         if (col.gameObject.transform.parent.gameObject.tag == "Grid")
         {

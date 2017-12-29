@@ -6,6 +6,10 @@ using UnityEngine.UI;
 public class MainCharacter : Person {
 
     public SkillTree skillTree;
+    public MainCharacter()
+    {
+
+    }
     public MainCharacter(string nameI, Stats statsI, Ranking rk, TroopType tt, Faction factionI, Experience expI)
     {
         initialization(nameI, statsI, rk, tt, factionI, expI);
@@ -25,7 +29,7 @@ public class MainCharacter : Person {
 
 public class SkillTree
 {
-    Dictionary<string, Perk> skillTreeDict;
+    public Dictionary<string, Perk> skillTreeDict;
     public SkillTree()
     {
         skillTreeInitialization();

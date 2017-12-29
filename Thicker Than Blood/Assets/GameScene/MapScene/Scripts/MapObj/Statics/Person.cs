@@ -15,21 +15,14 @@ public class Person {
     public Troop troop;
     //battleStats
     public int battleValue;
-    public float attackDmg;
     public float stamina { get; set; }
     public float staminaMax;
     public float health { get; set; }
     public float healthMax;
-
-    public float vision;
-    public float stealth;
-    public float accuracy;
-    public float evasion;
-    public float block;
     //gear
     public GearInfo gearInfo;
 
-    protected Person()
+    public Person()
     {
 
     }
@@ -141,87 +134,108 @@ public class Person {
 
     public virtual float getStaminaMax()
     {
-        return stats.agility * 10 * ((gearInfo.evasionRating + 10) / 10);
+        return stats.agility * 10 * ((getGearInfo().evasionRating + 10) / 10);
     }
     public virtual float getHealthMax()
     {
-        return stats.endurance * 100 * ((gearInfo.armorRating + 10) / 10);
+        return stats.endurance * 100 * ((getGearInfo().armorRating + 10) / 10);
     }
 
     public virtual float getWhirlwindStaminaCost()
     {
-        return 5.0f;
+        return 20.0f;
     }
     public virtual float getLungeStaminaCost()
     {
-        return 5.0f;
+        return 20.0f;
     }
     public virtual float getExecuteStaminaCost()
     {
-        return 5.0f;
+        return 20.0f;
     }
     public virtual float getFireStaminaCost()
     {
-        return 5.0f;
+        return 20.0f;
     }
     public virtual float getHoldSteadyStaminaCost()
     {
-        return 5.0f;
+        return 20.0f;
     }
     public virtual float getGuardStaminaCost()
     {
-        return 5.0f;
+        return 20.0f;
     }
     public virtual float getQuickDrawStaminaCost()
     {
-        return 5.0f;
+        return 20.0f;
     }
     public virtual float getRainOfArrowsStaminaCost()
     {
-        return 5.0f;
+        return 20.0f;
     }
 
 
 
     public virtual float getGuardedIncrease()
     {
-        return stats.endurance * ((gearInfo.armorRating + 10) / 10);
+        return stats.endurance * ((getGearInfo().armorRating + 10) / 10);
     }
     public virtual float getArmor()
     {
-        return stats.endurance * ((gearInfo.armorRating + 10) / 10);
+        return stats.endurance * ((getGearInfo().armorRating + 10) / 10);
     }
     public virtual float getBlock()
     {
-        return ((stats.perception + stats.strength) / 2) * ((gearInfo.armorRating + 10) / 10);
+        return ((stats.perception + stats.strength) / 2) * ((getGearInfo().armorRating + 10) / 10);
     }
     public virtual float getEvasion()
     {
-        return ((stats.perception + stats.strength) / 2) * ((gearInfo.armorRating + 10) / 10);
+        return ((stats.perception + stats.strength) / 2) * ((getGearInfo().armorRating + 10) / 10);
     }
     public virtual float getVision()
     {
-        return stats.perception * ((gearInfo.visionRating + 10) / 10);
+        return stats.perception * ((getGearInfo().visionRating + 10) / 10);
     }
     public virtual float getStealth()
     {
-        return stats.agility * ((gearInfo.stealthRating + 10) / 10);
+        return stats.agility * ((getGearInfo().stealthRating + 10) / 10);
     }
     public virtual float getAccuracy()
     {
-        return stats.perception * ((gearInfo.accuracyRating + 10) / 10);
+        return stats.perception * ((getGearInfo().accuracyRating + 10) / 10);
     }
     public virtual float getMeleeAttackDmg()
     {
-        return stats.strength * ((gearInfo.dmgRating + 10) / 10);
+        return stats.strength * ((getGearInfo().meleeDmgRating + 10) / 10);
     }
     public virtual float getRangedAttackDmg()
     {
-        return (stats.strength + stats.perception) * 5 * (((gearInfo.dmgRating + gearInfo.accuracyRating) / 2 + 10) / 10);
+        return (stats.strength + stats.perception) * ((getGearInfo().meleeDmgRating + 10) / 10);
     }
     public virtual float getMobility()
     {
-        return (stats.agility) * ((gearInfo.mobilityRating + 10) / 10);
+        return (stats.agility) * ((getGearInfo().mobilityRating + 10) / 10);
+    }
+
+    public virtual int getInjuredHealth()
+    {
+        return (int)(getHealthMax() * .05f);
+    }
+
+    public void increaseExp(int amount)
+    {
+        exp.exp += amount;
+        if (exp.exp >= exp.getLevelExp())
+        {
+            exp.exp -= (int)exp.getLevelExp();
+            exp.level += 1;
+            exp.sparedPoint += 1;
+        }
+    }
+
+    public int getExp()
+    {
+        return exp.level * 100;
     }
 
     public virtual int getTroopPlacingRange(int maxRange)
@@ -247,6 +261,17 @@ public class Person {
         return result;
     }
 
+    public GearInfo getGearInfo()
+    {
+        if (TroopDataBase.troopDataBase != null)
+        {
+            return TroopDataBase.troopDataBase.getGearInfo(faction, troopType, ranking);
+        } else
+        {
+            return new GearInfo(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+        }
+        
+    }
 
 
 

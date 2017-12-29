@@ -5,58 +5,53 @@ using UnityEngine.AI;
 
 public class Bandits : NPC {
     public GameObject spawnPoint;
-    const int roamRange = 60;
+    
     // Use this for initialization
     public override void Start () {
         base.Start();
-        dialogue = new string[] { "hello", "i will kill u" };
-        name = "CoolBandits";
-        npcParty = new Party(name, Faction.bandits, 300);
-        npcParty.prestige = 0;
-        npcParty.notoriety = 80;
-        makeParty();
-        roam();
-    }
-
-    // Update is called once per frame
-    public override void Update () {
-        base.Update();
-		if (!TimeSystem.pause)
+        if (MapManagement.mapManagement == null || !MapManagement.parties.Contains(npcParty))
         {
-            npcAgent = transform.GetComponent<NavMeshAgent>();
-            npcAgent.isStopped = false;
-            if (Vector3.Distance(npcAgent.destination,transform.position) <= 10)
-            {
-                roam();
-            }
-        } else
-        {
-            npcAgent.isStopped = true;
-        }
-        inspectPanel.GetComponent<InspectPanel>().updateTexts(npcParty);
-	}
-    
-    public override void roam()
-    {
-        if (spawnPoint != null)
-        {
-            if (Vector3.Distance(transform.position, spawnPoint.transform.position) >= roamRange)
-            {
-                npcAgent.destination = spawnPoint.transform.position;
-            }
-            else
-            {
-                Vector3 randomV = new Vector3(Random.Range(-roamRange, roamRange), 0, Random.Range(-roamRange, roamRange));
-                npcAgent.destination = spawnPoint.transform.position + randomV;
-            }
-
-        }
-        else
-        {
-            Vector3 randomV = new Vector3(Random.Range(-roamRange, roamRange), 0, Random.Range(-roamRange, roamRange));
-            npcAgent.destination = transform.position + randomV;
+            gameObject.SetActive(false);
         }
         
+
+    }
+    private void OnEnable()
+    {
+        if (MapManagement.mapManagement != null)
+        {
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Salt"));
+            npcParty.prestige = 0;
+            npcParty.notoriety = 80;
+            makeParty();
+            //roam();
+        }
+        
+    }
+    // Update is called once per frame
+    public override void Update () {
+        if (npcParty != null)
+        {
+            base.Update();
+            
+        }
+	}
+    
+    public override Vector3 getRoamTarget()
+    {
+        return base.getRoamTarget();
     }
     public void setSpawnPoint(GameObject sp)
     {

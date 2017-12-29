@@ -89,8 +89,8 @@ public class TroopUpgrade : MonoBehaviour {
         newVision.text = (troopInfo.gear.visionRating).ToString();
         newStealth.text = (troopInfo.gear.stealthRating).ToString();
         newAccuracy.text = (troopInfo.gear.accuracyRating).ToString();
-        newMelee.text = (troopInfo.gear.dmgRating).ToString();
-        newRanged.text = ((troopInfo.gear.dmgRating + troopInfo.gear.accuracyRating)/2).ToString();
+        newMelee.text = (troopInfo.gear.meleeDmgRating).ToString();
+        newRanged.text = ((troopInfo.gear.rangedDmgRating + troopInfo.gear.accuracyRating)/2).ToString();
         newMobility.text = (troopInfo.gear.mobilityRating).ToString();
         
         newArmorBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.armorRating) / 10);
@@ -99,8 +99,8 @@ public class TroopUpgrade : MonoBehaviour {
         newVisionBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.visionRating)  / 10);
         newStealthBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.stealthRating) / 10);
         newAccuracyBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.accuracyRating) / 10);
-        newMeleeBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.dmgRating) /10);
-        newRangedBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.dmgRating + troopInfo.gear.dmgRating) /20);
+        newMeleeBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.meleeDmgRating) /10);
+        newRangedBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.rangedDmgRating) /20);
         newMobilityBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.armorRating) / 10);
     }
 
@@ -115,8 +115,8 @@ public class TroopUpgrade : MonoBehaviour {
         curVision.text = (troopInfo.gear.visionRating).ToString();
         curStealth.text = (troopInfo.gear.stealthRating).ToString();
         curAccuracy.text = (troopInfo.gear.accuracyRating).ToString();
-        curMelee.text = (troopInfo.gear.dmgRating).ToString();
-        curRanged.text = ((troopInfo.gear.dmgRating + troopInfo.gear.accuracyRating) / 2).ToString();
+        curMelee.text = (troopInfo.gear.meleeDmgRating).ToString();
+        curRanged.text = ((troopInfo.gear.rangedDmgRating + troopInfo.gear.accuracyRating) / 2).ToString();
         curMobility.text = (troopInfo.gear.mobilityRating).ToString();
 
         curArmorBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.armorRating) / 10);
@@ -125,8 +125,8 @@ public class TroopUpgrade : MonoBehaviour {
         curVisionBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.visionRating) / 10);
         curStealthBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.stealthRating) / 10);
         curAccuracyBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.accuracyRating) / 10);
-        curMeleeBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.dmgRating) / 10);
-        curRangedBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.dmgRating + troopInfo.gear.dmgRating) / 20);
+        curMeleeBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.meleeDmgRating) / 10);
+        curRangedBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.rangedDmgRating) / 20);
         curMobilityBar.rectTransform.sizeDelta = new Vector2(STATS_BAR_WIDTH, STATS_BAR_HEIGHT * (troopInfo.gear.armorRating) / 10);
     }
 

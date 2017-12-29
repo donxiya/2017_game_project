@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class VisionIndicator : MonoBehaviour {
     
-    public void OnCollisionStay(Collision col)
+    public void OnTriggerStay(Collider col)
     {
         if (gameObject.transform.parent.transform.parent.tag == "Troop")
         {
@@ -22,7 +22,7 @@ public class VisionIndicator : MonoBehaviour {
         
     }
 
-    public void OnCollisionExit(Collision col)
+    public void OnTriggerExit(Collider col)
     {
         if (gameObject.transform.parent.transform.parent.tag == "Troop")
         {

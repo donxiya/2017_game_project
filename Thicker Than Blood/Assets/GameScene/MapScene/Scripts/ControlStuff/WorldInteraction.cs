@@ -9,7 +9,7 @@ public class WorldInteraction : MonoBehaviour
     public GameObject player;
     public GameObject tabCanvas;
     const float INTERACT_DIST = 1;
-    NavMeshAgent playerAgent;
+    public NavMeshAgent playerAgent;
     List<GameObject> inspectedList = new List<GameObject>();
     public static bool chasing;
     GameObject curChasedObj;
@@ -20,6 +20,9 @@ public class WorldInteraction : MonoBehaviour
         playerAgent = player.GetComponent<NavMeshAgent>();
         playerAgent.speed = Player.mainParty.getTravelSpeed();
         chasing = false;
+
+        
+        player.transform.position = Player.mainParty.position;
     }
 
 
@@ -32,14 +35,21 @@ public class WorldInteraction : MonoBehaviour
         {
             playerAgent.destination = curChasedObj.transform.position;
         }
+        Player.mainParty.position = player.transform.position;
+        if (playerAgent.destination.x == player.transform.position.x && playerAgent.destination.z == player.transform.position.z)
+        {
+            TimeSystem.pause = true;
+        } else
+        {
+            TimeSystem.pause = false;
+        }
     }
     void inputKeysActions()
     {
         if (Input.GetMouseButton(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
             chasing = false;
-            disInspect();
-            playerAgent.isStopped = false;
+            stopEveryone(false);
             getInteraction();
         }
         if (Input.GetMouseButton(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
@@ -64,14 +74,26 @@ public class WorldInteraction : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.Space))
         {
-            stopPlayer();
+            TimeSystem.pause = true;
+            stopEveryone(true);
         }
     }
 
-    public void stopPlayer()
+    public void stopEveryone(bool stop)
     {
-        disInspect();
-        playerAgent.isStopped = true;
+        if (!stop)
+        {
+            disInspect();
+        }
+        
+        playerAgent.isStopped = stop;
+        TimeSystem.pause = stop;
+        GameObject[] npcObj = GameObject.FindGameObjectsWithTag("NPC");
+        foreach (GameObject npc in npcObj)
+        {
+            npc.GetComponent<NPC>().npcAgent.isStopped = stop;
+        }
+
     }
 
     void getInteraction()
@@ -92,7 +114,7 @@ public class WorldInteraction : MonoBehaviour
             }
             else
             {
-                Debug.Log("cannot walk there");
+                playerAgent.destination = interactionInfo.point;
             }
         }
     }
@@ -124,6 +146,7 @@ public class WorldInteraction : MonoBehaviour
             }
             else if (interactedObject.tag == "NPC")
             {
+                Debug.Log("h");
                 interactedObject.GetComponent<Interactable>().inspect(true);
                 if (interactedObject != null && !inspectedList.Contains(interactedObject))
                 {

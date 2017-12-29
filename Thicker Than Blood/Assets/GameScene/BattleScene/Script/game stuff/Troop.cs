@@ -10,7 +10,7 @@ public class Troop : BattleInteractable {
     public GameObject controlPanel, inspectPanel;
     public Person person { get; set; }
     public Grid curGrid { get; set; }
-
+    public Troop lastAttacker;
     public GameObject statusPanel, troopStaminaBar, troopHealthBar, staminaTxt, healthTxt, nameTxt;
     public GameObject visionIndicator, walkIndicator, curIndicator, lungeIndicator, whirlwindIndicator, executeIndicator, fireIndicator, guardIndicator, rainOfArrowIndicator, quickDrawIndicator;
     public GameObject seenStatus;
@@ -22,7 +22,7 @@ public class Troop : BattleInteractable {
     public Material invisible;
     Material originalMaterial;
     float STATUS_BAR_HEIGHT, STATUS_BAR_WIDTH;
-    bool travelCostFree = false;
+    public bool travelCostFree = false;
     bool staminaCosted = false;
     Vector3 tempDest, finalDest, safetyDest;
     Grid destinationGrid;
@@ -80,7 +80,10 @@ public class Troop : BattleInteractable {
                     stayOnGird();
                 }
             }
-
+            if (person.health <= 0)
+            {
+                outOfHealth();
+            }
 
             showStatus();
             lookAtCamera(statusPanel);
@@ -199,7 +202,7 @@ public class Troop : BattleInteractable {
             curGrid.personOnGrid = person;
             activated = true;
             gameObject.SetActive(true);
-            person.troop = gameObject.GetComponent<Troop>();
+            
             if (person.faction == Faction.mercenary)
             {
                 BattleCentralControl.playerTroopOnField.Add(person, gameObject);
@@ -208,6 +211,8 @@ public class Troop : BattleInteractable {
             {
                 BattleCentralControl.enemyTroopOnField.Add(person, gameObject);
             }
+            person.troop = gameObject.GetComponent<Troop>();
+            EndTurnPanel.endTurnPanel.updateBattlemeter();
         }
     }
 
@@ -368,6 +373,7 @@ public class Troop : BattleInteractable {
                     charging = false;
                 } else
                 {
+                    travelCostFree = false;
                     //tempDest = new Vector3(getCurrentGrid().x, 1, getCurrentGrid().z);
                     //finalDest = new Vector3(getCurrentGrid().x, 1, getCurrentGrid().z);
                     //navMeshAgent.destination = tempDest;
@@ -542,7 +548,7 @@ public class Troop : BattleInteractable {
                             {
                                 GameObject interactedObject = interactionInfo.collider.gameObject.transform.parent.gameObject;
                                 Troop attackedTroop = interactedObject.GetComponent<Troop>();
-                                if (attackedTroop != null && attackedTroop.seenStatus && person.stamina >= person.getExecuteStaminaCost()) //TODO: remove player troop later
+                                if (attackedTroop != null && attackedTroop.seen && person.stamina >= person.getExecuteStaminaCost()) //TODO: remove player troop later
                                 {
                                     if (attackedTroop.person.faction != person.faction && attackedGrid.Contains(attackedTroop.curGrid))
                                     {
@@ -606,6 +612,7 @@ public class Troop : BattleInteractable {
                             g.personOnGrid.health -= person.getRangedAttackDmg();
                         }
                     }
+                    person.stamina -= person.getRainOfArrowsStaminaCost();
                 } else if (person.faction == Faction.mercenary)
                 {
                     BattleInteraction.skillMode = TroopSkill.none;
@@ -688,6 +695,7 @@ public class Troop : BattleInteractable {
                             blocked = true;
                         }
                     }
+                    person.stamina -= person.getQuickDrawStaminaCost();
                 } else if (person.faction == Faction.mercenary)
                 {
                     BattleInteraction.skillMode = TroopSkill.none;
@@ -697,9 +705,71 @@ public class Troop : BattleInteractable {
         }
         
     }
-    public void death()
+
+
+    public void takingDamage(Troop attacker)
+    {
+        lastAttacker = attacker;
+    }
+
+    public void blocking()
     {
 
+    }
+
+    public void dodging()
+    {
+
+    }
+    
+    public void outOfHealth()
+    {
+        activated = false;
+        curGrid.personOnGrid = null;
+        Debug.Log("dead");
+        if (lastAttacker != null)
+        {
+            lastAttacker.person.increaseExp(person.getExp());
+        }
+        if (Mathf.Abs(person.health) > person.getInjuredHealth() && person.ranking != Ranking.mainChar) //DEATH
+        {
+            if (person.faction == Faction.mercenary)
+            {
+                if (BattleCentralControl.playerParty.partyMember.Contains(person))
+                {
+                    BattleCentralControl.playerParty.partyMember.Remove(person);
+                }
+            }
+            else
+            {
+                if (BattleCentralControl.enemyParty.partyMember.Contains(person))
+                {
+                    BattleCentralControl.enemyParty.partyMember.Remove(person);
+                }
+            }
+        } else //INJURED
+        {
+            person.health = 0;
+        }
+        if (person.faction == Faction.mercenary)
+        {
+            if (BattleCentralControl.playerTroopOnField.ContainsKey(person))
+            {
+                BattleCentralControl.playerTroopOnField.Remove(person);
+                TroopPlacing.troopPlacing.removePlacingButton(person);
+            }
+            BattleCentralControl.enemyParty.expToDistribute += person.getExp();
+        }
+        else
+        {
+            if (BattleCentralControl.enemyTroopOnField.ContainsKey(person))
+            {
+                BattleCentralControl.enemyTroopOnField.Remove(person);
+            }
+            BattleCentralControl.playerParty.expToDistribute += person.getExp();
+        }
+        EndTurnPanel.endTurnPanel.updateBattlemeter();
+        GameObject.Destroy(gameObject);
     }
     public void stealthCheckRefresh()
     {
@@ -847,6 +917,13 @@ public class Troop : BattleInteractable {
                 v.x = v.z = 0.0f;
                 obj.transform.LookAt(pointedObj.transform.position - v);
                 obj.transform.Rotate(0, 180, 0);
+            } else
+            {
+                Vector3 v = interactionInfo.point - obj.transform.position;
+                v.x = v.z = 0.0f;
+                obj.transform.LookAt(pointedObj.transform.position - v);
+                obj.transform.Rotate(0, 180, 0);
+                
             }
         }
     }

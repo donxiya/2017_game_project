@@ -48,15 +48,20 @@ public class TimeSystem : MonoBehaviour {
                 timer -= 3.0f;
             }
         }
-        playerVelocity = player.transform.position - oneFrameAgo;
-        oneFrameAgo = player.transform.position;
-        if (playerVelocity == zeroVector)
+        if (player != null)
         {
-            pause = true;
-        } else
-        {
-            pause = false;
+            playerVelocity = player.transform.position - oneFrameAgo;
+            oneFrameAgo = player.transform.position;
+            if (playerVelocity == zeroVector)
+            {
+                pause = true;
+            }
+            else
+            {
+                pause = false;
+            }
         }
+        
 	}
 
     void updateTime()

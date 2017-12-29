@@ -82,12 +82,12 @@ public class TroopDataBase : MonoBehaviour {
             {
                 result.battleValue = 0;
                 result.model = mainCharacter;
-                result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+                result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
             } else
             {
                 result.battleValue = 0;
                 result.model = secCharacter;
-                result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+                result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
             }
             return result;
         }
@@ -96,7 +96,7 @@ public class TroopDataBase : MonoBehaviour {
             case TroopType.recruitType:
                 result.battleValue = 10;
                 result.model = mercenaryRecruit;
-                result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+                result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f);
 
                 break;
             case TroopType.crossbowman:
@@ -105,17 +105,17 @@ public class TroopDataBase : MonoBehaviour {
                     case Ranking.militia:
                         result.battleValue = 20;
                         result.model = mercenaryMilitiaCrossbowman;
-                        result.gear = new GearInfo(2.0f, 1.0f, 3.0f, 4.0f, 3.0f, 4.0f, 1.0f, 3.0f);
+                        result.gear = new GearInfo(2.0f, 1.0f, 3.0f, 4.0f, 3.0f, 4.0f, 1.0f, 2.0f, 3.0f);
                         break;
                     case Ranking.veteran:
                         result.battleValue = 50;
                         result.model = mercenaryVeteranCrossbowman;
-                        result.gear = new GearInfo(4.0f, 2.0f, 5.0f, 6.0f, 6.0f, 7.0f, 4.0f, 6.0f);
+                        result.gear = new GearInfo(4.0f, 2.0f, 5.0f, 6.0f, 6.0f, 7.0f, 2.0f, 4.0f, 6.0f);
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
                         result.model = mercenaryEliteCrossbowman;
-                        result.gear = new GearInfo(7.0f, 4.0f, 8.0f, 8.0f, 8.0f, 9.0f, 7.0f, 8.0f);
+                        result.gear = new GearInfo(7.0f, 4.0f, 8.0f, 8.0f, 8.0f, 9.0f, 4.0f, 7.0f, 8.0f);
                         break;
                 }
                 break;
@@ -125,17 +125,17 @@ public class TroopDataBase : MonoBehaviour {
                     case Ranking.militia:
                         result.battleValue = 40;
                         result.model = mercenaryMilitiaMusketeer;
-                        result.gear = new GearInfo(2.0f, 1.0f, 3.0f, 4.0f, 1.0f, 2.0f, 3.0f, 2.0f);
+                        result.gear = new GearInfo(2.0f, 1.0f, 3.0f, 4.0f, 1.0f, 2.0f, 1.0f, 3.0f, 2.0f);
                         break;
                     case Ranking.veteran:
                         result.battleValue = 80;
                         result.model = mercenaryVeteranMusketeer;
-                        result.gear = new GearInfo(4.0f, 2.0f, 3.0f, 4.0f, 4.0f, 5.0f, 7.0f, 5.0f);
+                        result.gear = new GearInfo(4.0f, 2.0f, 3.0f, 4.0f, 4.0f, 5.0f, 3.0f, 7.0f, 5.0f);
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
                         result.model = mercenaryEliteMusketeer;
-                        result.gear = new GearInfo(7.0f, 5.0f, 8.0f, 7.0f, 7.0f, 7.0f, 9.0f, 7.0f);
+                        result.gear = new GearInfo(7.0f, 5.0f, 8.0f, 7.0f, 7.0f, 7.0f, 5.0f, 9.0f, 7.0f);
                         break;
                 }
                 break;
@@ -145,17 +145,17 @@ public class TroopDataBase : MonoBehaviour {
                     case Ranking.militia:
                         result.battleValue = 20;
                         result.model = mercenaryMilitiaSwordsman;
-                        result.gear = new GearInfo(3.0f, 2.0f, 3.0f, 1.0f, 3.0f, 0.0f, 3.0f, 3.0f);
+                        result.gear = new GearInfo(3.0f, 2.0f, 3.0f, 1.0f, 3.0f, 0.0f, 4.0f, 0.0f, 3.0f);
                         break;
                     case Ranking.veteran:
                         result.battleValue = 50;
                         result.model = mercenaryVeteranSwordsman;
-                        result.gear = new GearInfo(5.0f, 5.0f, 6.0f, 2.0f, 7.0f, 0.0f, 7.0f, 7.0f);
+                        result.gear = new GearInfo(5.0f, 5.0f, 6.0f, 2.0f, 7.0f, 0.0f, 7.0f, 0.0f, 7.0f);
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
                         result.model = mercenaryEliteSwordsman;
-                        result.gear = new GearInfo(8.0f, 7.0f, 8.0f, 5.0f, 9.0f, 0.0f, 9.0f, 9.0f);
+                        result.gear = new GearInfo(8.0f, 7.0f, 8.0f, 5.0f, 9.0f, 0.0f, 9.0f, 0.0f, 9.0f);
                         break;
                 }
                 break;
@@ -165,17 +165,17 @@ public class TroopDataBase : MonoBehaviour {
                     case Ranking.militia:
                         result.battleValue = 20;
                         result.model = mercenaryMilitiaHalberdier;
-                        result.gear = new GearInfo(4.0f, 4.0f, 1.0f, 2.0f, 1.0f, 0.0f, 3.0f, 1.0f);
+                        result.gear = new GearInfo(4.0f, 4.0f, 1.0f, 2.0f, 1.0f, 0.0f, 4.0f, 0.0f, 1.0f);
                         break;
                     case Ranking.veteran:
                         result.battleValue = 50;
                         result.model = mercenaryVeteranHalberdier;
-                        result.gear = new GearInfo(7.0f, 7.0f, 2.0f, 3.0f, 2.0f, 0.0f, 6.0f, 4.0f);
+                        result.gear = new GearInfo(7.0f, 7.0f, 2.0f, 3.0f, 2.0f, 0.0f, 7.0f, 0.0f, 4.0f);
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
                         result.model = mercenaryEliteHalberdier;
-                        result.gear = new GearInfo(9.0f, 9.0f, 4.0f, 6.0f, 5.0f, 0.0f, 8.0f, 6.0f);
+                        result.gear = new GearInfo(9.0f, 9.0f, 4.0f, 6.0f, 5.0f, 0.0f, 9.0f, 0.0f, 6.0f);
                         break;
                 }
                 break;
@@ -185,17 +185,17 @@ public class TroopDataBase : MonoBehaviour {
                     case Ranking.militia:
                         result.battleValue = 40;
                         result.model = mercenaryMilitiaCavalry;
-                        result.gear = new GearInfo(4.0f, 4.0f, 1.0f, 2.0f, 1.0f, 0.0f, 3.0f, 3.0f);
+                        result.gear = new GearInfo(4.0f, 4.0f, 1.0f, 2.0f, 1.0f, 0.0f, 4.0f, 0.0f, 3.0f);
                         break;
                     case Ranking.veteran:
                         result.battleValue = 80;
                         result.model = mercenaryVeteranCavalry;
-                        result.gear = new GearInfo(6.0f, 6.0f, 4.0f, 5.0f, 3.0f, 0.0f, 6.0f, 6.0f);
+                        result.gear = new GearInfo(6.0f, 6.0f, 4.0f, 5.0f, 3.0f, 0.0f, 7.0f, 0.0f, 6.0f);
                         break;
                     case Ranking.elite:
                         result.battleValue = 150;
                         result.model = mercenaryEliteCavalry;
-                        result.gear = new GearInfo(9.0f, 9.0f, 6.0f, 7.0f, 7.0f, 0.0f, 9.0f, 9.0f);
+                        result.gear = new GearInfo(9.0f, 9.0f, 6.0f, 7.0f, 7.0f, 0.0f, 10.0f, 0.0f, 9.0f);
                         break;
                 }
                 break;
@@ -297,7 +297,7 @@ public class TroopDataBase : MonoBehaviour {
                 }
                 break;
         }
-        result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+        result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         return result;
     }
     public TroopInfo italianGetTroopInfoHelper(TroopType tt, Ranking rk)
@@ -395,6 +395,7 @@ public class TroopDataBase : MonoBehaviour {
                 }
                 break;
         }
+        result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         return result;
     }
     public TroopInfo papalGetTroopInfoHelper(TroopType tt, Ranking rk)
@@ -492,6 +493,7 @@ public class TroopDataBase : MonoBehaviour {
                 }
                 break;
         }
+        result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         return result;
     }
     public TroopInfo frenchGetTroopInfoHelper(TroopType tt, Ranking rk)
@@ -589,6 +591,7 @@ public class TroopDataBase : MonoBehaviour {
                 }
                 break;
         }
+        result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         return result;
     }
     public TroopInfo imperialGetTroopInfoHelper(TroopType tt, Ranking rk)
@@ -686,6 +689,7 @@ public class TroopDataBase : MonoBehaviour {
                 }
                 break;
         }
+        result.gear = new GearInfo(1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
         return result;
     }
 
@@ -766,134 +770,13 @@ public class TroopDataBase : MonoBehaviour {
     }
 }
 
-public class Stats
-{
-    //base
-    public int strength { get; set; }
-    public int agility { get; set; }
-    public int perception { get; set; }
-    public int endurance { get; set; }
-    public int charisma { get; set; }
-    public int intelligence { get; set; }
 
 
-    public Stats(int strengthI, int agilityI, int perceptionI, int enduranceI, int charismaI, int intelligenceI)
-    {
-        this.strength = strengthI;
-        this.agility = agilityI;
-        this.perception = perceptionI;
-        this.endurance = enduranceI;
-        this.charisma = charismaI;
-        this.intelligence = intelligenceI;
-    }
-}
-public class Experience
+public class TroopInfo : System.Object
 {
-    public int exp { get; set; }
-    public int level { get; set; }
-    public int levelExp;
-    public int sparedPoint { get; set; }
-    public Experience(int expI, int levelI, int sparedPointI)
-    {
-        this.exp = expI;
-        this.level = levelI;
-        this.sparedPoint = sparedPointI;
-    }
-    public float getLevelExp()
-    {
-        return 100 * Mathf.Pow(1.1f, level);
-    }
-}
-public enum Ranking
-{
-    mainChar,
-    recruit,
-    militia,
-    veteran,
-    elite
-};
-public enum TroopType
-{
-    mainCharType,
-    recruitType,
-    crossbowman,
-    musketeer,
-    swordsman,
-    halberdier,
-    cavalry
-};
-public enum Faction
-{
-    mercenary,
-    france,
-    italy,
-    bandits,
-    empire,
-    papacy
-}
-
-
-public enum TroopSkill {
-    none,
-    walk,
-    lunge,
-    whirlwind,
-    fire,
-    holdSteady,
-    execute,
-    guard,
-    charge,
-    quickDraw,
-    rainOfArrows
-}
-
-public enum CityNames
-{
-    Milano,
-    Torino,
-    Asti,
-    Parma,
-    Genova,
-    Modena,
-    Verona,
-    Padova,
-    Treviso,
-    Venezia,
-    Ferrara,
-    Bologna,
-    Firenze,
-    Ravenna,
-    Urbino,
-    Lucca,
-    Pisa,
-    Siena,
-    Grosseto,
-    Perugia,
-    Roma
-}
-
-public class TroopInfo{
     public int battleValue;
     public GameObject model;
     public Texture2D icon;
     public Texture2D profile;
     public GearInfo gear;
- }
-
-public class GearInfo
-{
-    public float armorRating, blockRating, evasionRating,
-        visionRating, stealthRating, accuracyRating, dmgRating, mobilityRating;
-    public GearInfo(float armorR, float blockR, float evasionR, float visionR,
-        float stealthR, float accuracyR, float dmgR, float mobilityR)
-    {
-        armorRating = armorR;
-        blockRating = blockR;
-        evasionRating = evasionR;
-        visionRating = visionR;
-        stealthRating = stealthR;
-        accuracyRating = accuracyR;
-        dmgRating = dmgR;
-        mobilityRating = mobilityR;
-    }
 }

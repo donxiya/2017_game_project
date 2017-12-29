@@ -7,68 +7,29 @@ public class Player : MonoBehaviour {
     public static MainCharacter mainCharacter;
     public static MainCharacter secCharacter;
     public static MainParty mainParty;
+    private void Awake()
+    {
+        //if (Serializer.HasKey("tempPlayer"))
+        //{
+        //    Debug.Log("here");
+        //    mainParty = Serializer.Load<MainParty>("tempPlayer");
+        //} else
+        //{
+        //    Debug.Log("cant find");
+        //}
+        
+        
+    }
     void Start()
     {
-        initializeMainPlayers();
-        initializeMainParty();
-        if (BattleCentralControl.playerParty == null)
-        {
-            BattleCentralControl.playerParty = mainParty;
-        }
-        
-        initializeDummy();
+        //should be removable
+        //if (BattleCentralControl.playerParty == null)
+        //{
+        //    BattleCentralControl.playerParty = SaveLoadSystem.saveLoadSystem.mainParty;
+        //}
     }
 
-    void initializeMainPlayers()
-    {
-        Stats mStats = new Stats(10, 10, 10, 1, 10, 10);
-        Experience mExp = new Experience(0, 1, 5);
-        mainCharacter = new MainCharacter("Nicola Da Roma", mStats, Ranking.mainChar,
-            TroopType.mainCharType, Faction.mercenary, mExp);
-        Experience sExp = new Experience(0, 1, 5);
-        secCharacter = new MainCharacter("Rachele Sforza", mStats, Ranking.mainChar,
-            TroopType.crossbowman, Faction.mercenary, sExp);
-    }
-    void initializeMainParty()
-    {
-        mainParty = new MainParty(mainCharacter, "Crimson Griffin", Faction.mercenary, 300);
-        mainParty.addToParty(secCharacter);
-        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.halberdier, Ranking.militia));
-        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.cavalry, Ranking.veteran));
-        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.swordsman, Ranking.militia));
-        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.halberdier, Ranking.elite));
-        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.crossbowman, Ranking.elite));
-        mainParty.addToParty(mainParty.makeGenericPerson(TroopType.musketeer, Ranking.elite));
-        mainParty.cash = 200;
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Salt"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Salt"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Salt"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Parchment"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Salt"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Fur"));
-        mainParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Textile"));
-    }
-    void initializeDummy()
-    {
-        if (BattleCentralControl.enemyParty == null)
-        {
-            BattleCentralControl.enemyParty = new Party("bandit", Faction.bandits, 800);
-            makeParty(BattleCentralControl.enemyParty);
-        }
-        
-    }
+    
     void makeParty(Party npcParty)
     {
         TroopType tt = npcParty.randomTroopType(20, 20, 10, 30, 10, 10);

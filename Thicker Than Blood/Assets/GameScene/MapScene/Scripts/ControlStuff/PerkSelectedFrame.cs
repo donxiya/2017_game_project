@@ -12,16 +12,20 @@ public class PerkSelectedFrame : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Player.mainCharacter.skillTree.getPerk(gameObject.transform.parent.gameObject.name).own 
+        if (MapManagement.mapManagement != null)
+        {
+            if (Player.mainCharacter.skillTree.getPerk(gameObject.transform.parent.gameObject.name).own
             && !gameObject.GetComponent<Image>().enabled)
-        {
-            gameObject.GetComponent<Image>().enabled = true;
+            {
+                gameObject.GetComponent<Image>().enabled = true;
+            }
+            if (!Player.mainCharacter.skillTree.getPerk(gameObject.transform.parent.gameObject.name).own
+                && gameObject.GetComponent<Image>().enabled)
+            {
+                gameObject.GetComponent<Image>().enabled = false;
+            }
         }
-        if (!Player.mainCharacter.skillTree.getPerk(gameObject.transform.parent.gameObject.name).own
-            && gameObject.GetComponent<Image>().enabled)
-        {
-            gameObject.GetComponent<Image>().enabled = false;
-        }
+        
     }
 
 }

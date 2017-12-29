@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TabMenu : MonoBehaviour {
@@ -14,7 +15,7 @@ public class TabMenu : MonoBehaviour {
     bool closing = true;
     // Use this for initialization
     void Start() {
-        tabMenu = gameObject.GetComponent<TabMenu>();
+        tabMenu = this;
         gameObject.SetActive(false);
         animator = gameObject.GetComponent<Animator>();
         objectiveButton.onClick.AddListener(delegate () { showPanel(TabPanelType.ObjectivePanel, true); });
@@ -44,13 +45,13 @@ public class TabMenu : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (gameObject.activeSelf)
+        if (gameObject.activeSelf && tabMenu != null)
         {
             resetLayout();
             if (Time.timeScale != 0.0f)
             {
                 Time.timeScale = 0.0f;
-                WorldInteraction.worldInteraction.stopPlayer();
+                WorldInteraction.worldInteraction.stopEveryone(true);
             }
             if (Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Escape))
             {
@@ -73,12 +74,21 @@ public class TabMenu : MonoBehaviour {
                     Time.timeScale = 1.0f;
                 }
             }
+            
         }
     }
 
     public void showMarket(bool show)
     {
-        
+        if (show)
+        {
+            gameObject.SetActive(show);
+            showPanel(TabPanelType.InventoryPanel, show);
+        }
+        else
+        {
+
+        }
         objectiveButtonQuick.gameObject.SetActive(!show);
         factionButtonQuick.gameObject.SetActive(!show);
         sapeButtonQuick.gameObject.SetActive(!show);
@@ -87,21 +97,68 @@ public class TabMenu : MonoBehaviour {
         secGearButtonQuick.gameObject.SetActive(!show);
         inventoryButtonQuick.gameObject.SetActive(show);
         troopButtonQuick.gameObject.SetActive(!show);
-        resetLayout();
         closeTabButton.gameObject.SetActive(true);
+
+    }
+    public void showTroopManagement(bool show, bool upgradable)
+    {
         if (show)
         {
             gameObject.SetActive(show);
-            showPanel(TabPanelType.InventoryPanel, show);
-        } else
+            showPanel(TabPanelType.TroopPanel, show);
+            TroopManagement.upgradable = true;
+        }
+        else
         {
 
         }
+        objectiveButtonQuick.gameObject.SetActive(!show);
+        factionButtonQuick.gameObject.SetActive(!show);
+        sapeButtonQuick.gameObject.SetActive(!show);
+        ciButtonQuick.gameObject.SetActive(!show);
+        mainGearButtonQuick.gameObject.SetActive(!show);
+        secGearButtonQuick.gameObject.SetActive(!show);
+        inventoryButtonQuick.gameObject.SetActive(!show);
+        troopButtonQuick.gameObject.SetActive(show);
+        closeTabButton.gameObject.SetActive(true);
         
-
     }
-
-
+    public void showPerk(bool show)
+    {
+        if (show)
+        {
+            gameObject.SetActive(show);
+            showPanel(TabPanelType.SAPEPanel, show);
+        }
+        objectiveButtonQuick.gameObject.SetActive(!show);
+        factionButtonQuick.gameObject.SetActive(!show);
+        sapeButtonQuick.gameObject.SetActive(show);
+        ciButtonQuick.gameObject.SetActive(show);
+        mainGearButtonQuick.gameObject.SetActive(!show);
+        secGearButtonQuick.gameObject.SetActive(!show);
+        inventoryButtonQuick.gameObject.SetActive(!show);
+        troopButtonQuick.gameObject.SetActive(!show);
+        closeTabButton.gameObject.SetActive(true);
+        
+    }
+    public void showGear(bool show)
+    {
+        if (show)
+        {
+            gameObject.SetActive(show);
+            showPanel(TabPanelType.MainGearPanel, show);
+        }
+        objectiveButtonQuick.gameObject.SetActive(!show);
+        factionButtonQuick.gameObject.SetActive(!show);
+        sapeButtonQuick.gameObject.SetActive(!show);
+        ciButtonQuick.gameObject.SetActive(!show);
+        mainGearButtonQuick.gameObject.SetActive(show);
+        secGearButtonQuick.gameObject.SetActive(show);
+        inventoryButtonQuick.gameObject.SetActive(!show);
+        troopButtonQuick.gameObject.SetActive(!show);
+        closeTabButton.gameObject.SetActive(true);
+        
+    }
     public void showPanel(TabPanelType tabPanelType, bool show)
     {
         animator.SetBool("troopUpgradeShow", false);
@@ -126,8 +183,16 @@ public class TabMenu : MonoBehaviour {
         if (tabPanelType == TabPanelType.SAPEPanel)
         {
             animator.SetBool("sapeShow", show);
+            if (!show)
+            {
+                SAPEManagement.sapeManagement.leaveManagement();
+            }
         } else
         {
+            if (show && animator.GetBool("inventoryShow"))
+            {
+                SAPEManagement.sapeManagement.leaveManagement();
+            }
             animator.SetBool("sapeShow", !show);
         }
         if (tabPanelType == TabPanelType.MainGearPanel)
@@ -154,7 +219,6 @@ public class TabMenu : MonoBehaviour {
                 InventoryManagement.inventoryManagement.leaveManagement();
             }
             animator.SetBool("inventoryShow", !show);
-
         }
         if (tabPanelType == TabPanelType.FactionPanel)
         {
@@ -166,6 +230,11 @@ public class TabMenu : MonoBehaviour {
         if (tabPanelType == TabPanelType.CIPanel)
         {
             animator.SetBool("ciShow", show);
+            if (!show)
+            {
+                //using sape's resetable, its fine
+                SAPEManagement.sapeManagement.leaveManagement();
+            }
         } else
         {
             animator.SetBool("ciShow", !show);
@@ -173,6 +242,7 @@ public class TabMenu : MonoBehaviour {
         if (tabPanelType == TabPanelType.SecGearPanel)
         {
             animator.SetBool("secGearShow", show);
+
         } else
         {
             animator.SetBool("secGearShow", !show);
@@ -196,9 +266,18 @@ public class TabMenu : MonoBehaviour {
     }
     public void closeTabMenu()
     {
+        objectiveButtonQuick.gameObject.SetActive(true);
+        factionButtonQuick.gameObject.SetActive(true);
+        sapeButtonQuick.gameObject.SetActive(true);
+        ciButtonQuick.gameObject.SetActive(true);
+        mainGearButtonQuick.gameObject.SetActive(true);
+        secGearButtonQuick.gameObject.SetActive(true);
+        inventoryButtonQuick.gameObject.SetActive(true);
+        troopButtonQuick.gameObject.SetActive(true);
         showPanel(TabPanelType.DefaultPanel, true);
         defaultPanel.SetActive(false);
         topPanel.SetActive(false);
+
         closing = true;
     }
     public void resetLayout ()

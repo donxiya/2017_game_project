@@ -12,6 +12,7 @@ public class BattleCentralControl : MonoBehaviour {
     public static MainParty playerParty;
     public static Dictionary<Person, GameObject> playerTroopOnField, enemyTroopOnField;
     public static Party enemyParty;
+    public static int playerTotal, enemyTotal;
     //public static Dictionary<Grid, GameObject> gridToObj;
     //public static Dictionary<GameObject, Grid> objToGrid;
     bool groundInitialized = false;
@@ -118,7 +119,27 @@ public class BattleCentralControl : MonoBehaviour {
         {
         }
     }
-
+    public static void endBattle()
+    {
+        //SaveLoadSystem.saveLoadSystem.tempSave();
+        foreach(Person p in BattleCentralControl.playerParty.partyMember)
+        {
+            p.inBattle = false;
+        }
+        foreach (Person p in BattleCentralControl.enemyParty.partyMember)
+        {
+            p.inBattle = false;
+        }
+        BattleInspectPanel.person = null;
+        GridInspectPanel.grid = null;
+        MapManagement.parties.Remove(BattleCentralControl.enemyParty);
+        SaveLoadSystem.saveLoadSystem.tempSave();
+        //Debug.Log(SaveLoadSystem.saveLoadSystem.mainParty.name);
+        SceneManager.LoadScene("MapScene");
+        SceneManager.UnloadSceneAsync("BattleScene");
+        MapManagement.mapManagement.endOfBattle(BattleCentralControl.enemyParty, EndTurnPanel.battleResult);
+        
+    }
     public static List<GameObject> gridInLine(GameObject start, GameObject end)
     {
         List<GameObject> result = new List<GameObject>();
