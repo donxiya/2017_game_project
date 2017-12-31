@@ -38,8 +38,8 @@ public class BattleCentralControl : MonoBehaviour {
     {
         if (!groundInitialized && playerParty != null && enemyParty != null)
         {
-            gridXMax = playerParty.partySize + enemyParty.partySize;
-            gridZMax = playerParty.partySize + enemyParty.partySize;
+            gridXMax = playerParty.partyMember.Count + enemyParty.partyMember.Count;
+            gridZMax = playerParty.partyMember.Count + enemyParty.partyMember.Count;
             map = new Grid[gridXMax, gridZMax];
             generateMap(gridXMax, gridZMax);
             placeOnMap(gridXMax, gridZMax);

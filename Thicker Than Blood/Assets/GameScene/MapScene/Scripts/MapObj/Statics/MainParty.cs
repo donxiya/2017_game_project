@@ -39,17 +39,9 @@ public class MainParty : Party {
     {
         base.plusPrestige(toAdd);
     }
-    public override int getPrestige()
-    {
-        return base.getPrestige();
-    }
     public override void plusNotoriety(int toAdd)
     {
         base.plusNotoriety(toAdd);
-    }
-    public override int getNotoriety()
-    {
-        return base.getNotoriety();
     }
     public override int getPartySizeLimit()
     {

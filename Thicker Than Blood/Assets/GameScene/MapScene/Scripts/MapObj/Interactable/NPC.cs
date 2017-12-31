@@ -9,7 +9,7 @@ public class NPC : Interactable {
     public NavMeshAgent npcAgent;
     public PartyVisionIndicator partyVisionIndicator;
     public Party npcParty = null;
-    public bool battling = false;
+    int hrSCounter, hrECounter, monthSCounter, monthECounter;
     const int roamRange = 60;
     private void Awake()
     {
@@ -23,6 +23,26 @@ public class NPC : Interactable {
     public override void Update()
     {
         base.Update();
+        hrSCounter = TimeSystem.hour;
+        if (hrSCounter != hrECounter)
+        {
+            if (npcParty.battling <= 1)
+            {
+                npcParty.battling = 0;
+            }
+            if (npcParty.battling > 0)
+            {
+                npcParty.battling -= 1;
+            }
+        }
+        hrECounter = TimeSystem.hour;
+        monthSCounter = TimeSystem.hour;
+        if (monthSCounter != monthECounter)
+        {
+            Debug.Log("here");
+            grow();
+        }
+        monthECounter = TimeSystem.hour;
     }
     public void FixedUpdate()
     {
@@ -33,6 +53,11 @@ public class NPC : Interactable {
         } else
         {
             gameObject.SetActive(false);
+        }
+        if (npcParty.partyMember.Count == 0)
+        {
+            MapManagement.parties.Remove(npcParty);
+            GameObject.Destroy(gameObject);
         }
         npcAgent.speed = npcParty.getTravelSpeed();
         if (!TimeSystem.pause)
@@ -47,13 +72,19 @@ public class NPC : Interactable {
             {
                 
             }
+            if (npcAgent.isActiveAndEnabled)
+            {
+                npcAgent.destination = getRoamTarget(); //Player.mainParty.position;
+            } else
+            {
+                npcAgent.Warp(transform.position);
+            }
             
-            npcAgent.destination = getRoamTarget(); //Player.mainParty.position;
         }
         else
         {
-            npcAgent.isStopped = true;
             npcAgent.destination = transform.position;
+            npcAgent.isStopped = true;
         }
         inspectPanel.GetComponent<InspectPanel>().updateTexts(npcParty);
     }
@@ -74,15 +105,28 @@ public class NPC : Interactable {
             DialogueSystem.Instance.createDialogue(PanelType.NPC, npcParty);
 
         }
-        if (col.gameObject.tag == "NPC" && !battling)
+        if (col.gameObject.tag == "NPC" && npcParty.battling < 1)
         {
             NPC encountered = col.gameObject.GetComponent<NPC>();
-            if (npcParty.factionFavors[encountered.npcParty.faction] < 0 && !encountered.battling)
+            if (npcParty.factionFavors[encountered.npcParty.faction] < 0 && encountered.npcParty.battling == 0)
             {
                 MapManagement.mapManagement.battleSimulation(this, col.gameObject.GetComponent<NPC>(), BattlefieldType.plain);
                 partyVisionIndicator.reLook();
             }
             
+        }
+    }
+    private void OnTriggerStay(Collider col)
+    {
+        if (col.gameObject.tag == "NPC" && npcParty.battling < 1)
+        {
+            NPC encountered = col.gameObject.GetComponent<NPC>();
+            if (npcParty.factionFavors[encountered.npcParty.faction] < 0 && encountered.npcParty.battling == 0)
+            {
+                MapManagement.mapManagement.battleSimulation(this, col.gameObject.GetComponent<NPC>(), BattlefieldType.plain);
+                partyVisionIndicator.reLook();
+            }
+
         }
     }
     public override void inspect(bool inspecting)
@@ -101,7 +145,8 @@ public class NPC : Interactable {
     public virtual Vector3 getRoamTarget()
     {
         Vector3 result = transform.position + new Vector3(Random.Range(-roamRange, roamRange), 0, Random.Range(-roamRange, roamRange));
-        if (npcParty != null && !battling)
+        Party closestEnemy = null;
+        if (npcParty != null && npcParty.battling == 0)
         {
 
             if (getNpcInVision().Count > 0)
@@ -109,6 +154,14 @@ public class NPC : Interactable {
                 int hate = 0;
                 foreach (Party p in getNpcInVision())
                 {
+                    if (p.factionFavors[npcParty.faction] < 0)
+                    {
+                        if (closestEnemy == null || Vector3.Distance(npcParty.position, p.position) < Vector3.Distance(npcParty.position, closestEnemy.position))
+                        {
+                            closestEnemy = p;
+                        }
+                    }
+                    
                     if (npcParty.factionFavors[p.faction] < hate)
                     {
                         hate = npcParty.factionFavors[p.faction];
@@ -118,6 +171,10 @@ public class NPC : Interactable {
                         }
                     }
                 }
+                if (closestEnemy != null && closestEnemy.getBattleValue() * .7f > npcParty.getBattleValue())
+                {
+                    result = 2 * npcParty.position - closestEnemy.position;
+                }
             } 
         }
         //Debug.Log(result);
@@ -126,7 +183,13 @@ public class NPC : Interactable {
 
     public virtual void grow()
     {
+        foreach (Item i in npcParty.inventory)
+        {
+            npcParty.cash += i.getSellingPrice();
 
+        }
+        npcParty.battleValue += npcParty.cash / 2;
+        makeParty();
     }
     public List<Party> getNpcInVision()
     {
@@ -138,5 +201,10 @@ public class NPC : Interactable {
         List<Party> result = partyVisionIndicator.getPartiesInRange();
         result.Remove(npcParty);
         return result;
+    }
+
+    public virtual void makeParty()
+    {
+
     }
 }

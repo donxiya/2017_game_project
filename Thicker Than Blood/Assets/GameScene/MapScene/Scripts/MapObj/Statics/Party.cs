@@ -16,11 +16,9 @@ public class Party : System.Object {
     public Dictionary<Faction, int> factionFavors;
     public Dictionary<string, int> locationFavors;
     public int prestige, notoriety;
-    public int partySize, partySizeLimit;
-    public float travelSpeed, visionRange;
-    public float taticRating, convinceRating;
     public float inventoryWeightLimit, inventoryWeight;
     public bool unique, hasShape;
+    public int battling;
     public string locationName;
     public City belongedCity;
     public Town belongedTown;
@@ -41,7 +39,6 @@ public class Party : System.Object {
         partyMember = new List<Person>();
         inventory = new List<Item>();
         
-        partySize = 0;
         addToParty(leader);
         battleValue = battleValueI;
         PartyInitialization();
@@ -58,7 +55,6 @@ public class Party : System.Object {
         leader.exp.level += (leader.stats.intelligence + leader.stats.charisma - 2);
         partyMember = new List<Person>();
         inventory = new List<Item>();
-        partySize = 0;
         addToParty(leader);
         battleValue = battleValueI;
         PartyInitialization();
@@ -102,15 +98,13 @@ public class Party : System.Object {
         locationFavors.Add("Perugia", 0);
         locationFavors.Add("Roma", 0);
         initializeFavors();
-        partySizeLimit = getPartySizeLimit();
     }
 
     public virtual bool addToParty(Person member)
     {
-        if (partySize < getPartySizeLimit())
+        if (partyMember.Count < getPartySizeLimit())
         {
             partyMember.Add(member);
-            partySize++;
             return true;
         }
         return false;
@@ -119,7 +113,6 @@ public class Party : System.Object {
     {
         if (partyMember.Remove(member))
         {
-            partySize -= 1;
             return true;
         }
         return false;
@@ -143,21 +136,15 @@ public class Party : System.Object {
         }
         return false;
     }
-    public virtual int getPrestige()
-    {
-        return prestige;
-    }
     public virtual void plusPrestige(int toAdd)
     {
         prestige += toAdd;
-    }
-    public virtual int getNotoriety()
-    {
-        return notoriety;
+        Mathf.Clamp(prestige, 0, 100);
     }
     public virtual void plusNotoriety(int toAdd)
     {
         notoriety += toAdd;
+        Mathf.Clamp(notoriety, 0, 100);
     }
     public virtual int getFactionFavor(Faction f)
     {
@@ -185,9 +172,14 @@ public class Party : System.Object {
     }
     public virtual float getTravelSpeed()
     {
-        float travelSpeed = 3 + maxTravelSpeed * (getAverage().agility / 10.0f) - 0.1f * (partySize + .1f * getInventoryWeight());
+        float travelSpeed = 3 + maxTravelSpeed * (getAverage().agility / 10.0f) - 0.1f * (partyMember.Count + .1f * getInventoryWeight());
         Mathf.Clamp(travelSpeed, 1, 10);
         return travelSpeed;
+    }
+    public virtual int changeMorale(int toChange)
+    {
+        morale += toChange;
+        return morale;
     }
     public virtual float getVisionRange()
     {
@@ -253,8 +245,33 @@ public class Party : System.Object {
         {
             result += p.exp.level;
         }
-        return result / partySize;
+        if (partyMember.Count > 0)
+        {
+            return result / partyMember.Count;
+        } else
+        {
+            return 0;
+        }
+        
 
+    }
+    public bool electNewLeader()
+    {
+        if (partyMember.Count > 0)
+        {
+            int highestLevel = 0;
+            foreach (Person p in partyMember)
+            {
+                if (p.exp.level > highestLevel)
+                {
+                    leader = p;
+                    highestLevel = leader.exp.level;
+                }
+                
+            }
+            return true;
+        }
+        return false;
     }
     public Stats getAverage()
     {
@@ -270,13 +287,12 @@ public class Party : System.Object {
                 result.charisma += p.stats.charisma;
                 result.intelligence += p.stats.intelligence;
             }
-            partySize = partyMember.Count;
-            result.strength = result.strength / partySize;
-            result.agility = result.agility / partySize;
-            result.perception = result.perception / partySize;
-            result.endurance = result.endurance / partySize;
-            result.charisma = result.charisma / partySize;
-            result.intelligence = result.intelligence / partySize;
+            result.strength = result.strength / partyMember.Count;
+            result.agility = result.agility / partyMember.Count;
+            result.perception = result.perception / partyMember.Count;
+            result.endurance = result.endurance / partyMember.Count;
+            result.charisma = result.charisma / partyMember.Count;
+            result.intelligence = result.intelligence / partyMember.Count;
         }
         
         return result;

@@ -66,7 +66,7 @@ public class TimeSystem : MonoBehaviour {
 
     void updateTime()
     {
-        minute += 20;
+        minute += 60; //change this to change time speed, more -> faster
         if (minute >= 60)
         {
             minute -= 60;

@@ -61,9 +61,9 @@ public class FrenchParty : NPC {
     }
     public override void grow()
     {
-
+        base.grow();
     }
-    public void makeParty()
+    public override void makeParty()
     {
         for (int i = 0; i < npcParty.getPartySizeLimit(); i++)
         {

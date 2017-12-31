@@ -256,6 +256,7 @@ public class PartySave : System.Object
     public int battleValue;
     public int morale;
     public int cash;
+    public int battling;
     public Dictionary<Faction, int> factionFavors;
     public Dictionary<string, int> locationFavors;
     public int prestige, notoriety;
@@ -304,6 +305,7 @@ public class PartySave : System.Object
         notoriety = inParty.notoriety;
         unique = inParty.unique;
         hasShape = inParty.hasShape;
+        battling = inParty.battling;
     }
     public virtual Party exportParty()
     {
@@ -335,6 +337,7 @@ public class PartySave : System.Object
         outParty.notoriety = notoriety;
         outParty.unique = unique;
         outParty.hasShape = hasShape;
+        outParty.battling = battling;
         return outParty;
     }
 }
@@ -397,6 +400,7 @@ public class MainPartySave : PartySave
         notoriety = inParty.notoriety;
         unique = inParty.unique;
         hasShape = inParty.hasShape;
+        battling = inParty.battling;
         factionPerkTreeSave = new FactionPerkTreeSave();
         factionPerkTreeSave.importTree(inParty.factionPerkTree);
         unfinishedQuestP = new List<QuestProgress>();
@@ -445,6 +449,7 @@ public class MainPartySave : PartySave
         outParty.notoriety = notoriety;
         outParty.unique = unique;
         outParty.hasShape = hasShape;
+        outParty.battling = battling;
         outParty.factionPerkTree = factionPerkTreeSave.loadTree(new FactionPerkTree());
         outParty.unfinishedQuests = new List<Quest>();
         foreach (QuestProgress qp in unfinishedQuestP)

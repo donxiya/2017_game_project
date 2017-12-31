@@ -72,7 +72,7 @@ public class MapManagement : MonoBehaviour {
             monthSCounter = TimeSystem.hour;
             if (monthSCounter != monthECounter)
             {
-                //banditUpdate();
+                spawnsUpdate();
             }
             monthECounter = TimeSystem.hour;
             if (finishingBattle && TabMenu.tabMenu != null)
@@ -263,9 +263,9 @@ public class MapManagement : MonoBehaviour {
         banditSpawnPointList = GameObject.FindGameObjectsWithTag("BanditSpawnPoint");
         foreach (GameObject sp in banditSpawnPointList)
         {
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 5; i++)
             {
-                var party = new Party("Bandits", Faction.bandits, 1000);
+                var party = new Party("Bandits", Faction.bandits, Random.Range(300, 600));
                 party.position = sp.transform.position + new Vector3(Random.Range(-spawnRange, spawnRange), 0, Random.Range(-spawnRange, spawnRange)); ;
                 
             }
@@ -329,12 +329,19 @@ public class MapManagement : MonoBehaviour {
 
         }
     }
-    void banditUpdate()
+    void spawnsUpdate()
     {
         banditSpawnPointList = GameObject.FindGameObjectsWithTag("BanditSpawnPoint");
         foreach (GameObject sp in banditSpawnPointList)
         {
-            Party newParty = new Party("Bandits", Faction.bandits, 300);
+            Party newParty = new Party("Bandits", Faction.bandits, Random.Range(300, 600));
+            newParty.position = sp.transform.position;
+            loadSingleParty(newParty);
+        }
+        franceSpawnPointList = GameObject.FindGameObjectsWithTag("FranceSpawnPoint");
+        foreach (GameObject sp in franceSpawnPointList)
+        {
+            Party newParty = new Party("French Troop", Faction.france, Random.Range(300, 600));
             newParty.position = sp.transform.position;
             loadSingleParty(newParty);
         }
@@ -373,7 +380,7 @@ public class MapManagement : MonoBehaviour {
             }
             var rot = new Quaternion(0, Random.Range(0, 360), 0, 0);
             spawned = Instantiate(toSpawn, p.position, rot);
-
+            spawned.GetComponent<NPC>().npcAgent.Warp(p.position);
             spawned.GetComponent<NPC>().npcParty = p;
             spawned.SetActive(true);
         }
@@ -407,25 +414,7 @@ public class MapManagement : MonoBehaviour {
         //SceneManager.UnloadSceneAsync("MapScene");
     }
 
-    public void battleSimulation(NPC npcOne, NPC npcTwo, BattlefieldType bt)
-    {
-        npcOne.battling = true;
-        npcTwo.battling = true;
-        int partyOneBattleValue = calculateBattleValue(npcOne.npcParty, bt);
-        int partyTwoBattleValue = calculateBattleValue(npcTwo.npcParty, bt);
-        if (partyOneBattleValue >= partyTwoBattleValue)
-        {
-            npcBattleResult(npcOne, npcTwo);
-        } else if (partyOneBattleValue < partyTwoBattleValue)
-        {
-            npcBattleResult(npcTwo, npcOne);
-        }
-        npcOne.battling = false;
-        npcTwo.battling = false;
-    }
-
-
-
+    
 
     public void endOfBattle(Party enemyParty, BattleResult battleResult)
     {
@@ -472,7 +461,7 @@ public class MapManagement : MonoBehaviour {
                 parties.Add(enemyParty);
                 break;
             case BattleResult.enemyUpper:
-                
+                Player.mainParty.changeMorale(Player.mainParty.partyMember.Count);
                 break;
             case BattleResult.enemyWon:
                 //GameObject partyObj = loadSingleParty(enemyParty);
@@ -517,11 +506,99 @@ public class MapManagement : MonoBehaviour {
         }
         return result;
     }
-    void npcBattleResult(NPC npcWon, NPC npcLost)
+    public void battleSimulation(NPC npcOne, NPC npcTwo, BattlefieldType bt)
     {
-        parties.Remove(npcLost.npcParty);
-        GameObject.Destroy(npcLost.gameObject);
+        if (npcOne.npcParty.battling > 0 || npcTwo.npcParty.battling > 0)
+        {
+            return;
+        }
+        npcOne.npcParty.battling = (int) (100 * npcOne.npcParty.getTaticRating());
+        npcTwo.npcParty.battling = (int) (100 * npcTwo.npcParty.getTaticRating());
+        float partyOneBattleValue = (float)calculateBattleValue(npcOne.npcParty, bt);
+        float partyTwoBattleValue = (float)calculateBattleValue(npcTwo.npcParty, bt);
+        if (partyOneBattleValue >= partyTwoBattleValue)
+        {
+            npcBattleResult(npcOne, npcTwo, 100f * partyOneBattleValue / (partyOneBattleValue + partyTwoBattleValue));
+        }
+        else if (partyOneBattleValue < partyTwoBattleValue)
+        {
+            npcBattleResult(npcTwo, npcOne, 100f * partyOneBattleValue / (partyOneBattleValue + partyTwoBattleValue));
+        }
+    }
+    void npcBattleResult(NPC npcWon, NPC npcLost, float winPercent)
+    {
+        List<Person> toRemove = new List<Person>();
+        foreach(Person p in npcWon.npcParty.partyMember)
+        {
+            int rand = Random.Range(0, 100);
+            if (rand > winPercent)
+            {
+                toRemove.Add(p);
+            } else
+            {
+                p.health = (winPercent) * p.health;
+            }
+        }
+        foreach (Person p in toRemove)
+        {
+            
+            npcWon.npcParty.partyMember.Remove(p);
+            if (p == npcWon.npcParty.leader)
+            {
+                if (!npcWon.npcParty.electNewLeader())
+                {
+                    GameObject.Destroy(npcWon.gameObject);
+                }
+            }
+        }
+        toRemove.Clear();
+        if (winPercent >= 85)
+        {
+            
+            foreach (Item i in npcLost.npcParty.inventory)
+            {
+                int rand = Random.Range(0, 100);
+                if (rand <= winPercent)
+                {
+                    npcWon.npcParty.addToInventory(i);
+                }
+            }
+            
+            for (int i = 0; i < npcLost.npcParty.partyMember.Count; i++)
+            {
+                npcWon.npcParty.addToInventory(ItemDataBase.dataBase.getItem("Slave"));
+            }
+            parties.Remove(npcLost.npcParty);
+            GameObject.Destroy(npcLost.gameObject);
+            npcWon.npcParty.plusPrestige(npcLost.npcParty.notoriety);
+            npcWon.npcParty.plusNotoriety(npcLost.npcParty.prestige);
+            npcWon.npcParty.cash += npcLost.npcParty.cash;
+        } else
+        {
+            foreach (Person p in npcLost.npcParty.partyMember)
+            {
+                int rand = Random.Range(0, 100);
+                if (rand > (100 - winPercent) && p != npcLost.npcParty.leader)
+                {
+                    toRemove.Add(p);
+                }
+                else
+                {
+                    p.health = (100 - winPercent) * p.health;
+                }
+            }
+            foreach (Person p in toRemove)
+            {
 
+                npcLost.npcParty.partyMember.Remove(p);
+                if (!npcLost.npcParty.electNewLeader())
+                {
+                    GameObject.Destroy(npcLost.gameObject);
+                }
+            }
+            toRemove.Clear();
+        }
+        npcWon.npcParty.battling = 0;
     }
 
     int calculateBattleValue(Party party, BattlefieldType bType)
