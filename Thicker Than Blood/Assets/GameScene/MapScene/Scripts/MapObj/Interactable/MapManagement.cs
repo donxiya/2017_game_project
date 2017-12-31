@@ -101,27 +101,27 @@ public class MapManagement : MonoBehaviour {
 
     void cityInitialization()
     {
-        buildCity("Milano", defaultCity, new Vector3(850/2, 3, 730/2), 1000, 20000);
-        buildCity("Torino", defaultCity, new Vector3(720/2, 3, 970/2), 1000, 20000);
-        buildCity("Asti", defaultCity, new Vector3(700/2, 3, 850/2), 1000, 20000);
-        buildCity("Parma", defaultCity, new Vector3(610/2, 3, 740/2), 1000, 20000);
-        buildCity("Genova", defaultCity, new Vector3(620/2, 3, 770/2), 1000, 20000);
-        buildCity("Modena", defaultCity, new Vector3(790/2, 3, 550/2), 1000, 20000);
-        buildCity("Verona", defaultCity, new Vector3(880/2, 3, 540/2), 1000, 20000);
-        buildCity("Padova", defaultCity, new Vector3(850/2, 3, 400/2), 1000, 20000);
-        buildCity("Treviso", defaultCity, new Vector3(940/2, 3, 270/2), 1000, 20000);
-        buildCity("Venezia", defaultCity, new Vector3(860/2, 3, 200/2), 1000, 20000);
-        buildCity("Ferrara", defaultCity, new Vector3(730/2, 3, 400/2), 1000, 20000);
-        buildCity("Bologna", defaultCity, new Vector3(630/2, 3, 380/2), 1000, 20000);
-        buildCity("Firenze", defaultCity, new Vector3(480/2, 3, 500/2), 1000, 20000);
-        buildCity("Ravenna", defaultCity, new Vector3(620/2, 3, 330/2), 1000, 20000);
-        buildCity("Urbino", defaultCity, new Vector3(470/2, 3, 290/2), 1000, 20000);
-        buildCity("Lucca", defaultCity, new Vector3(530/2, 3, 580/2), 1000, 20000);
-        buildCity("Pisa", defaultCity, new Vector3(450/2, 3, 580/2), 1000, 20000);
-        buildCity("Siena", defaultCity, new Vector3(400/2, 3, 450/2), 1000, 20000);
-        buildCity("Grosseto", defaultCity, new Vector3(180/2, 3, 320/2), 1000, 20000);
-        buildCity("Perugia", defaultCity, new Vector3(350/2, 3, 320/2), 1000, 20000);
-        buildCity("Roma", defaultCity, new Vector3(100/2, 3, 200/2), 1000, 20000);
+        buildCity("Milano", defaultCity, new Vector3(135, 3, 425), 1000, 20000);
+        buildCity("Torino", defaultCity, new Vector3(35, 3, 360), 1000, 20000);
+        buildCity("Asti", defaultCity, new Vector3(75, 3, 350), 1000, 20000);
+        buildCity("Parma", defaultCity, new Vector3(160, 3, 360), 1000, 20000);
+        buildCity("Genova", defaultCity, new Vector3(115, 3, 310), 1000, 20000);
+        buildCity("Modena", defaultCity, new Vector3(220, 3, 345), 1000, 20000);
+        buildCity("Verona", defaultCity, new Vector3(230, 3, 425), 1000, 20000);
+        buildCity("Padova", defaultCity, new Vector3(300, 3, 425), 1000, 20000);
+        buildCity("Treviso", defaultCity, new Vector3(350, 3, 460), 1000, 20000);
+        buildCity("Venezia", defaultCity, new Vector3(360, 3, 400), 1000, 20000);
+        buildCity("Ferrara", defaultCity, new Vector3(300, 3, 365), 1000, 20000);
+        buildCity("Bologna", defaultCity, new Vector3(275, 3, 315), 1000, 20000);
+        buildCity("Firenze", defaultCity, new Vector3(250, 3, 240), 1000, 20000);
+        buildCity("Ravenna", defaultCity, new Vector3(330, 3, 310), 1000, 20000);
+        buildCity("Urbino", defaultCity, new Vector3(330, 3, 270), 1000, 20000);
+        buildCity("Lucca", defaultCity, new Vector3(190, 3, 290), 1000, 20000);
+        buildCity("Pisa", defaultCity, new Vector3(200, 3, 265), 1000, 20000);
+        buildCity("Siena", defaultCity, new Vector3(275, 3, 200), 1000, 20000);
+        buildCity("Grosseto", defaultCity, new Vector3(340, 3, 90), 1000, 20000);
+        buildCity("Perugia", defaultCity, new Vector3(320, 3, 170), 1000, 20000);
+        buildCity("Roma", defaultCity, new Vector3(400, 3, 50), 1000, 20000);
     }
     void buildCity(string cityName, GameObject obj, Vector3 location, int guardBattleValue, int cash)
     {
