@@ -795,15 +795,16 @@ public class Troop : BattleInteractable {
     {
         if (stealthCheckDict.ContainsKey(watcher.person) && !stealthCheckDict[watcher.person])
         {
-            float rand = Random.Range(10.0f, watcher.person.getVision() + person.getStealth());
+            float distance = Vector3.Distance(watcher.gameObject.transform.position, transform.position);
+            float rand = Random.Range(distance, watcher.person.getVision() + person.getStealth());
             if ( rand < watcher.person.getVision())
             {
-                //hidden();
+                hidden();
             } else
             {
-                //revealed();
+                revealed();
             }
-            revealed();  //revealed when enter others' vision
+            //revealed();  //revealed when enter others' vision
             stealthCheckDict[watcher.person] = true;
         }
     }

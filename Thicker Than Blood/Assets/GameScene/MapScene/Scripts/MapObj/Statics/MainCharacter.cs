@@ -25,6 +25,186 @@ public class MainCharacter : Person {
         skillTree.skillTreeInitialization();
         exp.sparedPoint += 50; //REMEMBER TO CHANGE THIS TO LEVEL
     }
+    public override GearInfo getGearInfo()
+    {
+        
+        GearInfo result = new GearInfo(1, 1, 1, 1, 1, 1, 1, 1, 1);
+        if (skillTree != null)
+        {
+            if (troopType == TroopType.mainCharType)
+            {
+                if (skillTree.getPerk("M1_HELMET1").own)
+                {
+                    result.visionRating += 2;
+                    result.armorRating += 2;
+                    if (skillTree.getPerk("M1_HELMET2").own)
+                    {
+                        result.visionRating += 2;
+                        result.armorRating += 2;
+                        if (skillTree.getPerk("M1_HELMET3").own)
+                        {
+                            result.visionRating += 2;
+                            result.armorRating += 2;
+                            if (skillTree.getPerk("M1_HELMET4A").own)
+                            {
+                                result.visionRating += 3;
+                            }
+                            else if (skillTree.getPerk("M1_HELMET4B").own)
+                            {
+                                result.armorRating += 3;
+                            }
+                        }
+                    }
+                }
+                if (skillTree.getPerk("M1_ARMOR1").own)
+                {
+                    result.armorRating += 2;
+                    result.blockRating += 2;
+                    result.evasionRating += 2;
+                    if (skillTree.getPerk("M1_ARMOR2").own)
+                    {
+                        result.armorRating += 2;
+                        result.blockRating += 2;
+                        result.evasionRating += 2;
+                        if (skillTree.getPerk("M1_ARMOR3").own)
+                        {
+                            result.armorRating += 2;
+                            result.blockRating += 2;
+                            result.evasionRating += 2;
+                            if (skillTree.getPerk("M1_ARMOR4A").own)
+                            {
+                                result.armorRating += 3;
+                            }
+                            else if (skillTree.getPerk("M1_ARMOR4B").own)
+                            {
+                                result.blockRating += 3;
+                            }
+                            else if (skillTree.getPerk("M1_ARMOR4C").own)
+                            {
+                                result.evasionRating += 3;
+                            }
+                        }
+                    }
+                }
+                if (skillTree.getPerk("M1_CLOTHES1").own)
+                {
+                    result.stealthRating += 2;
+                    result.mobilityRating += 2;
+                    result.evasionRating += 2;
+                    result.visionRating += 2;
+                    if (skillTree.getPerk("M1_CLOTHES2").own)
+                    {
+                        result.stealthRating += 2;
+                        result.mobilityRating += 2;
+                        result.evasionRating += 2;
+                        result.visionRating += 2;
+                        if (skillTree.getPerk("M1_CLOTHES3").own)
+                        {
+                            result.stealthRating += 2;
+                            result.mobilityRating += 2;
+                            result.evasionRating += 2;
+                            result.visionRating += 2;
+                            if (skillTree.getPerk("M1_CLOTHES4A").own)
+                            {
+                                result.stealthRating += 3;
+                            }
+                            else if (skillTree.getPerk("M1_CLOTHES4B").own)
+                            {
+                                result.mobilityRating += 3;
+                            }
+                            else if (skillTree.getPerk("M1_CLOTHES4C").own)
+                            {
+                                result.evasionRating += 3;
+                            }
+                            else if (skillTree.getPerk("M1_CLOTHES4D").own)
+                            {
+                                result.visionRating += 3;
+                            }
+                        }
+                    }
+                }
+                if (skillTree.getPerk("M1_SWORD1").own)
+                {
+                    result.meleeDmgRating += 4;
+                    result.blockRating += 2;
+                    if (skillTree.getPerk("M1_SWORD2").own)
+                    {
+                        result.meleeDmgRating += 4;
+                        result.blockRating += 2;
+                        if (skillTree.getPerk("M1_SWORD3").own)
+                        {
+                            result.meleeDmgRating += 4;
+                            result.blockRating += 2;
+                            if (skillTree.getPerk("M1_SWORD4A").own)
+                            {
+                                result.meleeDmgRating += 7;
+                            }
+                            else if (skillTree.getPerk("M1_SWORD4B").own)
+                            {
+                                result.blockRating += 3;
+                            }
+                            else if (skillTree.getPerk("M1_SWORD4C").own)
+                            {
+                                //reduce stamina cost
+                            }
+                        }
+                    }
+                }
+                if (skillTree.getPerk("M1_PISTOL1").own)
+                {
+                    result.rangedDmgRating += 4;
+                    result.accuracyRating += 4;
+                    if (skillTree.getPerk("M1_SWORD2").own)
+                    {
+                        result.rangedDmgRating += 4;
+                        result.accuracyRating += 4;
+                        if (skillTree.getPerk("M1_SWORD3").own)
+                        {
+                            result.rangedDmgRating += 4;
+                            result.accuracyRating += 4;
+                            if (skillTree.getPerk("M1_SWORD4A").own)
+                            {
+                                result.rangedDmgRating += 7;
+                            }
+                            else if (skillTree.getPerk("M1_SWORD4B").own)
+                            {
+                                result.accuracyRating += 7;
+                            }
+                        }
+                    }
+                }
+                if (skillTree.getPerk("M1_BOOTS1").own)
+                {
+                    result.mobilityRating += 2;
+                    result.stealthRating += 2;
+                    if (skillTree.getPerk("M1_BOOTS2").own)
+                    {
+                        result.mobilityRating += 2;
+                        result.stealthRating += 2;
+                        if (skillTree.getPerk("M1_SWORD3").own)
+                        {
+                            result.mobilityRating += 2;
+                            result.stealthRating += 2;
+                            if (skillTree.getPerk("M1_SWORD4A").own)
+                            {
+                                result.mobilityRating += 3;
+                            }
+                            else if (skillTree.getPerk("M1_SWORD4B").own)
+                            {
+                                result.stealthRating += 3;
+                            }
+                        }
+                    }
+                }
+            }
+            if (troopType == TroopType.crossbowman)
+            {
+
+            }
+        }
+        
+        return result;
+    }
 }
 
 public class SkillTree
@@ -115,6 +295,89 @@ public class SkillTree
         skillTreeDict.Add("I9D", new Perk("I9D", false, "Merciful", "Execution cost less stamina based on S", "nothing right now"));
         skillTreeDict.Add("I10A", new Perk("I10A", false, "Merciful", "Execution cost less stamina based on S", "nothing right now"));
         skillTreeDict.Add("I10B", new Perk("I10B", false, "Merciful", "Execution cost less stamina based on S", "nothing right now"));
+
+        skillTreeDict.Add("M1_HELMET1", new Perk("M1_HELMET1", false, "Helmet Upgrade I", "Increase vision and armor", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_HELMET2", new Perk("M1_HELMET2", false, "Helmet Upgrade II", "Increase vision and armor", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_HELMET3", new Perk("M1_HELMET3", false, "Helmet Upgrade III", "Increase vision and armor", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_HELMET4A", new Perk("M1_HELMET4A", false, "Helmet Upgrade IV Armor", "Increase armor", "helmet can improve ur armor yeah!"));
+        skillTreeDict.Add("M1_HELMET4B", new Perk("M1_HELMET4B", false, "Helmet Upgrade IV Vision", "Increase vision", "helmet can improve ur vision yeah!"));
+
+        skillTreeDict.Add("M1_ARMOR1", new Perk("M1_ARMOR1", false, "Armor Upgrade I", "Increase armor, block, evasion", "armor is awesome man!"));
+        skillTreeDict.Add("M1_ARMOR2", new Perk("M1_ARMOR2", false, "Armor Upgrade II", "Increase armor, block, evasion", "armor is awesome man!"));
+        skillTreeDict.Add("M1_ARMOR3", new Perk("M1_ARMOR3", false, "Armor Upgrade III", "Increase armor, block, evasion", "armor is awesome man!"));
+        skillTreeDict.Add("M1_ARMOR4A", new Perk("M1_ARMOR4A", false, "Armor Upgrade IV Armor", "Increase armor", "armor is awesome man!"));
+        skillTreeDict.Add("M1_ARMOR4B", new Perk("M1_ARMOR4B", false, "Armor Upgrade IV Block", "Increase block", "armor is awesome man!"));
+        skillTreeDict.Add("M1_ARMOR4C", new Perk("M1_ARMOR4C", false, "Armor Upgrade IV Evasion", "Increase vision", "armor is awesome man!"));
+
+        skillTreeDict.Add("M1_CLOTHES1", new Perk("M1_CLOTHES1", false, "Clothes Upgrade I", "Increase stealth, block, evasion, vision", "clothes is awesome man!"));
+        skillTreeDict.Add("M1_CLOTHES2", new Perk("M1_CLOTHES2", false, "Clothes Upgrade II", "Increase stealth, block, evasion, vision", "clothes is awesome man!"));
+        skillTreeDict.Add("M1_CLOTHES3", new Perk("M1_CLOTHES3", false, "Clothes Upgrade III", "Increase stealth, block, evasion, vision", "clothes is awesome man!"));
+        skillTreeDict.Add("M1_CLOTHES4A", new Perk("M1_CLOTHES4A", false, "Clothes Upgrade IV Clothes", "Increase armor", "clothes is awesome man!"));
+        skillTreeDict.Add("M1_CLOTHES4B", new Perk("M1_CLOTHES4B", false, "Clothes Upgrade IV Block", "Increase block", "clothes is awesome man!"));
+        skillTreeDict.Add("M1_CLOTHES4C", new Perk("M1_CLOTHES4C", false, "Clothes Upgrade IV Evasion", "Increase evasion", "clothes is awesome man!"));
+        skillTreeDict.Add("M1_CLOTHES4D", new Perk("M1_CLOTHES4D", false, "Clothes Upgrade IV Vision", "Increase vision", "clothes is awesome man!"));
+
+        skillTreeDict.Add("M1_SWORD1", new Perk("M1_SWORD1", false, "Sword Upgrade I", "Increase damage, block, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_SWORD2", new Perk("M1_SWORD2", false, "Sword Upgrade II", "Increase damage, block, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_SWORD3", new Perk("M1_SWORD3", false, "Sword Upgrade III", "Increase damage, block, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_SWORD4A", new Perk("M1_SWORD4A", false, "Sword Upgrade IV Damage", "Increase damage", "helmet can improve ur armor yeah!"));
+        skillTreeDict.Add("M1_SWORD4B", new Perk("M1_SWORD4B", false, "Sword Upgrade IV Block", "Increase block", "helmet can improve ur vision yeah!"));
+        skillTreeDict.Add("M1_SWORD4C", new Perk("M1_SWORD4C", false, "Sword Upgrade IV Stamina Cost", "Decrease stamina cost for lunge, whirlwind, execute", "helmet can improve ur vision yeah!"));
+
+        skillTreeDict.Add("M1_PISTOL1", new Perk("M1_PISTOL1", false, "Pistol Upgrade I", "Increase damage, accuracy, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_PISTOL2", new Perk("M1_PISTOL2", false, "Pistol Upgrade II", "Increase damage, accuracy, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_PISTOL3", new Perk("M1_PISTOL3", false, "Pistol Upgrade III", "Increase damage, accuracy, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_PISTOL4A", new Perk("M1_PISTOL4A", false, "Pistol Upgrade IV Damage", "Increase damage", "helmet can improve ur armor yeah!"));
+        skillTreeDict.Add("M1_PISTOL4B", new Perk("M1_PISTOL4B", false, "Pistol Upgrade IV Accuracy", "Increase accuracy", "helmet can improve ur vision yeah!"));
+        skillTreeDict.Add("M1_PISTOL4C", new Perk("M1_PISTOL4C", false, "Pistol Upgrade IV Stamina Cost", "Decrease stamina cost for fire and hold steady", "helmet can improve ur vision yeah!"));
+
+        skillTreeDict.Add("M1_BOOTS1", new Perk("M1_BOOTS1", false, "Boots Upgrade I", "Increase mobility and stealth", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_BOOTS2", new Perk("M1_BOOTS2", false, "Boots Upgrade II", "Increase mobility and stealth", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_BOOTS3", new Perk("M1_BOOTS3", false, "Boots Upgrade III", "Increase mobility and stealth", "helmet is awesome man!"));
+        skillTreeDict.Add("M1_BOOTS4A", new Perk("M1_BOOTS4A", false, "Boots Upgrade IV mobility", "Increase mobility", "helmet can improve ur armor yeah!"));
+        skillTreeDict.Add("M1_BOOTS4B", new Perk("M1_BOOTS4B", false, "Boots Upgrade IV stealth", "Increase stealth", "helmet can improve ur vision yeah!"));
+
+
+        skillTreeDict.Add("M2_HELMET1", new Perk("M2_HELMET1", false, "Helmet Upgrade I", "Increase vision and armor", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_HELMET2", new Perk("M2_HELMET2", false, "Helmet Upgrade II", "Increase vision and armor", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_HELMET3", new Perk("M2_HELMET3", false, "Helmet Upgrade III", "Increase vision and armor", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_HELMET4A", new Perk("M2_HELMET4A", false, "Helmet Upgrade IV Armor", "Increase armor", "helmet can improve ur armor yeah!"));
+        skillTreeDict.Add("M2_HELMET4B", new Perk("M2_HELMET4B", false, "Helmet Upgrade IV Vision", "Increase vision", "helmet can improve ur vision yeah!"));
+
+        skillTreeDict.Add("M2_ARMOR1", new Perk("M2_ARMOR1", false, "Armor Upgrade I", "Increase armor, block, evasion", "armor is awesome man!"));
+        skillTreeDict.Add("M2_ARMOR2", new Perk("M2_ARMOR2", false, "Armor Upgrade II", "Increase armor, block, evasion", "armor is awesome man!"));
+        skillTreeDict.Add("M2_ARMOR3", new Perk("M2_ARMOR3", false, "Armor Upgrade III", "Increase armor, block, evasion", "armor is awesome man!"));
+        skillTreeDict.Add("M2_ARMOR4A", new Perk("M2_ARMOR4A", false, "Armor Upgrade IV Armor", "Increase armor", "armor is awesome man!"));
+        skillTreeDict.Add("M2_ARMOR4B", new Perk("M2_ARMOR4B", false, "Armor Upgrade IV Block", "Increase block", "armor is awesome man!"));
+        skillTreeDict.Add("M2_ARMOR4C", new Perk("M2_ARMOR4C", false, "Armor Upgrade IV Evasion", "Increase vision", "armor is awesome man!"));
+
+        skillTreeDict.Add("M2_CLOTHES1", new Perk("M2_CLOTHES1", false, "Clothes Upgrade I", "Increase stealth, block, evasion, vision", "clothes is awesome man!"));
+        skillTreeDict.Add("M2_CLOTHES2", new Perk("M2_CLOTHES2", false, "Clothes Upgrade II", "Increase stealth, block, evasion, vision", "clothes is awesome man!"));
+        skillTreeDict.Add("M2_CLOTHES3", new Perk("M2_CLOTHES3", false, "Clothes Upgrade III", "Increase stealth, block, evasion, vision", "clothes is awesome man!"));
+        skillTreeDict.Add("M2_CLOTHES4A", new Perk("M2_CLOTHES4A", false, "Clothes Upgrade IV Clothes", "Increase armor", "clothes is awesome man!"));
+        skillTreeDict.Add("M2_CLOTHES4B", new Perk("M2_CLOTHES4B", false, "Clothes Upgrade IV Block", "Increase block", "clothes is awesome man!"));
+        skillTreeDict.Add("M2_CLOTHES4C", new Perk("M2_CLOTHES4C", false, "Clothes Upgrade IV Evasion", "Increase evasion", "clothes is awesome man!"));
+        skillTreeDict.Add("M2_CLOTHES4D", new Perk("M2_CLOTHES4D", false, "Clothes Upgrade IV Vision", "Increase vision", "clothes is awesome man!"));
+
+        skillTreeDict.Add("M2_DAGGER1", new Perk("M2_DAGGER1", false, "Dagger Upgrade I", "Increase damage, block, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_DAGGER2", new Perk("M2_DAGGER2", false, "Dagger Upgrade II", "Increase damage, block, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_DAGGER3", new Perk("M2_DAGGER3", false, "Dagger Upgrade III", "Increase damage, block, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_DAGGER4A", new Perk("M2_DAGGER4A", false, "Dagger Upgrade IV Damage", "Increase damage", "helmet can improve ur armor yeah!"));
+        skillTreeDict.Add("M2_DAGGER4B", new Perk("M2_DAGGER4B", false, "Dagger Upgrade IV Block", "Increase block", "helmet can improve ur vision yeah!"));
+        skillTreeDict.Add("M2_DAGGER4C", new Perk("M2_DAGGER4C", false, "Dagger Upgrade IV Stamina Cost", "Decrease stamina cost for lunge, whirlwind, execute", "helmet can improve ur vision yeah!"));
+
+        skillTreeDict.Add("M2_CROSSBOW1", new Perk("M2_CROSSBOW1", false, "Crossbow Upgrade I", "Increase damage, accuracy, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_CROSSBOW2", new Perk("M2_CROSSBOW2", false, "Crossbow Upgrade II", "Increase damage, accuracy, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_CROSSBOW3", new Perk("M2_CROSSBOW3", false, "Crossbow Upgrade III", "Increase damage, accuracy, decrease stamina cost", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_CROSSBOW4A", new Perk("M2_CROSSBOW4A", false, "Crossbow Upgrade IV Damage", "Increase damage", "helmet can improve ur armor yeah!"));
+        skillTreeDict.Add("M2_CROSSBOW4B", new Perk("M2_CROSSBOW4B", false, "Crossbow Upgrade IV Accuracy", "Increase accuracy", "helmet can improve ur vision yeah!"));
+        skillTreeDict.Add("M2_CROSSBOW4C", new Perk("M2_CROSSBOW4C", false, "Crossbow Upgrade IV Stamina Cost", "Decrease stamina cost for fire and hold steady", "helmet can improve ur vision yeah!"));
+
+        skillTreeDict.Add("M2_BOOTS1", new Perk("M2_BOOTS1", false, "Boots Upgrade I", "Increase mobility and stealth", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_BOOTS2", new Perk("M2_BOOTS2", false, "Boots Upgrade II", "Increase mobility and stealth", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_BOOTS3", new Perk("M2_BOOTS3", false, "Boots Upgrade III", "Increase mobility and stealth", "helmet is awesome man!"));
+        skillTreeDict.Add("M2_BOOTS4A", new Perk("M2_BOOTS4A", false, "Boots Upgrade IV mobility", "Increase mobility", "helmet can improve ur armor yeah!"));
+        skillTreeDict.Add("M2_BOOTS4B", new Perk("M2_BOOTS4B", false, "Boots Upgrade IV stealth", "Increase stealth", "helmet can improve ur vision yeah!"));
     }
     public Perk getPerk(string ID)
     {

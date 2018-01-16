@@ -19,6 +19,7 @@ public class Party : System.Object {
     public float inventoryWeightLimit, inventoryWeight;
     public bool unique, hasShape;
     public int battling;
+    public List<BattlefieldType> battlefieldTypes;
     public string locationName;
     public City belongedCity;
     public Town belongedTown;
@@ -69,12 +70,7 @@ public class Party : System.Object {
         notoriety = 0;
         expToDistribute = 0;
         locationName = "";
-        factionFavors = new Dictionary<Faction, int>();
-        factionFavors.Add(Faction.empire, 0);
-        factionFavors.Add(Faction.france, 0);
-        factionFavors.Add(Faction.papacy, 0);
-        factionFavors.Add(Faction.mercenary, 0);
-        factionFavors.Add(Faction.bandits, 0);
+        battlefieldTypes = new List<BattlefieldType>();
         locationFavors = new Dictionary<string, int>();
         locationFavors.Add("Milano", 0);
         locationFavors.Add("Torino", 0);
@@ -173,6 +169,10 @@ public class Party : System.Object {
     public virtual float getTravelSpeed()
     {
         float travelSpeed = 3 + maxTravelSpeed * (getAverage().agility / 10.0f) - 0.1f * (partyMember.Count + .1f * getInventoryWeight());
+        if (battlefieldTypes.Contains(BattlefieldType.Woods))
+        {
+            travelSpeed = travelSpeed * .2f;
+        }
         Mathf.Clamp(travelSpeed, 1, 10);
         return travelSpeed;
     }
@@ -253,6 +253,23 @@ public class Party : System.Object {
             return 0;
         }
         
+
+    }
+    public virtual bool inventoryContains(string itemName, int amount)
+    {
+        return true;
+        foreach(Item i in inventory)
+        {
+            if (itemName == i.name)
+            {
+                amount -= 1;
+            }
+            if (amount <= 0)
+            {
+                return true;
+            }
+        }
+        return false;
 
     }
     public bool electNewLeader()
@@ -436,6 +453,13 @@ public class Party : System.Object {
     }
     public void initializeFavors()
     {
+        factionFavors = new Dictionary<Faction, int>();
+        factionFavors.Add(Faction.italy, 0);
+        factionFavors.Add(Faction.empire, 0);
+        factionFavors.Add(Faction.france, 0);
+        factionFavors.Add(Faction.papacy, 0);
+        factionFavors.Add(Faction.mercenary, 0);
+        factionFavors.Add(Faction.bandits, 0);
         factionFavors[faction] = 100;
         switch (faction)
         {
@@ -464,7 +488,7 @@ public class Party : System.Object {
                 factionFavors[Faction.empire] = -20;
                 factionFavors[Faction.papacy] = -50;
                 factionFavors[Faction.italy] = 0;
-                factionFavors[Faction.mercenary] = -50;
+                factionFavors[Faction.mercenary] = 0;
                 break;
             case Faction.papacy:
                 prestige = Random.Range(getBattleValue() / 40, getBattleValue() / 20);
@@ -481,7 +505,7 @@ public class Party : System.Object {
                 factionFavors[Faction.bandits] = -50;
                 factionFavors[Faction.france] = 0;
                 factionFavors[Faction.papacy] = 0;
-                factionFavors[Faction.italy] = 0;
+                factionFavors[Faction.empire] = 0;
                 factionFavors[Faction.mercenary] = 0;
                 break;
         }

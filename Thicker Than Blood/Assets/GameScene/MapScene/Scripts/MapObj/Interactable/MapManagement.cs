@@ -5,10 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class MapManagement : MonoBehaviour {
     public static MapManagement mapManagement;
-    
-    public GameObject[] banditSpawnPointList, franceSpawnPointList, papacySpawnPointList, empireSpawnPointList;
+
+    public GameObject[] banditSpawnPointList, franceSpawnPointList, papacySpawnPointList, empireSpawnPointList, italySpawnPointList;
     public GameObject banditTroop, frenchTroop, papalTroop, italianTroop, imperialTroop;
-    public GameObject defaultCity;
+    public GameObject cityScape;
+    public GameObject defaultCity, defaultTown;
+    public GameObject pisa;
     bool finishingBattle = false;
     
     public bool finishedLoading = true;
@@ -20,6 +22,7 @@ public class MapManagement : MonoBehaviour {
     public static List<City> cities;
     public static List<Town> towns;
     public static bool goingToLoot, playerRespawn;
+    const int MAXIMUM_PARTY_AMOUNT = 100;
     private void Awake()
     {
         finishedLoading = false;
@@ -44,12 +47,11 @@ public class MapManagement : MonoBehaviour {
         //
 
         SaveLoadSystem.saveType = SaveType.newGame;
+        spawnPiontInitialization();
         if (SaveLoadSystem.saveType == SaveType.newGame)
         {
             cityInitialization();
-            banditInitialization();
-            franceInitialization();
-
+            spawnsUpdate();
         }
         else
         {
@@ -117,20 +119,48 @@ public class MapManagement : MonoBehaviour {
         buildCity("Ravenna", defaultCity, new Vector3(330, 3, 310), 1000, 20000);
         buildCity("Urbino", defaultCity, new Vector3(330, 3, 270), 1000, 20000);
         buildCity("Lucca", defaultCity, new Vector3(190, 3, 290), 1000, 20000);
-        buildCity("Pisa", defaultCity, new Vector3(200, 3, 265), 1000, 20000);
+        buildCity("Pisa", pisa, new Vector3(200, 3, 265), 1000, 20000);
         buildCity("Siena", defaultCity, new Vector3(275, 3, 200), 1000, 20000);
         buildCity("Grosseto", defaultCity, new Vector3(340, 3, 90), 1000, 20000);
         buildCity("Perugia", defaultCity, new Vector3(320, 3, 170), 1000, 20000);
         buildCity("Roma", defaultCity, new Vector3(400, 3, 50), 1000, 20000);
     }
+    void townInitialization()
+    {
+        buildTown("Milano", defaultTown, new Vector3(135, 3, 425), 1000, 20000);
+        buildTown("Torino", defaultTown, new Vector3(35, 3, 360), 1000, 20000);
+        buildTown("Asti", defaultTown, new Vector3(75, 3, 350), 1000, 20000);
+        buildTown("Parma", defaultTown, new Vector3(160, 3, 360), 1000, 20000);
+        buildTown("Genova", defaultTown, new Vector3(115, 3, 310), 1000, 20000);
+        buildTown("Modena", defaultTown, new Vector3(220, 3, 345), 1000, 20000);
+        buildTown("Verona", defaultTown, new Vector3(230, 3, 425), 1000, 20000);
+        buildTown("Padova", defaultTown, new Vector3(300, 3, 425), 1000, 20000);
+        buildTown("Treviso", defaultTown, new Vector3(350, 3, 460), 1000, 20000);
+        buildTown("Venezia", defaultTown, new Vector3(360, 3, 400), 1000, 20000);
+        buildTown("Ferrara", defaultTown, new Vector3(300, 3, 365), 1000, 20000);
+        buildTown("Bologna", defaultTown, new Vector3(275, 3, 315), 1000, 20000);
+        buildTown("Firenze", defaultTown, new Vector3(250, 3, 240), 1000, 20000);
+        buildTown("Ravenna", defaultTown, new Vector3(330, 3, 310), 1000, 20000);
+        buildTown("Urbino", defaultTown, new Vector3(330, 3, 270), 1000, 20000);
+        buildTown("Lucca", defaultTown, new Vector3(190, 3, 290), 1000, 20000);
+        buildTown("Pisa", defaultTown, new Vector3(200, 3, 265), 1000, 20000);
+        buildTown("Siena", defaultTown, new Vector3(275, 3, 200), 1000, 20000);
+        buildTown("Grosseto", defaultTown, new Vector3(340, 3, 90), 1000, 20000);
+        buildTown("Perugia", defaultTown, new Vector3(320, 3, 170), 1000, 20000);
+        buildTown("Roma", defaultTown, new Vector3(400, 3, 50), 1000, 20000);
+    }
     void buildCity(string cityName, GameObject obj, Vector3 location, int guardBattleValue, int cash)
     {
-        var rot = new Quaternion(0, Random.Range(0, 360), 0, 0);
+        var rot = new Quaternion(0, 0, 0, 0);
         var spawned = Instantiate(obj, location, rot);
         spawned.transform.SetParent(obj.transform.parent, false);
         spawned.SetActive(true);
+        var spawnedCityScape = Instantiate(cityScape, location, rot);
+        spawnedCityScape.transform.SetParent(obj.transform.parent, false);
+        spawnedCityScape.SetActive(true);
         City spawnedCity = spawned.GetComponent<City>();
         spawnedCity.lName = cityName;
+        spawnedCity.ID = cityName.Substring(0, 3).ToUpper();
         spawnedCity.position = location;
         Party cityGuard = new Party(cityName + " Guard", Faction.italy, guardBattleValue);
         cityGuard.hasShape = false;
@@ -147,14 +177,6 @@ public class MapManagement : MonoBehaviour {
         spawnedCity.warehouse = new List<Item>();
         cities.Add(spawned.GetComponent<City>());
         loadCitySave();
-        //if (SaveLoadSystem.saveLoadSystem != null)
-        //{
-        //    loadCitySave();
-        //
-        //} else
-        //{
-            
-        //}
     }
     void buildTown(string townName, GameObject obj, Vector3 location, int guardBattleValue, int cash)
     {
@@ -258,93 +280,58 @@ public class MapManagement : MonoBehaviour {
         cityTrader.inventory.Add(ItemDataBase.dataBase.getItem("Tools"));
         cityTrader.inventory.Add(ItemDataBase.dataBase.getItem("Supplies"));
     }
-    void banditInitialization()
+    
+    void spawnPiontInitialization()
     {
         banditSpawnPointList = GameObject.FindGameObjectsWithTag("BanditSpawnPoint");
-        foreach (GameObject sp in banditSpawnPointList)
-        {
-            for (int i = 0; i < 5; i++)
-            {
-                var party = new Party("Bandits", Faction.bandits, Random.Range(300, 600));
-                party.position = sp.transform.position + new Vector3(Random.Range(-spawnRange, spawnRange), 0, Random.Range(-spawnRange, spawnRange)); ;
-                
-            }
-
-        }
-        
-    }
-    void franceInitialization()
-    {
         franceSpawnPointList = GameObject.FindGameObjectsWithTag("FranceSpawnPoint");
-        foreach (GameObject sp in franceSpawnPointList)
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                var party = new Party("French Troop", Faction.france, 1000);
-                party.position = sp.transform.position + new Vector3(Random.Range(-spawnRange, spawnRange), 0, Random.Range(-spawnRange, spawnRange)); ;
-
-            }
-
-        }
-
-    }
-    void italyInitialization()
-    {
-        foreach (City ct in cities)
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                var party = new Party(ct.lName + " Troop", Faction.italy, 1000);
-                party.belongedCity = ct;
-                party.position = ct.gameObject.transform.position + new Vector3(Random.Range(-spawnRange, spawnRange), 0, Random.Range(-spawnRange, spawnRange)); ;
-
-            }
-        }
-    }
-    void papacyInitialization()
-    {
         papacySpawnPointList = GameObject.FindGameObjectsWithTag("PapacySpawnPoint");
-        foreach (GameObject sp in banditSpawnPointList)
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                var party = new Party("Papal Troop", Faction.papacy, 1000);
-                party.position = sp.transform.position + new Vector3(Random.Range(-spawnRange, spawnRange), 0, Random.Range(-spawnRange, spawnRange)); ;
-
-            }
-
-        }
-    }
-    void empireInitialization()
-    {
         empireSpawnPointList = GameObject.FindGameObjectsWithTag("EmpireSpawnPoint");
-        foreach (GameObject sp in banditSpawnPointList)
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                var party = new Party("Imperial Troop", Faction.empire, 1000);
-                party.position = sp.transform.position + new Vector3(Random.Range(-spawnRange, spawnRange), 0, Random.Range(-spawnRange, spawnRange)); ;
-
-            }
-
-        }
+        italySpawnPointList = GameObject.FindGameObjectsWithTag("ItalySpawnPoint");
     }
     void spawnsUpdate()
     {
-        banditSpawnPointList = GameObject.FindGameObjectsWithTag("BanditSpawnPoint");
-        foreach (GameObject sp in banditSpawnPointList)
+        if (parties.Count <= MAXIMUM_PARTY_AMOUNT)
         {
-            Party newParty = new Party("Bandits", Faction.bandits, Random.Range(300, 600));
-            newParty.position = sp.transform.position;
-            loadSingleParty(newParty);
+            foreach (GameObject sp in banditSpawnPointList)
+            {
+                Party newParty = new Party("Bandits", Faction.bandits, Random.Range(300, 600));
+                newParty.position = sp.transform.position;
+                loadSingleParty(newParty);
+            }
+            foreach (GameObject sp in franceSpawnPointList)
+            {
+                Party newParty = new Party("French Troop", Faction.france, Random.Range(300, 600));
+                newParty.position = sp.transform.position;
+                loadSingleParty(newParty);
+            }
+            foreach (GameObject sp in papacySpawnPointList)
+            {
+                Party newParty = new Party("Papal Troop", Faction.papacy, Random.Range(300, 600));
+                newParty.position = sp.transform.position;
+                loadSingleParty(newParty);
+            }
+            foreach (GameObject sp in empireSpawnPointList)
+            {
+                Party newParty = new Party("Imperial Troop", Faction.empire, Random.Range(300, 600));
+                newParty.position = sp.transform.position;
+                loadSingleParty(newParty);
+            }
+            foreach (GameObject sp in italySpawnPointList)
+            {
+                Party newParty = new Party("Italian Troop", Faction.italy, Random.Range(300, 600));
+                newParty.position = sp.transform.position;
+                loadSingleParty(newParty);
+            }
+            foreach (City city in cities)
+            {
+                Party newParty = new Party("Italian Troop", Faction.italy, Random.Range(300, 600));
+                newParty.belongedCity = city;
+                newParty.position = city.position;
+                loadSingleParty(newParty);
+            }
         }
-        franceSpawnPointList = GameObject.FindGameObjectsWithTag("FranceSpawnPoint");
-        foreach (GameObject sp in franceSpawnPointList)
-        {
-            Party newParty = new Party("French Troop", Faction.france, Random.Range(300, 600));
-            newParty.position = sp.transform.position;
-            loadSingleParty(newParty);
-        }
+        
     }
     
     void loadParties()
@@ -378,8 +365,9 @@ public class MapManagement : MonoBehaviour {
                     toSpawn = papalTroop;
                     break;
             }
-            var rot = new Quaternion(0, Random.Range(0, 360), 0, 0);
-            spawned = Instantiate(toSpawn, p.position, rot);
+            var rot = new Quaternion(0, 0, 0, 0);
+            spawned = Instantiate(toSpawn, p.position + new Vector3(0, 1, 0), rot);
+            spawned.transform.SetParent(toSpawn.transform.parent, false);
             spawned.GetComponent<NPC>().npcAgent.Warp(p.position);
             spawned.GetComponent<NPC>().npcParty = p;
             spawned.SetActive(true);
@@ -404,10 +392,11 @@ public class MapManagement : MonoBehaviour {
     }
     
 
-    public static void createBattleScene(Party enemyParty)
+    public static void createBattleScene(Party enemyParty, List<BattlefieldType> bt)
     {
         BattleCentralControl.enemyParty = enemyParty;
         BattleCentralControl.playerParty = Player.mainParty;
+        BattleCentralControl.battlefieldTypes = bt;
         SaveLoadSystem.saveLoadSystem.tempSave();
         SceneManager.LoadScene("BattleScene");
         //Serializer.Save<MainParty>("tempPlayer", Player.mainParty);
@@ -506,7 +495,7 @@ public class MapManagement : MonoBehaviour {
         }
         return result;
     }
-    public void battleSimulation(NPC npcOne, NPC npcTwo, BattlefieldType bt)
+    public void battleSimulation(NPC npcOne, NPC npcTwo, List<BattlefieldType> bt)
     {
         if (npcOne.npcParty.battling > 0 || npcTwo.npcParty.battling > 0)
         {
@@ -552,7 +541,7 @@ public class MapManagement : MonoBehaviour {
             }
         }
         toRemove.Clear();
-        if (winPercent >= 85)
+        if (winPercent >= 65)
         {
             
             foreach (Item i in npcLost.npcParty.inventory)
@@ -601,7 +590,7 @@ public class MapManagement : MonoBehaviour {
         npcWon.npcParty.battling = 0;
     }
 
-    int calculateBattleValue(Party party, BattlefieldType bType)
+    int calculateBattleValue(Party party, List<BattlefieldType> bTypes)
     {
         int result = 0;
         foreach (Person p in party.partyMember)

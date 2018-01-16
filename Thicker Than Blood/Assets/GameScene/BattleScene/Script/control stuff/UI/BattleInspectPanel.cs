@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class BattleInspectPanel : MonoBehaviour {
     public static Person person;
     public GameObject icon, nameTxt, stamina, health, staminaTxt, healthTxt, armor, evasion, block,
-        vision, stealth, accuracy, melee, ranged, morale;
+        vision, stealth, accuracy, melee, ranged, mobility;
     float BAR_WIDTH, BAR_HEIGHT;
     bool active = false;
     // Use this for initialization
@@ -41,6 +41,7 @@ public class BattleInspectPanel : MonoBehaviour {
         accuracy.GetComponent<Text>().text = person.getAccuracy().ToString();
         melee.GetComponent<Text>().text = person.getMeleeAttackDmg().ToString();
         ranged.GetComponent<Text>().text = person.getRangedAttackDmg().ToString();
+        mobility.GetComponent<Text>().text = person.getMobility().ToString();
         nameTxt.GetComponent<Text>().text = person.name;
     }
 }

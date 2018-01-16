@@ -15,6 +15,7 @@ public class QuestManagement : MonoBehaviour {
     public Texture2D finishedSelectedImg, finishedUnselectedImg;
     public Texture2D completeImg, incompleteImg;
     public List<GameObject> createdQuestButtons, createdFinishedQuestButton, createdObjectives;
+    
     GameObject curQuestButton;
     bool initialized = false;
     // Use this for initialization
@@ -26,6 +27,7 @@ public class QuestManagement : MonoBehaviour {
         singleObjective.SetActive(false);
         createdObjectives = new List<GameObject>();
         createdQuestButtons = new List<GameObject>();
+        
     }
     private void OnEnable()
     {
@@ -40,6 +42,8 @@ public class QuestManagement : MonoBehaviour {
             initialized = true;
         }
 	}
+    
+
     void displayQuests()
     {
         foreach (Quest q in Player.mainParty.unfinishedQuests)
@@ -54,7 +58,7 @@ public class QuestManagement : MonoBehaviour {
             //createFinishedQuestButton(q);
         }
     }
-
+    
     void inspect(Quest quest)
     {
         inspectQuestName.text = quest.questName;
@@ -90,6 +94,7 @@ public class QuestManagement : MonoBehaviour {
         createdObjectives.Add(newSingleObjective);
         newSingleObjective.SetActive(true);
     }
+    
     GameObject createQuestButton(Quest q)
     {
         questButton.GetComponent<RawImage>().texture = unselectedImg;
@@ -131,7 +136,7 @@ public class QuestManagement : MonoBehaviour {
         createdQuestButtons.Add(newQuestButton);
         return newQuestButton;
     }
-
+   
     void changeCurQuestButton(GameObject buttonObj)
     {
         if (curQuestButton != null)

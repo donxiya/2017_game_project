@@ -33,6 +33,7 @@ public class Grid {
     {
         switch (gridType)
         {
+            //ADD NEW GRID
             case GridType.rockAndTree:
                 name = "Rock And Tree";
                 hideRate = .8f;
@@ -45,8 +46,32 @@ public class Grid {
                 blockRate = .1f;
                 staminaCost = 1f;
                 break;
-            case GridType.tree:
-                name = "Tree";
+            case GridType.deadTree:
+                name = "Dead Tree";
+                hideRate = .3f;
+                blockRate = .3f;
+                staminaCost = 2f;
+                break;
+            case GridType.singleTree:
+                name = "Single Tree";
+                hideRate = .5f;
+                blockRate = .3f;
+                staminaCost = 2f;
+                break;
+            case GridType.rockyPlain:
+                name = "Rocky Plain";
+                hideRate = .2f;
+                blockRate = .2f;
+                staminaCost = 1f;
+                break;
+            case GridType.fence:
+                name = "Fence";
+                hideRate = .4f;
+                blockRate = .4f;
+                staminaCost = 3f;
+                break;
+            default:
+                name = "FlatGrass";
                 hideRate = .5f;
                 blockRate = .3f;
                 staminaCost = 2f;

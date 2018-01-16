@@ -24,7 +24,7 @@ public class SAPEManagement : MonoBehaviour {
     // Use this for initialization
     void Start () {
         sapeManagement = this;
-        resetable = false;
+        resetable = true;
 		MAX_BAR_HEIGHT = barMax.rectTransform.sizeDelta.y;
         MAX_BAR_WIDTH = barMax.rectTransform.sizeDelta.x;
         SCALE_X = scaler.referenceResolution.x / Screen.width;
@@ -45,6 +45,7 @@ public class SAPEManagement : MonoBehaviour {
             if (!initialized)
             {
                 initialization();
+                initialized = true;
             }
             showStats();
             buttonUpdate();

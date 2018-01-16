@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class NPC : Interactable {
     public NavMeshAgent npcAgent;
+    public GameObject model;
     public PartyVisionIndicator partyVisionIndicator;
     public Party npcParty = null;
     int hrSCounter, hrECounter, monthSCounter, monthECounter;
@@ -18,11 +19,11 @@ public class NPC : Interactable {
     {
         base.Start();
         npcAgent = transform.GetComponent<NavMeshAgent>();
-
     }
     public override void Update()
     {
         base.Update();
+        lookAtCamera(model);
         hrSCounter = TimeSystem.hour;
         if (hrSCounter != hrECounter)
         {
@@ -39,18 +40,15 @@ public class NPC : Interactable {
         monthSCounter = TimeSystem.hour;
         if (monthSCounter != monthECounter)
         {
-            Debug.Log("here");
             grow();
         }
         monthECounter = TimeSystem.hour;
-    }
-    public void FixedUpdate()
-    {
         
         if (npcParty != null)
         {
             npcParty.position = transform.position;
-        } else
+        }
+        else
         {
             gameObject.SetActive(false);
         }
@@ -66,20 +64,21 @@ public class NPC : Interactable {
             //npcAgent.isStopped = false;
             if (Vector3.Distance(npcAgent.destination, transform.position) <= 10)
             {
-                
+
             }
             if (npcParty.faction == Faction.france)
             {
-                
+
             }
             if (npcAgent.isActiveAndEnabled)
             {
                 npcAgent.destination = getRoamTarget(); //Player.mainParty.position;
-            } else
+            }
+            else
             {
                 npcAgent.Warp(transform.position);
             }
-            
+
         }
         else
         {
@@ -87,6 +86,11 @@ public class NPC : Interactable {
             npcAgent.isStopped = true;
         }
         inspectPanel.GetComponent<InspectPanel>().updateTexts(npcParty);
+
+    }
+    public void FixedUpdate()
+    {
+        
     }
     
     public override void interact()
@@ -110,7 +114,7 @@ public class NPC : Interactable {
             NPC encountered = col.gameObject.GetComponent<NPC>();
             if (npcParty.factionFavors[encountered.npcParty.faction] < 0 && encountered.npcParty.battling == 0)
             {
-                MapManagement.mapManagement.battleSimulation(this, col.gameObject.GetComponent<NPC>(), BattlefieldType.plain);
+                MapManagement.mapManagement.battleSimulation(this, col.gameObject.GetComponent<NPC>(), npcParty.battlefieldTypes);
                 partyVisionIndicator.reLook();
             }
             
@@ -123,7 +127,7 @@ public class NPC : Interactable {
             NPC encountered = col.gameObject.GetComponent<NPC>();
             if (npcParty.factionFavors[encountered.npcParty.faction] < 0 && encountered.npcParty.battling == 0)
             {
-                MapManagement.mapManagement.battleSimulation(this, col.gameObject.GetComponent<NPC>(), BattlefieldType.plain);
+                MapManagement.mapManagement.battleSimulation(this, col.gameObject.GetComponent<NPC>(), npcParty.battlefieldTypes);
                 partyVisionIndicator.reLook();
             }
 
@@ -154,6 +158,10 @@ public class NPC : Interactable {
                 int hate = 0;
                 foreach (Party p in getNpcInVision())
                 {
+                    if (!p.factionFavors.ContainsKey(npcParty.faction))
+                    {
+                        Debug.Log(npcParty.name + " doesnt have " + p.faction);
+                    }
                     if (p.factionFavors[npcParty.faction] < 0)
                     {
                         if (closestEnemy == null || Vector3.Distance(npcParty.position, p.position) < Vector3.Distance(npcParty.position, closestEnemy.position))
@@ -176,6 +184,9 @@ public class NPC : Interactable {
                     result = 2 * npcParty.position - closestEnemy.position;
                 }
             } 
+        } else
+        {
+            result = transform.position;
         }
         //Debug.Log(result);
         return result;
@@ -206,5 +217,12 @@ public class NPC : Interactable {
     public virtual void makeParty()
     {
 
+    }
+    void lookAtCamera(GameObject gameObj)
+    {
+        Vector3 v = Camera.main.transform.position - gameObj.transform.position;
+        v.x = v.z = 0.0f;
+        gameObj.transform.LookAt(Camera.main.transform.position - v);
+        gameObj.transform.Rotate(0, 180, 0);
     }
 }

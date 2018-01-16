@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class TabMenu : MonoBehaviour {
     public static TabMenu tabMenu;
     public GameObject defaultPanel, topPanel;
+    public Text timeDisplay;
     public Button objectiveButton, factionButton, sapeButton, ciButton,
         mainGearButton, secGearButton, inventoryButton, troopButton;
     public Button objectiveButtonQuick, factionButtonQuick, sapeButtonQuick, ciButtonQuick,
@@ -76,6 +77,7 @@ public class TabMenu : MonoBehaviour {
             }
             
         }
+        timeDisplay.text = TimeSystem.getTimeDisplay();
     }
 
     public void showMarket(bool show)
@@ -223,8 +225,16 @@ public class TabMenu : MonoBehaviour {
         if (tabPanelType == TabPanelType.FactionPanel)
         {
             animator.SetBool("factionShow", show);
+            if (!show)
+            {
+                FaceCoop.faceCoop.leaveManagement();
+            }
         } else
         {
+            if (show && animator.GetBool("factionShow"))
+            {
+                FaceCoop.faceCoop.leaveManagement();
+            }
             animator.SetBool("factionShow", !show);
         }
         if (tabPanelType == TabPanelType.CIPanel)

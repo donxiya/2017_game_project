@@ -130,6 +130,10 @@ public class TimeSystem : MonoBehaviour {
         //}
         
     }
+    public static string getTimeDisplay()
+    {
+        return season + " " + monthString + "/" + dayString + "th " + hourString + ":00";
+    }
     
 }
 

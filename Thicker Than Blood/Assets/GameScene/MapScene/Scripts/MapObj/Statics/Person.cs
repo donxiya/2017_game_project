@@ -134,7 +134,7 @@ public class Person {
 
     public virtual float getStaminaMax()
     {
-        return stats.agility * 10 * ((getGearInfo().evasionRating + 10) / 10);
+        return stats.agility * 10 * ((getGearInfo().mobilityRating + 10) / 10);
     }
     public virtual float getHealthMax()
     {
@@ -261,7 +261,7 @@ public class Person {
         return result;
     }
 
-    public GearInfo getGearInfo()
+    public virtual GearInfo getGearInfo()
     {
         if (TroopDataBase.troopDataBase != null)
         {

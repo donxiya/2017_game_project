@@ -33,6 +33,7 @@ public class GridObject : BattleInteractable {
     private void OnEnable()
     {
         meshRenderer = gameObject.GetComponentInChildren<MeshRenderer>();
+
         guardedByPlayerIndicator.SetActive(false);
         guardedByEnemyIndicator.SetActive(false);
         

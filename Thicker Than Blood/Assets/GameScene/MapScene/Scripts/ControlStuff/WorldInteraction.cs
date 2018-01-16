@@ -11,6 +11,7 @@ public class WorldInteraction : MonoBehaviour
     const float INTERACT_DIST = 1;
     public NavMeshAgent playerAgent;
     List<GameObject> inspectedList = new List<GameObject>();
+    Animation playerAnimation;
     public static bool chasing;
     GameObject curChasedObj;
     // Use this for initialization
@@ -20,9 +21,11 @@ public class WorldInteraction : MonoBehaviour
         playerAgent = player.GetComponent<NavMeshAgent>();
         playerAgent.speed = Player.mainParty.getTravelSpeed();
         chasing = false;
-
+        playerAnimation = player.transform.Find("Model").GetComponent<Animation>();
         
         player.transform.position = Player.mainParty.position;
+        Player.mainParty.battlefieldTypes.Add(BattlefieldType.Common);
+        Player.mainParty.battlefieldTypes.Add(BattlefieldType.City);
     }
 
 
@@ -30,7 +33,7 @@ public class WorldInteraction : MonoBehaviour
     void Update()
     {
         inputKeysActions();
-        
+        playerAgent.speed = Player.mainParty.getTravelSpeed();
         if (chasing)
         {
             playerAgent.destination = curChasedObj.transform.position;
@@ -38,9 +41,11 @@ public class WorldInteraction : MonoBehaviour
         Player.mainParty.position = player.transform.position;
         if (playerAgent.destination.x == player.transform.position.x && playerAgent.destination.z == player.transform.position.z)
         {
+            playerAnimation.Play("Idle");
             TimeSystem.pause = true;
         } else
         {
+            playerAnimation.Play("ShortGliding");
             TimeSystem.pause = false;
         }
     }
@@ -146,7 +151,6 @@ public class WorldInteraction : MonoBehaviour
             }
             else if (interactedObject.tag == "NPC")
             {
-                Debug.Log("h");
                 interactedObject.GetComponent<Interactable>().inspect(true);
                 if (interactedObject != null && !inspectedList.Contains(interactedObject))
                 {

@@ -4,14 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class FaceCoop : MonoBehaviour {
-    public FaceCoop faceCoop;
+    public static FaceCoop faceCoop;
     public Button facecoop, emperor, france, papacy, italy;
     public GameObject milano, torino, asti, parma, genova,
         modena, verona, padova, treviso, venezia, ferrara, bologna, firenze, ravenne,
         urbino, lucca, pisa, siena, grosseto, perugia, roma;
     public RawImage factionBackground;
     public GameObject posPerk1, posPerk2, posPerk3, negPerk1, negPerk2, negPerk3;
-    public GameObject factionPanel, cityPanel, peoplePanel;
+    public GameObject factionPanel, cityPanel, peoplePanel, feedPanel;
     public GameObject personButton;
     public RawImage personIcon;
     public Text selectingPersonName;
@@ -30,6 +30,8 @@ public class FaceCoop : MonoBehaviour {
         cityPanel.SetActive(false);
         peoplePanel.SetActive(false);
         personButton.SetActive(false);
+        peoplePanel.SetActive(false);
+        feedPanel.SetActive(true);
         createdButtons = new List<GameObject>();
         displayPersons();
     }
@@ -52,6 +54,9 @@ public class FaceCoop : MonoBehaviour {
         inspectPersonName.text = person.name;
         inspectPersonDescription.text = SNPCImgDataBase.dataBase.getSNPCTroopInfo(person.name).description[0]; //CHANGE TO QUEST PROGESS LATER
         peoplePanel.SetActive(true);
+        cityPanel.SetActive(false);
+        factionPanel.SetActive(false);
+        feedPanel.SetActive(false);
     }
     GameObject createPersonButton(Person person)
     {
@@ -63,7 +68,7 @@ public class FaceCoop : MonoBehaviour {
         }
         GameObject newPersonButton = Object.Instantiate(personButton);
         newPersonButton.transform.SetParent(personButton.transform.parent, false);
-        newPersonButton.GetComponent<Button>().onClick.AddListener(delegate { inspectPerson(person); });
+        newPersonButton.GetComponent<Button>().onClick.AddListener(delegate { inspectPerson(person);});
         newPersonButton.SetActive(true);
         createdButtons.Add(newPersonButton);
         return newPersonButton;
@@ -73,10 +78,12 @@ public class FaceCoop : MonoBehaviour {
         factionPanel.SetActive(false);
         cityPanel.SetActive(false);
         peoplePanel.SetActive(false);
+        feedPanel.SetActive(true);
     }
     void displayFactionPerks(Faction faction)
     {
         int factionFavor = 0;
+        feedPanel.SetActive(false);
         cityPanel.SetActive(false);
         closeFactionPerk();
         factionPanel.SetActive(true);
@@ -199,6 +206,7 @@ public class FaceCoop : MonoBehaviour {
     {
         closeFactionPerk();
         cityPanel.SetActive(true);
+        feedPanel.SetActive(false);
         //cityPanel.transform.parent.GetComponent<VerticalLayoutGroup>().SetLayoutVertical();
         fillInCityPerks(milano, Player.mainParty.factionPerkTree.getPerk("MIL"));
         fillInCityPerks(torino, Player.mainParty.factionPerkTree.getPerk("TOR"));
@@ -243,5 +251,10 @@ public class FaceCoop : MonoBehaviour {
         buttonGameObject.SetActive(false);
         GameObject panelGameObject = toReset.transform.Find("ExplainationPanel").gameObject;
         buttonGameObject.GetComponent<Button>().onClick.RemoveAllListeners();
+    }
+    public void leaveManagement()
+    {
+        showFrontPage();
+
     }
 }

@@ -153,6 +153,13 @@ public class SaveLoadSystem : MonoBehaviour {
         mainParty.addToInventory(ItemDataBase.dataBase.getItem("Fur"));
         mainParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Textile"));
         mainParty.morale = 60;
+        //QUEST
+        var q = QuestDataBase.dataBase.getQuest("MAIN1");
+
+        mainParty.unfinishedQuests.Add(q);
+        var q2 = QuestDataBase.dataBase.getQuest("MAIN2");
+
+        mainParty.unfinishedQuests.Add(q2);
     }
 
     void checkSavePath ()
@@ -878,9 +885,12 @@ public enum TroopSkill
 [System.Serializable] 
 public enum BattlefieldType
 {
-    plain,
-    forest,
-    rocky,
-    city,
-    bushy
+    Woods,
+    Farmland,
+    Mountain,
+    Grassland,
+    Hills,
+    Marsh,
+    City,
+    Common
 }

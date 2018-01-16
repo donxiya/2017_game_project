@@ -21,19 +21,20 @@ public class FrenchParty : NPC {
     {
         if (MapManagement.mapManagement != null)
         {
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
-            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
             npcParty.addToInventory(ItemDataBase.dataBase.getItem("Salt"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            npcParty.addToInventory(ItemDataBase.dataBase.getItem("Silk Thread"));
+            
             npcParty.prestige = 0;
             npcParty.notoriety = 80;
             makeParty();

@@ -43,6 +43,7 @@ public class CIManagement : MonoBehaviour {
             if (!initialized)
             {
                 initialization();
+                initialized = true;
             }
             showStats();
             buttonUpdate();

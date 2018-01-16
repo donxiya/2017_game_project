@@ -10,11 +10,14 @@ public class BattleCentralControl : MonoBehaviour {
     public static Grid[,] map;
     public static int gridXMax, gridZMax, curRound, oldRound;
     public static MainParty playerParty;
-    public static Dictionary<Person, GameObject> playerTroopOnField, enemyTroopOnField;
     public static Party enemyParty;
+    public static List<BattlefieldType> battlefieldTypes;
+    public static Dictionary<Person, GameObject> playerTroopOnField, enemyTroopOnField;
+    
     public static int playerTotal, enemyTotal;
-    //public static Dictionary<Grid, GameObject> gridToObj;
-    //public static Dictionary<GameObject, Grid> objToGrid;
+    //ADD NEW GRID
+    public GameObject flatGrass, rockAndTree, singleTree, deadTree, rockyPlain, fence;
+    List<GridType> woods, farmland, mountain, grassland, hills, marsh, city, common;
     bool groundInitialized = false;
     private void Awake()
     {
@@ -22,15 +25,19 @@ public class BattleCentralControl : MonoBehaviour {
         //objToGrid = new Dictionary<GameObject, Grid>();
         playerTroopOnField = new Dictionary<Person, GameObject>();
         enemyTroopOnField = new Dictionary<Person, GameObject>();
+        if (battlefieldTypes == null || battlefieldTypes.Count == 0)
+        {
+            battlefieldTypes = new List<BattlefieldType>();
+            battlefieldTypes.Add(BattlefieldType.Common);
+        }
+        
         playerTurn = true;
         battleStart = false;
     }
     // Use this for initialization
     void Start()
     {
-        
-        
-
+        categorizeGridTypes();
     }
 
     // Update is called once per frame
@@ -160,7 +167,7 @@ public class BattleCentralControl : MonoBehaviour {
         {
             for (int iz = 0; iz < z; iz++)
             {
-                mapGridDecider(ix, iz);
+                mapGridDecider(ix, iz, battlefieldTypes);
             }
         }
     }
@@ -186,43 +193,117 @@ public class BattleCentralControl : MonoBehaviour {
             }
         }
     }
-    GameObject mapGridDecider(int x, int z)
+    void mapGridDecider(int x, int z, List<BattlefieldType> bt)
     {
-        int rand = (int) Random.Range(1, 4);
-        GameObject model;
-        if (rand == 1)
+        int rand = Random.Range(0, bt.Count);
+        List<GridType> gridTypesToCreate;
+        switch(bt[rand])
         {
-            model = GameObject.Find("tree");
-            var temp = new Grid(x, z, model, GridType.tree);
-            map[x, z] = temp;
+            case BattlefieldType.City:
+                gridTypesToCreate = city;
+                break;
+            case BattlefieldType.Farmland:
+                gridTypesToCreate = farmland;
+                break;
+            case BattlefieldType.Grassland:
+                gridTypesToCreate = grassland;
+                break;
+            case BattlefieldType.Hills:
+                gridTypesToCreate = hills;
+                break;
+            case BattlefieldType.Marsh:
+                gridTypesToCreate = marsh;
+                break;
+            case BattlefieldType.Mountain:
+                gridTypesToCreate = mountain;
+                break;
+            case BattlefieldType.Woods:
+                gridTypesToCreate = woods;
+                break;
+            default:
+                gridTypesToCreate = common;
+                break;
+
         }
-        else if (rand == 2)
-        {
-            model = GameObject.Find("rockAndTree");
-            var temp = new Grid(x, z, model, GridType.rockAndTree);
-            map[x, z] = temp;
-        }
-        else
-        {
-            model = GameObject.Find("flatGrass");
-            var temp = new Grid(x, z, model, GridType.flatGrass);
-            map[x, z] = temp;
-        }
-        return model;
+        Grid temp = makeLandscape(x, z, gridTypesToCreate);
+        //ADD NEW GRID
+        
+        map[x, z] = temp;
     }
+    Grid makeLandscape(int x, int z, List<GridType> gridTypes)
+    {
+        int rand = (int)Random.Range(0, gridTypes.Count);
+        Grid temp = new Grid(x, z, flatGrass, GridType.flatGrass);
+        switch (gridTypes[rand])
+        {
+            case GridType.flatGrass:
+                temp = new Grid(x, z, rockAndTree, GridType.flatGrass);
+                break;
+            case GridType.rockAndTree:
+                temp = new Grid(x, z, rockAndTree, GridType.rockAndTree);
+                break;
+            case GridType.deadTree:
+                temp = new Grid(x, z, deadTree, GridType.deadTree);
+                break;
+            case GridType.singleTree:
+                temp = new Grid(x, z, singleTree, GridType.singleTree);
+                break;
+            case GridType.rockyPlain:
+                temp = new Grid(x, z, rockyPlain, GridType.rockyPlain);
+                break;
+            case GridType.fence:
+                temp = new Grid(x, z, fence, GridType.fence);
+                break;
+        }
+        return temp;
+    }
+    
     void groundInitialization()
     {
-        GameObject.Find("flatGrass").SetActive(false);
-        GameObject.Find("rockAndTree").SetActive(false);
-        GameObject.Find("tree").SetActive(false);
+        flatGrass.SetActive(false);
+        rockAndTree.SetActive(false);
+        singleTree.SetActive(false);
+        deadTree.SetActive(false);
+        rockyPlain.SetActive(false);
+        fence.SetActive(false);
         //Terrain terrain = ground.GetComponent<Terrain>();
         //ground.GetComponent<MeshRenderer>().enabled = false;
     }
-}
+    //ADD NEW GRID
+    void categorizeGridTypes()
+    {
+        woods = new List<GridType>();
+        woods.AddRange(new GridType[] { GridType.rockAndTree, GridType.singleTree });
 
+        farmland = new List<GridType>();
+        farmland.AddRange(new GridType[] { GridType.flatGrass, GridType.fence, GridType.rockAndTree, GridType.singleTree });
+
+        mountain = new List<GridType>();
+        mountain.AddRange(new GridType[] { GridType.rockAndTree, GridType.singleTree, GridType.rockyPlain });
+
+        grassland = new List<GridType>();
+        grassland.AddRange(new GridType[] { GridType.flatGrass, GridType.fence, GridType.singleTree });
+
+        hills = new List<GridType>();
+        hills.AddRange(new GridType[] { GridType.flatGrass, GridType.rockAndTree, GridType.singleTree });
+
+        marsh = new List<GridType>();
+        marsh.AddRange(new GridType[] { GridType.flatGrass});
+
+        city = new List<GridType>();
+        city.AddRange(new GridType[] { GridType.fence });
+
+        common = new List<GridType>();
+        common.AddRange(new GridType[] { GridType.flatGrass, GridType.fence, GridType.rockAndTree, GridType.singleTree, GridType.rockyPlain });
+    }
+}
+//ADD NEW GRID
 public enum GridType
 {
-    rockAndTree,
     flatGrass,
-    tree
+    rockAndTree,
+    singleTree,
+    deadTree,
+    rockyPlain,
+    fence
 }

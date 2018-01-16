@@ -181,7 +181,7 @@ public class DialogueSystem : MonoBehaviour {
     {
         makeSurePanel.SetActive(false);
         closeDialogue(PanelType.NPC);
-        MapManagement.createBattleScene(curInteractedParty);
+        MapManagement.createBattleScene(curInteractedParty, Player.mainParty.battlefieldTypes);
     }
     public void ambushNPC()
     {
@@ -191,7 +191,7 @@ public class DialogueSystem : MonoBehaviour {
         if (ambushR >= rand)
         {
             closeDialogue(PanelType.NPC);
-            MapManagement.createBattleScene(curInteractedParty);
+            MapManagement.createBattleScene(curInteractedParty, Player.mainParty.battlefieldTypes);
         } else
         {
             npcAmbush.GetComponent<Button>().interactable = false;
@@ -433,7 +433,7 @@ public class DialogueSystem : MonoBehaviour {
         cityRetreat.SetActive(false);
         cityMenuButtons(true);
         closeDialogue(PanelType.city);
-        MapManagement.createBattleScene(curInteractedParty);
+        MapManagement.createBattleScene(curInteractedParty, Player.mainParty.battlefieldTypes);
         
     }
     public void ransomCity()
@@ -465,7 +465,7 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void billboardCity()
     {
-
+        Billboard.billboard.displayPostedQuests(curInteractedParty.belongedCity.getavailableQuests());
     }
     public void resetPerkCity()
     {
@@ -483,7 +483,7 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void restCity()
     {
-
+        //increase morale, health, 
     }
     public void bartenderCity()
     {
@@ -499,11 +499,11 @@ public class DialogueSystem : MonoBehaviour {
     }
     public void orgyCity()
     {
-
+        //decrease prestige
     }
     public void indulgenceCity()
     {
-
+        //decrease notoriety
     }
     public void upgradeEncampmentCity()
     {
@@ -677,7 +677,7 @@ public class DialogueSystem : MonoBehaviour {
         townPillage.SetActive(false);
         townRansom.SetActive(false);
         townRetreat.SetActive(false);
-        MapManagement.createBattleScene(curInteractedParty);
+        MapManagement.createBattleScene(curInteractedParty, Player.mainParty.battlefieldTypes);
         closeDialogue(PanelType.town);
     }
     public void ransomTown()

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class City : Interactable {
     public string lName;
+    public string ID;
     public Party cityGuard, cityTrader;
     private Material objMaterial;    // Used to store material reference.
     private Color objColor;            // Used to store color reference.
@@ -77,5 +78,30 @@ public class City : Interactable {
         string[] result = new string[] { "hello", "welcome" };
 
         return result;
+    }
+    public List<Quest> getavailableQuests()
+    {
+        List<Quest> quests = new List<Quest>();
+        if (!checkPlayerQuestID(QuestType.ASN + ID))
+        {
+            quests.Add(QuestDataBase.dataBase.getQuest(QuestType.ASN + ID));
+        }
+        if (!checkPlayerQuestID(QuestType.HUN + ID))
+        {
+            quests.Add(QuestDataBase.dataBase.getQuest(QuestType.HUN + ID));
+        }
+
+        return quests;
+    }
+    bool checkPlayerQuestID(string id)
+    {
+        foreach (Quest q in Player.mainParty.unfinishedQuests)
+        {
+            if (q.questID == id)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

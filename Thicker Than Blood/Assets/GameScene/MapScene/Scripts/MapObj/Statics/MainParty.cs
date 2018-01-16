@@ -27,13 +27,7 @@ public class MainParty : Party {
     {
         base.PartyInitialization();
         factionPerkTree = new FactionPerkTree();
-        //QUEST
-        var q = QuestDataBase.dataBase.getQuest("MAIN1");
         
-        unfinishedQuests.Add(q);
-        var q2 = QuestDataBase.dataBase.getQuest("MAIN2");
-
-        unfinishedQuests.Add(q2);
     }
     public override void plusPrestige(int toAdd)
     {
@@ -57,6 +51,7 @@ public class MainParty : Party {
     }
     public override float getTravelSpeed()
     {
+        
         return base.getTravelSpeed() + 4.0f;
     }
     public override float getVisionRange()

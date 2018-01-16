@@ -16,7 +16,7 @@ public class Town : Interactable
         base.Start();
         dialogue = new string[] { "hello", "hi" };
         interactableType = InteractableType.town;
-        objMaterial = gameObject.GetComponent<MeshRenderer>().material;
+        objMaterial = gameObject.GetComponentInChildren<MeshRenderer>().material;
         objColor = objMaterial.color;
         //townGuard.belongedTown = this;
     }
