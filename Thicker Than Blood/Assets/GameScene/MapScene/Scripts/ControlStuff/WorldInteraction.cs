@@ -9,6 +9,7 @@ public class WorldInteraction : MonoBehaviour
     public GameObject player;
     public GameObject tabCanvas;
     const float INTERACT_DIST = 1;
+    float idleCounter = 0;
     public NavMeshAgent playerAgent;
     List<GameObject> inspectedList = new List<GameObject>();
     Animation playerAnimation;
@@ -39,13 +40,14 @@ public class WorldInteraction : MonoBehaviour
             playerAgent.destination = curChasedObj.transform.position;
         }
         Player.mainParty.position = player.transform.position;
-        if (playerAgent.destination.x == player.transform.position.x && playerAgent.destination.z == player.transform.position.z)
+        if (Mathf.Abs(playerAgent.destination.x - player.transform.position.x) <= .5f && Mathf.Abs(playerAgent.destination.z - player.transform.position.z) <= .5f)
         {
-            playerAnimation.Play("Idle");
+            idleAnimation();
             TimeSystem.pause = true;
         } else
         {
-            playerAnimation.Play("ShortGliding");
+
+            walkingAnimation();
             TimeSystem.pause = false;
         }
     }
@@ -100,7 +102,56 @@ public class WorldInteraction : MonoBehaviour
         }
 
     }
-
+    void idleAnimation()
+    {
+        if (!playerAnimation.IsPlaying("CleanFeather"))
+        {
+            playerAnimation.Play("Idle");
+        }
+        idleCounter += Time.deltaTime;
+        if (idleCounter >= 3.0f)
+        {
+            idleCounter -= 3.0f;
+            playerAnimation.Play("CleanFeather");
+        }
+    }
+    void walkingAnimation()
+    {
+        //playerAnimation.Play("ShortGliding");
+        float carriedPercentage = Player.mainParty.getInventoryWeight() / Player.mainParty.getInventoryWeightLimit();
+        if (carriedPercentage <.5f) //gliding animation
+        {
+            if (playerAnimation.IsPlaying("Idle"))
+            {
+                playerAnimation.Play("Launch");
+            }
+            if (!playerAnimation.IsPlaying("Launch"))
+            {
+                playerAnimation.Play("Gliding");
+            }
+        } else if (carriedPercentage < .5f)
+        {
+            if (!playerAnimation.IsPlaying("Landing"))
+            {
+                playerAnimation.Play("Hop");
+            }
+            if (playerAnimation.IsPlaying("Gliding"))
+            {
+                playerAnimation.Play("Landing");
+            }
+        } else 
+        {
+            if (playerAnimation.IsPlaying("Idle")
+                || playerAnimation.IsPlaying("Landing"))
+            {
+                playerAnimation.Play("Walk");
+            }
+            if (playerAnimation.IsPlaying("Gliding"))
+            {
+                playerAnimation.Play("Landing");
+            }
+        }
+    }
     void getInteraction()
     {
         Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);

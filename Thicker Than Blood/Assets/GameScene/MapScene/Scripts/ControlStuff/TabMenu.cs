@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class TabMenu : MonoBehaviour {
     public static TabMenu tabMenu;
     public GameObject defaultPanel, topPanel;
+    public GameObject explainPanel;
+    public Text explainMsgText;
     public Text timeDisplay;
     public Button objectiveButton, factionButton, sapeButton, ciButton,
         mainGearButton, secGearButton, inventoryButton, troopButton;
@@ -293,6 +295,32 @@ public class TabMenu : MonoBehaviour {
     public void resetLayout ()
     {
         topPanel.GetComponent<HorizontalLayoutGroup>().SetLayoutHorizontal();
+    }
+    public void explain(string msg)
+    {
+        if (!explainPanel.activeSelf)
+        {
+            explainPanel.SetActive(true);
+        }
+        explainMsgText.text = msg;
+        Vector3 pos = Input.mousePosition;
+        var SCALE_X = gameObject.GetComponent<CanvasScaler>().referenceResolution.x / Screen.width;
+        var SCALE_Y = gameObject.GetComponent<CanvasScaler>().referenceResolution.y / Screen.height;
+        var INSPECT_OFFSET_Y = explainPanel.GetComponent<RectTransform>().sizeDelta.y;
+        if (pos.y >= Screen.height / 2)
+        {
+            pos.y -= INSPECT_OFFSET_Y / SCALE_Y;
+        }
+        else
+        {
+            pos.y += INSPECT_OFFSET_Y / SCALE_Y;
+        }
+        explainPanel.transform.GetComponent<RectTransform>().position = pos;
+        
+    }
+    public void hideExplain()
+    {
+        explainPanel.SetActive(false);
     }
 }
 

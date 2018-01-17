@@ -41,6 +41,13 @@ ModelImporter:
     100066: hip_R
     100068: leg_R
     100070: thigh_R
+    100072: Cube_001
+    100074: hand_L_001
+    100076: hand_L_002
+    100078: hand_L_003
+    100080: hand_R_001
+    100082: hand_R_002
+    100084: hand_R_003
     400000: //RootNode
     400002: Armature
     400004: Bone
@@ -77,11 +84,21 @@ ModelImporter:
     400066: hip_R
     400068: leg_R
     400070: thigh_R
+    400072: Cube_001
+    400074: hand_L_001
+    400076: hand_L_002
+    400078: hand_L_003
+    400080: hand_R_001
+    400082: hand_R_002
+    400084: hand_R_003
     2300000: //RootNode
     2300002: Cube
+    2300004: Cube_001
     3300000: //RootNode
     3300002: Cube
+    3300004: Cube_001
     4300000: Cube
+    4300002: Cube_001
     7400000: Default Take
     7400002: ArmatureAction_001
     7400004: Idle
@@ -96,6 +113,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Material
     second: {fileID: 2100000, guid: 3e5cca30e128a8a4793c003e666e4fd4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: unnamed
+    second: {fileID: 2100000, guid: 3574376b65c638240b546467df2658ba, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
