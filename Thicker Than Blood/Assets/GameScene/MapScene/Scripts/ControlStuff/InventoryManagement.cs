@@ -18,7 +18,7 @@ public class InventoryManagement : MonoBehaviour {
         selectingValueTotal, selectingAmountTotal;
     public Text playerCash, selectingCash;
     public Text playerWeight;
-    public Text price, weight, amount;
+    public Text inspectName, price, weight, amount;
     public Slider amountSlider;
     public Button buyButton, sellButton;
     public Text buyText, sellText;
@@ -309,6 +309,7 @@ public class InventoryManagement : MonoBehaviour {
                 {
                     maxAmount = (int)toInspect.Count;
                 }
+                inspectName.text = toInspect[0].name;
                 inspectIcon.texture = toInspect[0].icon;
                 singleWeight = -(int)toInspect[0].getWeight();
                 sellButton.interactable = true;
