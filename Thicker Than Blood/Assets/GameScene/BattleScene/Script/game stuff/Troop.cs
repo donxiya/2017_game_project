@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class Troop : BattleInteractable {
 
-    
+    public Animation troopAnimation;
     public GameObject controlPanel, inspectPanel;
     public Person person { get; set; }
     public Grid curGrid { get; set; }
@@ -24,7 +24,7 @@ public class Troop : BattleInteractable {
     float STATUS_BAR_HEIGHT, STATUS_BAR_WIDTH;
     public bool travelCostFree = false;
     bool staminaCosted = false;
-    Vector3 tempDest, finalDest, safetyDest;
+    Vector3 tempDest, finalDest, safetyDest, lookTarget;
     Grid destinationGrid;
     NavMeshAgent navMeshAgent;
     MeshRenderer meshRenderer;
@@ -53,12 +53,19 @@ public class Troop : BattleInteractable {
         
         if (activated)
         {
-            
+            if (troopAnimation == null)
+            {
+                troopAnimation = transform.Find("Model").GetComponent<Animation>();
+            }
             if (!gameObject.activeSelf)
             {
                 gameObject.SetActive(true);
             }
             visionUpdate();
+            if (lookTarget != null)
+            {
+                lookAtVector(transform.position + lookTarget, troopAnimation.gameObject);
+            }
             if (BattleCentralControl.playerTurn && person.faction == Faction.mercenary)
             {
                 if (controlled)
@@ -206,10 +213,12 @@ public class Troop : BattleInteractable {
             if (person.faction == Faction.mercenary)
             {
                 BattleCentralControl.playerTroopOnField.Add(person, gameObject);
+                lookTarget = new Vector3(0, 0, 1);
             }
             else
             {
                 BattleCentralControl.enemyTroopOnField.Add(person, gameObject);
+                lookTarget = new Vector3(0, 0, - 1);
             }
             person.troop = gameObject.GetComponent<Troop>();
             EndTurnPanel.endTurnPanel.updateBattlemeter();
@@ -272,10 +281,15 @@ public class Troop : BattleInteractable {
 
     public void walkUpdate()
     {
+        
         //CHECK IF AT FINAL DEST
         float finalDistance = Vector2.Distance(new Vector2(finalDest.x, finalDest.z), new Vector2(gameObject.transform.position.x, gameObject.transform.position.z));
         if (finalDistance <= 0.1f)
         {
+            if (!troopAnimation.isPlaying)
+            {
+                troopAnimation.Play("Idle");
+            }
             reachedDestination = true;
             if (person.faction == Faction.mercenary)
             {
@@ -291,6 +305,10 @@ public class Troop : BattleInteractable {
         float distance = Vector2.Distance(new Vector2(tempDest.x, tempDest.z), new Vector2(gameObject.transform.position.x, gameObject.transform.position.z));
         if (distance <= 0.1f) //when we arrive a grid
         {
+            if (!troopAnimation.isPlaying)
+            {
+                troopAnimation.Play("Idle");
+            }
             if (curGrid != getCurrentGrid()) //make sure new grid
             {
                 if (charging)
@@ -363,7 +381,7 @@ public class Troop : BattleInteractable {
                     }
                     navMeshAgent.destination = tempDest;
                     //lookAtVector(tempDest);
-                    
+
                 }
             } else { //ARRIVING
                 if (getCurrentGrid().personOnGrid != null && getCurrentGrid().personOnGrid != person)
@@ -383,6 +401,8 @@ public class Troop : BattleInteractable {
             
         } else //TRAVELLING
         {
+            troopAnimation.Play("Walk");
+            lookTarget = navMeshAgent.destination - transform.position;
             if (curGrid !=  getCurrentGrid())
             {
                 navMeshAgent.destination = tempDest;
@@ -397,7 +417,7 @@ public class Troop : BattleInteractable {
             walkIndicator.SetActive(true);
             curIndicator = walkIndicator;
         }
-        followMouse(walkIndicator);
+        walkIndicator.SetActive(followMouse(walkIndicator));
         //lookAtMouse(gameObject);
     }
     public void lunge()
@@ -407,8 +427,10 @@ public class Troop : BattleInteractable {
             lungeIndicator.SetActive(true);
             curIndicator = lungeIndicator;
         }
-        lookAtMouse(gameObject);
+        lookAtMouse(gameObject.gameObject);
         lookAtMouse(lungeIndicator);
+        lookTarget = lungeIndicator.transform.Find("Model").transform.position - transform.position;
+        lookAtMouse(troopAnimation.gameObject);
     }
     public void whirlwind()
     {
@@ -505,6 +527,8 @@ public class Troop : BattleInteractable {
             case TroopSkill.lunge:
                 if (person.stamina >= person.getLungeStaminaCost())
                 {
+                    //lookAtVector(lungeIndicator.transform.position, troopAnimation.gameObject);
+                    troopAnimation.Play("Lunge");
                     foreach (Grid g in attackedGrid)
                     {
                         if (g.personOnGrid != null && g.personOnGrid.faction != person.faction)
@@ -522,6 +546,7 @@ public class Troop : BattleInteractable {
             case TroopSkill.whirlwind:
                 if (person.stamina >= person.getWhirlwindStaminaCost())
                 {
+                    troopAnimation.Play("Whirlwind");
                     foreach (Grid g in attackedGrid)
                     {
                         if (g.personOnGrid != null && g.personOnGrid.faction != person.faction)
@@ -550,6 +575,7 @@ public class Troop : BattleInteractable {
                                 Troop attackedTroop = interactedObject.GetComponent<Troop>();
                                 if (attackedTroop != null && attackedTroop.seen && person.stamina >= person.getExecuteStaminaCost()) //TODO: remove player troop later
                                 {
+                                    troopAnimation.Play("Execute");
                                     if (attackedTroop.person.faction != person.faction && attackedGrid.Contains(attackedTroop.curGrid))
                                     {
                                         lookAtVector(attackedTroop.gameObject.transform.position);
@@ -857,6 +883,8 @@ public class Troop : BattleInteractable {
             Vector3 pos = new Vector3(getCurrentGrid().x, transform.position.y, getCurrentGrid().z);
             curGrid = getCurrentGrid();
             transform.position = Vector3.Slerp(transform.position, pos, Time.deltaTime * 1000);
+
+            troopAnimation.Play("Idle");
         }
     }
     Vector3 goNearbyGrid(Grid g) {
@@ -896,7 +924,13 @@ public class Troop : BattleInteractable {
         gameObject.transform.LookAt(pos - v);
         gameObject.transform.Rotate(0, 180, 0);
     }
-
+    void lookAtVector(Vector3 pos, GameObject obj)
+    {
+        Vector3 v = pos - gameObject.transform.position;
+        v.x = v.z = 0.0f;
+        obj.transform.LookAt(pos - v);
+        obj.transform.Rotate(0, 180, 0);
+    }
     void lookAtCamera(GameObject obj)
     {
         Vector3 v = Camera.main.transform.position - obj.transform.position;
@@ -928,7 +962,7 @@ public class Troop : BattleInteractable {
             }
         }
     }
-    void followMouse(GameObject obj)
+    bool followMouse(GameObject obj)
     {
         Ray interactionRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit interactionInfo;
@@ -940,6 +974,10 @@ public class Troop : BattleInteractable {
                 Vector3 pos = new Vector3(pointedObj.transform.position.x, 0, pointedObj.transform.position.z);
                 obj.transform.position = Vector3.Slerp(obj.transform.position, pos, Time.deltaTime * 1000);
             }
+            return true;
+        } else
+        {
+            return false;
         }
     }
     List<Grid> sortGridByRange(List<Grid> gridL)

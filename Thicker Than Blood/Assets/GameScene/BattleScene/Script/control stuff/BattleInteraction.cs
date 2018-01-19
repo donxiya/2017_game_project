@@ -63,6 +63,7 @@ public class BattleInteraction : MonoBehaviour {
                         curControlled.GetComponent<Troop>().cameraFocusOn();
                         walkToObj();
                     }
+                    
                 }
                 else if (skillMode == TroopSkill.none && Input.GetMouseButtonDown(1))
                 {
@@ -165,12 +166,13 @@ public class BattleInteraction : MonoBehaviour {
                 {
                     interactedObject.GetComponent<GridObject>().cameraFocusOn();
                 }
-            } else if (interactedObject.tag == "Indicator")
+            } else
             {
                 curControlled.GetComponent<Troop>().walkIndicator.GetComponent<Indicator>().goToIndicatedGrid(curControlled);
-                
-                
-            } else
+            }
+        } else
+        {
+            if (curControlled.GetComponent<Troop>().walkIndicator.activeSelf)
             {
                 curControlled.GetComponent<Troop>().walkIndicator.GetComponent<Indicator>().goToIndicatedGrid(curControlled);
             }

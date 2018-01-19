@@ -38,6 +38,7 @@ public class TabMenu : MonoBehaviour {
         inventoryButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.InventoryPanel, true); });
         troopButtonQuick.onClick.AddListener(delegate () { showPanel(TabPanelType.TroopPanel, true); });
         closeTabButton.onClick.AddListener(delegate () { closeTabMenu(); });
+        explainPanel.SetActive(false);
     }
     private void OnEnable()
     {

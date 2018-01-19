@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class InventoryManagement : MonoBehaviour {
     public static InventoryManagement inventoryManagement;
     public GameObject currentItemButton, selectingItemButton;
-    public RawImage currentItemIcon, selectingItemIcon;
+    public RawImage currentItemIcon, selectingItemIcon, inspectIcon;
     public Text currentName, currentWeight, currentValue, currentAmount;
     public Text selectingName, selectingWeight, selectingValue, selectingAmount;
     public Texture2D selectedImg, unselectedImg;
@@ -192,7 +192,6 @@ public class InventoryManagement : MonoBehaviour {
     void showCurrent()
     {
         clearCurrent();
-        curButton = null;
         if (currentInventory != null && currentInventory.Count > 0)
         {
             switch(currentSortingMode)
@@ -244,7 +243,6 @@ public class InventoryManagement : MonoBehaviour {
     void showSelecting()
     {
         clearSelecting();
-        curButton = null;
         if (selectingInventory != null && selectingInventory.Count > 0)
         {
             switch (selectingSortingMode)
@@ -311,11 +309,13 @@ public class InventoryManagement : MonoBehaviour {
                 {
                     maxAmount = (int)toInspect.Count;
                 }
+                inspectIcon.texture = toInspect[0].icon;
                 singleWeight = -(int)toInspect[0].getWeight();
                 sellButton.interactable = true;
                 buyButton.interactable = false;
             } else
             {
+                inspectIcon.texture = toInspect[0].icon;
                 singlePrice = - toInspect[0].getBuyingPrice();
                 singleWeight = (int)toInspect[0].getWeight();
                 if (managementMode == InventoryManagementMode.shopping)
@@ -475,6 +475,7 @@ public class InventoryManagement : MonoBehaviour {
             }
             currentInventory = collapseList(originalCurrentInventory);
             selectingInventory = collapseList(originalSelectingInventory);
+            curButton = null;
             showCurrent();
             showSelecting();
         }
@@ -496,6 +497,7 @@ public class InventoryManagement : MonoBehaviour {
             }
             currentInventory = collapseList(originalCurrentInventory);
             selectingInventory = collapseList(originalSelectingInventory);
+            curButton = null;
             showCurrent();
             showSelecting();
         }
