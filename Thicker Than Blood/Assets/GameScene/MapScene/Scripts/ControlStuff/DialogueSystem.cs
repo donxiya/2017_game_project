@@ -77,7 +77,7 @@ public class DialogueSystem : MonoBehaviour {
         npcThreaten.GetComponent<Button>().onClick.AddListener(delegate () { npcConfirm("threatenNPC"); });
         npcRetreat.GetComponent<Button>().onClick.AddListener(delegate () { npcConfirm("retreatNPC"); });
         npcBribe.GetComponent<Button>().onClick.AddListener(delegate () { npcConfirm("bribeNPC"); ; });
-        npcLeave.GetComponent<Button>().onClick.AddListener(delegate () { npcConfirm("leaveNPC"); });
+        npcLeave.GetComponent<Button>().onClick.AddListener(delegate () { leaveNPC(); });
     }
     public void SNPCPanelInitialization()
     {

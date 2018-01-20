@@ -14,41 +14,41 @@ public class MapSceneUIImageDataBase : MonoBehaviour {
 
     // Use this for initialization
     void Awake () {
-        dataBase = new MapSceneUIImageDataBase();
-        dataBase.cityDefaultImg = cityDefaultImg;
-        dataBase.cityGarrisonImg = cityGarrisonImg;
-        dataBase.cityThreatenImg = cityThreatenImg;
-        dataBase.cityMarketImg = cityMarketImg;
-        dataBase.cityHallImg = cityHallImg;
-        dataBase.cityArmoryImg = cityArmoryImg;
-        dataBase.cityTavernImg = cityTavernImg;
-        dataBase.cityBrothelImg = cityBrothelImg;
-        dataBase.cityChurchImg = cityChurchImg;
-        dataBase.cityEncampmentImg = cityEncampmentImg;
-        dataBase.townDefaultImg = townDefaultImg;
-        dataBase.townGarrisonImg = townGarrisonImg;
-        dataBase.townThreatenImg = townThreatenImg;
-        dataBase.townRestockImg = townRestockImg;
-        dataBase.townRecruitImg = townRecruitImg;
-        dataBase.townInvestImg = townInvestImg;
-        dataBase.empPos1 = empPos1;
-        dataBase.empPos2 = empPos2;
-        dataBase.empPos3 = empPos3;
-        dataBase.empNeg1 = empNeg1;
-        dataBase.empNeg2 = empNeg2;
-        dataBase.empNeg3 = empNeg3;
-        dataBase.fraPos1 = fraPos1;
-        dataBase.fraPos2 = fraPos2;
-        dataBase.fraPos3 = fraPos3;
-        dataBase.fraNeg1 = fraNeg1;
-        dataBase.fraNeg2 = fraNeg2;
-        dataBase.fraNeg3 = fraNeg3;
-        dataBase.papPos1 = papPos1;
-        dataBase.papPos2 = papPos2;
-        dataBase.papPos3 = papPos3;
-        dataBase.papNeg1 = papNeg1;
-        dataBase.papNeg2 = papNeg2;
-        dataBase.papNeg3 = papNeg3;
+        dataBase = this;
+        //dataBase.cityDefaultImg = cityDefaultImg;
+        //dataBase.cityGarrisonImg = cityGarrisonImg;
+        //dataBase.cityThreatenImg = cityThreatenImg;
+        //dataBase.cityMarketImg = cityMarketImg;
+        //dataBase.cityHallImg = cityHallImg;
+        //dataBase.cityArmoryImg = cityArmoryImg;
+        //dataBase.cityTavernImg = cityTavernImg;
+        //dataBase.cityBrothelImg = cityBrothelImg;
+        //dataBase.cityChurchImg = cityChurchImg;
+        //dataBase.cityEncampmentImg = cityEncampmentImg;
+        //dataBase.townDefaultImg = townDefaultImg;
+        //dataBase.townGarrisonImg = townGarrisonImg;
+        //dataBase.townThreatenImg = townThreatenImg;
+        //dataBase.townRestockImg = townRestockImg;
+        //dataBase.townRecruitImg = townRecruitImg;
+        //dataBase.townInvestImg = townInvestImg;
+        //dataBase.empPos1 = empPos1;
+        //dataBase.empPos2 = empPos2;
+        //dataBase.empPos3 = empPos3;
+        //dataBase.empNeg1 = empNeg1;
+        //dataBase.empNeg2 = empNeg2;
+        //dataBase.empNeg3 = empNeg3;
+        //dataBase.fraPos1 = fraPos1;
+        //dataBase.fraPos2 = fraPos2;
+        //dataBase.fraPos3 = fraPos3;
+        //dataBase.fraNeg1 = fraNeg1;
+        //dataBase.fraNeg2 = fraNeg2;
+        //dataBase.fraNeg3 = fraNeg3;
+        //dataBase.papPos1 = papPos1;
+        //dataBase.papPos2 = papPos2;
+        //dataBase.papPos3 = papPos3;
+        //dataBase.papNeg1 = papNeg1;
+        //dataBase.papNeg2 = papNeg2;
+        //dataBase.papNeg3 = papNeg3;
     }
 	
 	// Update is called once per frame

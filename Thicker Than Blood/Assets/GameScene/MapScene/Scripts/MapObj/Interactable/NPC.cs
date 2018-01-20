@@ -62,14 +62,6 @@ public class NPC : Interactable {
         {
             //npcAgent = transform.GetComponent<NavMeshAgent>();
             //npcAgent.isStopped = false;
-            if (Vector3.Distance(npcAgent.destination, transform.position) <= 10)
-            {
-
-            }
-            if (npcParty.faction == Faction.france)
-            {
-
-            }
             if (npcAgent.isActiveAndEnabled)
             {
                 npcAgent.destination = getRoamTarget(); //Player.mainParty.position;
@@ -96,6 +88,7 @@ public class NPC : Interactable {
     public override void interact()
     {
         base.interact();
+        DialogueSystem.Instance.createDialogue(PanelType.NPC, npcParty);
         //DialogueSystem.Instance.addNewDialogue(npcParty, dialogue, PanelType.NPC);
         //DialogueSystem.Instance.createDialogue(PanelType.NPC, npcParty);
     }
@@ -106,7 +99,7 @@ public class NPC : Interactable {
         {
             //start dialogue
             //DialogueSystem.Instance.addNewDialogue(npcParty, dialogue, PanelType.NPC);
-            DialogueSystem.Instance.createDialogue(PanelType.NPC, npcParty);
+            //DialogueSystem.Instance.createDialogue(PanelType.NPC, npcParty);
 
         }
         if (col.gameObject.tag == "NPC" && npcParty.battling < 1)

@@ -10,6 +10,7 @@ public class WorldInteraction : MonoBehaviour
     public GameObject tabCanvas;
     const float INTERACT_DIST = 1;
     float idleCounter = 0;
+    GameObject objectWantToInteract;
     public NavMeshAgent playerAgent;
     List<GameObject> inspectedList = new List<GameObject>();
     Animation playerAnimation;
@@ -37,7 +38,14 @@ public class WorldInteraction : MonoBehaviour
         playerAgent.speed = Player.mainParty.getTravelSpeed();
         if (chasing)
         {
-            playerAgent.destination = curChasedObj.transform.position;
+            if (curChasedObj != null)
+            {
+                playerAgent.destination = curChasedObj.transform.position;
+            } else
+            {
+                chasing = false;
+            }
+            
         }
         Player.mainParty.position = player.transform.position;
         if (Mathf.Abs(playerAgent.destination.x - player.transform.position.x) <= .5f && Mathf.Abs(playerAgent.destination.z - player.transform.position.z) <= .5f)
@@ -50,16 +58,24 @@ public class WorldInteraction : MonoBehaviour
             walkingAnimation();
             TimeSystem.pause = false;
         }
+        if (objectWantToInteract != null)
+        {
+            if (Vector3.Distance(player.transform.position, objectWantToInteract.transform.position) <= INTERACT_DIST)
+            {
+                objectWantToInteract.GetComponent<Interactable>().interact();
+                objectWantToInteract = null;
+            }
+        }
     }
     void inputKeysActions()
     {
-        if (Input.GetMouseButton(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButtonDown(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
             chasing = false;
             stopEveryone(false);
             getInteraction();
         }
-        if (Input.GetMouseButton(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButtonDown(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
             chasing = false;
             inspect();
@@ -84,6 +100,7 @@ public class WorldInteraction : MonoBehaviour
             TimeSystem.pause = true;
             stopEveryone(true);
         }
+        
     }
 
     public void stopEveryone(bool stop)
@@ -158,19 +175,22 @@ public class WorldInteraction : MonoBehaviour
         RaycastHit interactionInfo;
         if (Physics.Raycast(interactionRay, out interactionInfo, Mathf.Infinity))
         {
+            
             GameObject interactedObject = interactionInfo.collider.gameObject;
             if (interactedObject.tag == "Plain")
             {
                 playerAgent.destination = interactionInfo.point;
-                
+                objectWantToInteract = null;
             }
-            else if (interactedObject.tag == "Interactable Object" || interactedObject.tag == "NPC") {
+            else if (interactedObject.tag == "Interactable Object" || interactedObject.tag == "NPC" || interactedObject.tag == "City" || interactedObject.tag == "Town") {
                 //interactedObject.GetComponent<Interactable>().moveToInteraction(playerAgent);
                 moveToInteraction(interactedObject);
+                objectWantToInteract = interactedObject;
             }
             else
             {
                 playerAgent.destination = interactionInfo.point;
+                objectWantToInteract = null;
             }
         }
     }
@@ -179,7 +199,7 @@ public class WorldInteraction : MonoBehaviour
     {
         //interactedObj.GetComponent<Interactable>().hasInteracted = false;
         playerAgent.destination = new Vector3(interactedObj.transform.position.x, player.transform.position.y, interactedObj.transform.position.z);
-        if (Vector3.Distance(playerAgent.transform.position, interactedObj.transform.position) >= INTERACT_DIST)
+        if (Vector3.Distance(playerAgent.transform.position, interactedObj.transform.position) >= 0)
         {
             chasing = true;
             curChasedObj = interactedObj;

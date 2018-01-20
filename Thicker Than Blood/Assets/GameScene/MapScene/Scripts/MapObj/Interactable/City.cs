@@ -32,7 +32,7 @@ public class City : Interactable {
     }
     public override void interact()
     {
-        
+        base.interact();
         DialogueSystem.Instance.createDialogue(PanelType.city, cityGuard);
     }
 
@@ -41,7 +41,7 @@ public class City : Interactable {
 
         if (col.gameObject.tag == "Player")
         {
-            interact();
+            //interact();
             //start dialogue
             //DialogueSystem.Instance.addNewDialogue(name, dialogue, PanelType.city);
             //DialogueSystem.Instance.createDialogue(PanelType.city);

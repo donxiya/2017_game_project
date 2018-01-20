@@ -17,7 +17,13 @@ public class FaceCoop : MonoBehaviour {
     public Text selectingPersonName;
     public RawImage inspectPersonProfile;
     public Text inspectPersonName, inspectPersonDescription;
+    public GameObject postPanel;
+    public RawImage postImg;
+    public Text postTitle, poster, postContent;
+    int daySCounter, dayECounter;
     List<GameObject> createdButtons;
+    Queue<FaceCoopPost> currentPosts;
+    Dictionary<FaceCoopPost, GameObject> postDict;
 	// Use this for initialization
 	void Start () {
         faceCoop = this;
@@ -33,13 +39,25 @@ public class FaceCoop : MonoBehaviour {
         peoplePanel.SetActive(false);
         feedPanel.SetActive(true);
         createdButtons = new List<GameObject>();
+        currentPosts = new Queue<FaceCoopPost>();
+        postDict = new Dictionary<FaceCoopPost, GameObject>();
         displayPersons();
     }
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+        daySCounter = TimeSystem.hour;
+        if (daySCounter != dayECounter)
+        {
+            var postToRemove = currentPosts.Dequeue();
+            if (postToRemove != null)
+            {
+                
+                postDict.Remove(postToRemove);
+            }
+        }
+        dayECounter = TimeSystem.hour;
+    }
 
     void displayPersons()
     {
@@ -252,6 +270,18 @@ public class FaceCoop : MonoBehaviour {
         GameObject panelGameObject = toReset.transform.Find("ExplainationPanel").gameObject;
         buttonGameObject.GetComponent<Button>().onClick.RemoveAllListeners();
     }
+    GameObject createPost(FaceCoopPost post)
+    {
+        postTitle.text = post.postTitle;
+        poster.text = post.poster;
+        postContent.text = post.postContent;
+        postImg.texture = post.postImg;
+        GameObject newPost = Object.Instantiate(postPanel);
+        newPost.transform.SetParent(postPanel.transform.parent, false);
+        postDict.Add(post, newPost);
+        return newPost;
+    }
+
     public void leaveManagement()
     {
         showFrontPage();
