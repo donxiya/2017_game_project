@@ -112,7 +112,7 @@ public class MapManagement : MonoBehaviour {
         buildCity("Verona", defaultCity, new Vector3(230, 3, 425), 1000, 20000);
         buildCity("Padova", defaultCity, new Vector3(300, 3, 425), 1000, 20000);
         buildCity("Treviso", defaultCity, new Vector3(350, 3, 460), 1000, 20000);
-        buildCity("Venezia", defaultCity, new Vector3(360, 3, 400), 1000, 20000);
+        buildCity("Venezia", defaultCity, new Vector3(365, 3, 385), 1000, 20000);
         buildCity("Ferrara", defaultCity, new Vector3(300, 3, 365), 1000, 20000);
         buildCity("Bologna", defaultCity, new Vector3(275, 3, 315), 1000, 20000);
         buildCity("Firenze", defaultCity, new Vector3(250, 3, 240), 1000, 20000);
