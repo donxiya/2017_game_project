@@ -69,7 +69,7 @@ public class WorldInteraction : MonoBehaviour
     }
     void inputKeysActions()
     {
-        if (Input.GetMouseButtonDown(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+        if (Input.GetMouseButton(1) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
             chasing = false;
             stopEveryone(false);

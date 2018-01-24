@@ -6,7 +6,7 @@ using UnityEngine.UI;
 //TODO: save and load time
 public class TimeSystem : MonoBehaviour {
     public Text currentTime;
-    public GameObject sun, mapCenter;
+    public GameObject sun, moon, mapCenter;
     float timer;
     public TimeSave timeSave;
     public static int month, day, hour, minute;
@@ -40,6 +40,8 @@ public class TimeSystem : MonoBehaviour {
     {
         sun.transform.RotateAround(mapCenter.transform.position, Vector3.right, 10f * Time.deltaTime);
         sun.transform.LookAt(mapCenter.transform);
+        moon.transform.RotateAround(mapCenter.transform.position, Vector3.right, 10f * Time.deltaTime);
+        moon.transform.LookAt(mapCenter.transform);
     }
 
     // Update is called once per frame

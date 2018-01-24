@@ -27,8 +27,8 @@ public class BattlefieldIndicator : MonoBehaviour {
         {
             if (!Player.mainParty.battlefieldTypes.Contains(battlefieldType)){
                 Player.mainParty.battlefieldTypes.Add(battlefieldType);
-                
-                
+
+                Debug.Log("enter:" + battlefieldType);
             }
             
         }
