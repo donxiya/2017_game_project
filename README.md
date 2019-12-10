@@ -10,10 +10,9 @@ The player will roam the Renaissance Italy region as a mercenary, or condotierro
 ### Education Value
 - Artwork inspired by historical paintings
 - Story arch based on 16th century historical event
-- 
 
-## Techology
 
+### Techology
 - Unity#D
 - Adobe suite
 - Pecil2D
